@@ -3,6 +3,8 @@ __all__ = [
 ]
 
 import os
+import random
+import numpy as np
 
 
 def file_paths(root_directory):
@@ -12,3 +14,9 @@ def file_paths(root_directory):
         for filename in filenames:
             res.append(os.path.join(dirname, filename))
     return res
+
+
+def seed_everything(seed=31):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)

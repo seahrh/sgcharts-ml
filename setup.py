@@ -4,7 +4,9 @@ setup(
     name='kaggle-rig',
     version=__version__,
     python_requires='>=3.7.0',
-    install_requires=[],
+    install_requires=[
+        'pandas>=0.25.0'
+    ],
     packages=find_packages(exclude=['*.tests', '*.tests.*', 'tests.*', 'tests']),
     include_package_data=True,
     description='kaggle rig',
