@@ -5,10 +5,11 @@ __all__ = [
 
 import os
 import random
+from typing import Iterable
 import numpy as np
 
 
-def file_paths(root_directory):
+def file_paths(root_directory: str) -> Iterable[str]:
     """Returns a list of file paths rooted at the given directory."""
     res = []
     for dirname, _, filenames in os.walk(root_directory):
@@ -17,7 +18,7 @@ def file_paths(root_directory):
     return res
 
 
-def seed_everything(seed=31):
+def seed_everything(seed: int = 31):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)

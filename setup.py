@@ -5,7 +5,8 @@ setup(
     version=__version__,
     python_requires='>=3.7.0',
     install_requires=[
-        'pandas>=0.25.0'
+        'pandas>=0.25.0',
+        'mypy>=0.761',
     ],
     packages=find_packages(exclude=['*.tests', '*.tests.*', 'tests.*', 'tests']),
     include_package_data=True,
