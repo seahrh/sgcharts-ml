@@ -28,6 +28,7 @@ __all__ = [
     'MultilabelStratifiedShuffleSplit',
 ]
 
+import logging
 import numpy as np
 
 from sklearn.utils import check_random_state
@@ -220,6 +221,9 @@ class MultilabelStratifiedKFold(_BaseKFold):
         split. You can make the results identical by setting ``random_state``
         to an integer.
         """
+        logging.debug(f'col sums={np.sum(y, axis=0)}')
+        if np.amin(np.sum(y, axis=0)) < self.n_splits:
+            raise ValueError(f'Label must have at least {self.n_splits} positive examples')
         y = check_array(y, ensure_2d=False, dtype=None)
         return super(MultilabelStratifiedKFold, self).split(X, y, groups)
 
