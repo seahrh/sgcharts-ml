@@ -23,9 +23,9 @@ Attribution to authors of scikit-learn/model_selection/_split.py under BSD 3 cla
 # License: BSD 3 clause
 
 __all__ = [
-    'MultilabelStratifiedKFold',
-    'RepeatedMultilabelStratifiedKFold',
-    'MultilabelStratifiedShuffleSplit',
+    "MultilabelStratifiedKFold",
+    "RepeatedMultilabelStratifiedKFold",
+    "MultilabelStratifiedShuffleSplit",
 ]
 
 import logging
@@ -35,8 +35,12 @@ from sklearn.utils import check_random_state
 from sklearn.utils.validation import _num_samples, check_array
 from sklearn.utils.multiclass import type_of_target
 
-from sklearn.model_selection._split import _BaseKFold, _RepeatedSplits, \
-    BaseShuffleSplit, _validate_shuffle_split
+from sklearn.model_selection._split import (
+    _BaseKFold,
+    _RepeatedSplits,
+    BaseShuffleSplit,
+    _validate_shuffle_split,
+)
 
 
 def _iterative_stratification(labels, r, random_state):
@@ -89,7 +93,9 @@ def _iterative_stratification(labels, r, random_state):
         if label_idx.shape[0] > 1:
             label_idx = label_idx[random_state.choice(label_idx.shape[0])]
 
-        sample_idxs = np.where(np.logical_and(labels[:, label_idx].flatten(), labels_not_processed_mask))[0]
+        sample_idxs = np.where(
+            np.logical_and(labels[:, label_idx].flatten(), labels_not_processed_mask)
+        )[0]
 
         for sample_idx in sample_idxs:
             # Find the subset(s) with the largest number of desired examples
@@ -99,8 +105,9 @@ def _iterative_stratification(labels, r, random_state):
             fold_idx = np.where(label_folds == label_folds.max())[0]
 
             if fold_idx.shape[0] > 1:
-                temp_fold_idx = np.where(c_folds[fold_idx] ==
-                                         c_folds[fold_idx].max())[0]
+                temp_fold_idx = np.where(c_folds[fold_idx] == c_folds[fold_idx].max())[
+                    0
+                ]
                 fold_idx = fold_idx[temp_fold_idx]
 
                 if temp_fold_idx.shape[0] > 1:
@@ -170,9 +177,12 @@ class MultilabelStratifiedKFold(_BaseKFold):
         y = np.asarray(y, dtype=bool)
         type_of_target_y = type_of_target(y)
 
-        if type_of_target_y != 'multilabel-indicator':
+        if type_of_target_y != "multilabel-indicator":
             raise ValueError(
-                'Supported target type is: multilabel-indicator. Got {!r} instead.'.format(type_of_target_y))
+                "Supported target type is: multilabel-indicator. Got {!r} instead.".format(
+                    type_of_target_y
+                )
+            )
 
         num_samples = y.shape[0]
 
@@ -221,9 +231,11 @@ class MultilabelStratifiedKFold(_BaseKFold):
         split. You can make the results identical by setting ``random_state``
         to an integer.
         """
-        logging.debug(f'col sums={np.sum(y, axis=0)}')
+        logging.debug(f"col sums={np.sum(y, axis=0)}")
         if np.amin(np.sum(y, axis=0)) < self.n_splits:
-            raise ValueError(f'Label must have at least {self.n_splits} positive examples')
+            raise ValueError(
+                f"Label must have at least {self.n_splits} positive examples"
+            )
         y = check_array(y, ensure_2d=False, dtype=None)
         return super(MultilabelStratifiedKFold, self).split(X, y, groups)
 
@@ -267,8 +279,8 @@ class RepeatedMultilabelStratifiedKFold(_RepeatedSplits):
 
     def __init__(self, n_splits=5, n_repeats=10, random_state=None):
         super(RepeatedMultilabelStratifiedKFold, self).__init__(
-            MultilabelStratifiedKFold, n_repeats, random_state,
-            n_splits=n_splits)
+            MultilabelStratifiedKFold, n_repeats, random_state, n_splits=n_splits
+        )
 
 
 class MultilabelStratifiedShuffleSplit(BaseShuffleSplit):
@@ -331,10 +343,12 @@ class MultilabelStratifiedShuffleSplit(BaseShuffleSplit):
     preference of stratification over perfectly sized folds.
     """
 
-    def __init__(self, n_splits=10, test_size="default", train_size=None,
-                 random_state=None):
+    def __init__(
+        self, n_splits=10, test_size="default", train_size=None, random_state=None
+    ):
         super(MultilabelStratifiedShuffleSplit, self).__init__(
-            n_splits, test_size, train_size, random_state)
+            n_splits, test_size, train_size, random_state
+        )
 
     def _iter_indices(self, X, y, groups=None):
         n_samples = _num_samples(X)
@@ -342,13 +356,16 @@ class MultilabelStratifiedShuffleSplit(BaseShuffleSplit):
         y = np.asarray(y, dtype=bool)
         type_of_target_y = type_of_target(y)
 
-        if type_of_target_y != 'multilabel-indicator':
+        if type_of_target_y != "multilabel-indicator":
             raise ValueError(
-                'Supported target type is: multilabel-indicator. Got {!r} instead.'.format(
-                    type_of_target_y))
+                "Supported target type is: multilabel-indicator. Got {!r} instead.".format(
+                    type_of_target_y
+                )
+            )
 
-        n_train, n_test = _validate_shuffle_split(n_samples, self.test_size,
-                                                  self.train_size)
+        n_train, n_test = _validate_shuffle_split(
+            n_samples, self.test_size, self.train_size
+        )
 
         n_samples = y.shape[0]
         rng = check_random_state(self.random_state)

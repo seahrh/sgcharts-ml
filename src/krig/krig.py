@@ -1,7 +1,7 @@
 __all__ = [
-    'file_paths',
-    'seed_everything',
-    'var_name',
+    "file_paths",
+    "seed_everything",
+    "var_name",
 ]
 
 import os
@@ -22,12 +22,12 @@ def file_paths(root_directory: str) -> Iterable[str]:
 
 def seed_everything(seed: int = 31):
     random.seed(seed)
-    os.environ['PYTHONHASHSEED'] = str(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
     np.random.seed(seed)
 
 
 def var_name(s: str) -> str:
     res = s.strip().lower()
-    res = re.sub(r'[\s]+', '_', res)
-    res = re.sub(r'[\W]', '', res)
+    res = re.sub(r"[\s]+", "_", res)
+    res = re.sub(r"[\W]", "", res)
     return res

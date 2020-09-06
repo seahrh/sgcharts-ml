@@ -16,11 +16,10 @@ def _test(y, n_samples, n_splits):
         for r1, r2 in zip(y_train, y_test):
             assert r1 > 0
             assert r2 > 0
-            assert math.fabs(r1 - r2) < .08
+            assert math.fabs(r1 - r2) < 0.08
 
 
 class TestMultilabelStratifiedKFold:
-
     def test_label_proportion_must_be_similar_in_each_split(self):
         n_samples = 200
         labels = [3, 10, 30]
@@ -35,7 +34,7 @@ class TestMultilabelStratifiedKFold:
         n_labels = 2
         n_splits = 2
         y = np.zeros(shape=(n_samples, n_labels))
-        match = r'at least \d+ positive examples'
+        match = r"at least \d+ positive examples"
         with pytest.raises(ValueError, match=match):
             _test(y, n_samples=n_samples, n_splits=n_splits)
         y[0, 0], y[0, 1] = 1, 1
