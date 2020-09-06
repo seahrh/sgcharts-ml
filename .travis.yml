@@ -1,12 +1,11 @@
+dist: xenial   # required for Python >= 3.7
 language: python
 python:
   - "3.7"
 # command to install dependencies
 install:
-  - python -m ensurepip --default-pip
-  - python -m pip install --upgrade pip setuptools wheel
-  - pip install .[tests]
+  - pip install ."[tests]"
 # command to run tests
 script:
-  - mypy -p krig
-  - pytest -v
+  - mypy src
+  - pytest -v --cov=src
