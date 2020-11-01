@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 __version__ = "0.2.0"
 setup(
-    name="kaggle-rig",
+    name="sgcharts-ml",
     version=__version__,
     python_requires="~=3.7",
     install_requires=["pandas~=1.1.1", "scikit-learn~=0.23.2"],
@@ -12,9 +12,9 @@ setup(
     packages=find_packages("src", exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_dir={"": "src"},
     include_package_data=True,
-    description="kaggle rig",
+    description="sgcharts machine learning library",
     license="MIT",
     author="seahrh",
     author_email="seahrh@gmail.com",
-    url="https://github.com/seahrh/kaggle-rig",
+    url="https://github.com/seahrh/sgcharts-ml",
 )

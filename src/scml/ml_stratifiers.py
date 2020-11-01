@@ -146,7 +146,7 @@ class MultilabelStratifiedKFold(_BaseKFold):
         algorithm breaks ties randomly.
     Examples
     --------
-    >>> from src.krig import MultilabelStratifiedKFold
+    >>> from scml import MultilabelStratifiedKFold
     >>> import numpy as np
     >>> X = np.array([[1,2], [3,4], [1,2], [3,4], [1,2], [3,4], [1,2], [3,4]])
     >>> y = np.array([[0,0], [0,0], [0,1], [0,1], [1,1], [1,1], [1,0], [1,0]])
@@ -256,7 +256,7 @@ class RepeatedMultilabelStratifiedKFold(_RepeatedSplits):
         stratification algorithm.
     Examples
     --------
-    >>> from src.krig import RepeatedMultilabelStratifiedKFold
+    >>> from scml import RepeatedMultilabelStratifiedKFold
     >>> import numpy as np
     >>> X = np.array([[1,2], [3,4], [1,2], [3,4], [1,2], [3,4], [1,2], [3,4]])
     >>> y = np.array([[0,0], [0,0], [0,1], [0,1], [1,1], [1,1], [1,0], [1,0]])
@@ -319,7 +319,7 @@ class MultilabelStratifiedShuffleSplit(BaseShuffleSplit):
         algorithm breaks ties randomly.
     Examples
     --------
-    >>> from src.krig import MultilabelStratifiedShuffleSplit
+    >>> from scml import MultilabelStratifiedShuffleSplit
     >>> import numpy as np
     >>> X = np.array([[1,2], [3,4], [1,2], [3,4], [1,2], [3,4], [1,2], [3,4]])
     >>> y = np.array([[0,0], [0,0], [0,1], [0,1], [1,1], [1,1], [1,0], [1,0]])

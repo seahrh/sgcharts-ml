@@ -1,17 +1,21 @@
+import os
+import random
+import re
+from typing import List
+
+import numpy as np
+
+from .ml_stratifiers import *
+
 __all__ = [
     "file_paths",
     "seed_everything",
     "var_name",
 ]
-
-import os
-import random
-import re
-from typing import Iterable
-import numpy as np
+__all__ += ml_stratifiers.__all__  # type: ignore  # Name 'ml_stratifiers' is not defined
 
 
-def file_paths(root_directory: str) -> Iterable[str]:
+def file_paths(root_directory: str) -> List[str]:
     """Returns a list of file paths rooted at the given directory."""
     res = []
     for dirname, _, filenames in os.walk(root_directory):

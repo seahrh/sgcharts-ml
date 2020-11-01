@@ -1,4 +1,4 @@
-from krig import var_name
+from scml import var_name
 
 
 class TestVarName:

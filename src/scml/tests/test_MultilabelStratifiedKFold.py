@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import pytest
-from krig import MultilabelStratifiedKFold
+from scml import MultilabelStratifiedKFold
 
 
 def _test(y, n_samples, n_splits):
