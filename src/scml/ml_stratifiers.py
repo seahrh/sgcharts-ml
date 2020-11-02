@@ -32,9 +32,12 @@ import logging
 import numpy as np
 
 from sklearn.utils import check_random_state
+
+# noinspection PyProtectedMember
 from sklearn.utils.validation import _num_samples, check_array
 from sklearn.utils.multiclass import type_of_target
 
+# noinspection PyProtectedMember
 from sklearn.model_selection._split import (
     _BaseKFold,
     _RepeatedSplits,
@@ -123,6 +126,7 @@ def _iterative_stratification(labels, r, random_state):
     return test_folds
 
 
+# noinspection PyAbstractClass
 class MultilabelStratifiedKFold(_BaseKFold):
     """Multilabel stratified K-Folds cross-validator
     Provides train/test indices to split multilabel data into train/test sets.
@@ -171,7 +175,9 @@ class MultilabelStratifiedKFold(_BaseKFold):
     """
 
     def __init__(self, n_splits=3, shuffle=False, random_state=None):
-        super(MultilabelStratifiedKFold, self).__init__(n_splits, shuffle, random_state)
+        super(MultilabelStratifiedKFold, self).__init__(
+            n_splits, shuffle=shuffle, random_state=random_state
+        )
 
     def _make_test_folds(self, X, y):
         y = np.asarray(y, dtype=bool)
@@ -204,6 +210,7 @@ class MultilabelStratifiedKFold(_BaseKFold):
         for i in range(self.n_splits):
             yield test_folds == i
 
+    # noinspection PyMethodOverriding
     def split(self, X, y, groups=None):
         """Generate indices to split data into training and test set.
         Parameters
@@ -350,6 +357,7 @@ class MultilabelStratifiedShuffleSplit(BaseShuffleSplit):
             n_splits, test_size, train_size, random_state
         )
 
+    # noinspection PyMethodOverriding
     def _iter_indices(self, X, y, groups=None):
         n_samples = _num_samples(X)
         y = check_array(y, ensure_2d=False, dtype=None)
@@ -386,6 +394,7 @@ class MultilabelStratifiedShuffleSplit(BaseShuffleSplit):
 
             yield train, test
 
+    # noinspection PyMethodOverriding
     def split(self, X, y, groups=None):
         """Generate indices to split data into training and test set.
         Parameters
