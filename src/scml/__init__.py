@@ -7,13 +7,15 @@ from typing import List
 import numpy as np
 
 from .ml_stratifiers import *
+from .model_checkpoint import *
 
 __all__ = [
     "file_paths",
     "seed_everything",
     "var_name",
 ]
-__all__ += ml_stratifiers.__all__  # type: ignore  # Name 'ml_stratifiers' is not defined
+__all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
+__all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
 
 
 def file_paths(root_directory: str) -> List[str]:
