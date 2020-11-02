@@ -1,8 +1,9 @@
 import os
 import random
 import re
+import pandas as pd
 import tensorflow as tf
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 
@@ -13,6 +14,8 @@ __all__ = [
     "file_paths",
     "seed_everything",
     "var_name",
+    "normalized_counts",
+    "freq_encode",
 ]
 __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
 __all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
@@ -39,3 +42,18 @@ def var_name(s: str) -> str:
     res = re.sub(r"[\s]+", "_", res)
     res = re.sub(r"[\W]", "", res)
     return res
+
+
+def normalized_counts(s: pd.Series) -> Dict[str, float]:
+    return dict(s.value_counts(normalize=True))
+
+
+def freq_encode(
+    s: pd.Series,
+    dtype=np.float64,
+    encoding_map: Dict[str, float] = None,
+    default: float = 0,
+) -> pd.Series:
+    if encoding_map is None:
+        encoding_map = normalized_counts(s)
+    return s.map(encoding_map).astype(dtype).fillna(default)
