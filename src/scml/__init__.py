@@ -1,6 +1,7 @@
 import os
 import random
 import re
+import tensorflow as tf
 from typing import List
 
 import numpy as np
@@ -24,10 +25,11 @@ def file_paths(root_directory: str) -> List[str]:
     return res
 
 
-def seed_everything(seed: int = 31):
+def seed_everything(seed: int = 31) -> None:
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     np.random.seed(seed)
+    tf.random.set_seed(seed)
 
 
 def var_name(s: str) -> str:
