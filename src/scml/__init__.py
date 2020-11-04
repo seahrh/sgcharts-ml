@@ -87,17 +87,14 @@ def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
                 elif c_min > np.iinfo(np.int64).min and c_max < np.iinfo(np.int64).max:
                     df[col] = df[col].astype(np.int64)
             else:
-                # float types: check precision in addition to min/max limits
-                p = df[col].apply(lambda x: np.finfo(x).precision).max()
                 if (
                     c_min > np.finfo(np.float32).min
                     and c_max < np.finfo(np.float32).max
-                    and p == np.finfo(np.float32).precision
                 ):
                     df[col] = df[col].astype(np.float32)
                 else:
                     df[col] = df[col].astype(np.float64)
-    end_mem: float = df.memory_usage().sum() / 1024 ** 2
-    percent: float = 100 * (start_mem - end_mem) / start_mem
     if verbose:
+        end_mem: float = df.memory_usage().sum() / 1024 ** 2
+        percent: float = 100 * (start_mem - end_mem) / start_mem
         print(f"Mem. usage decreased to {end_mem:5.2f} Mb ({percent:.1f}% reduction)")
