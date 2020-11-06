@@ -17,6 +17,7 @@ __all__ = [
     "normalized_counts",
     "freq_encode",
     "quantize",
+    "find_missing_values",
 ]
 __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
 __all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
@@ -98,3 +99,16 @@ def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
         end_mem: float = df.memory_usage().sum() / 1024 ** 2
         percent: float = 100 * (start_mem - end_mem) / start_mem
         print(f"Mem. usage decreased to {end_mem:5.2f} Mb ({percent:.1f}% reduction)")
+
+
+def find_missing_values(
+    df: pd.DataFrame, blank_strings_as_null: bool = True
+) -> pd.DataFrame:
+    if blank_strings_as_null:
+        df = df.replace(r"^\s*$", np.nan, regex=True)
+    total = df.isna().sum()
+    percent = df.isna().sum() / df.isna().count()
+    res = pd.concat([total, percent], axis=1, keys=["Total", "Percent"])
+    types = [str(df[col].dtype) for col in df.columns]
+    res["Type"] = types
+    return res
