@@ -9,6 +9,7 @@ import numpy as np
 
 from .ml_stratifiers import *
 from .model_checkpoint import *
+from ._smote import *
 
 __all__ = [
     "file_paths",
@@ -21,6 +22,7 @@ __all__ = [
 ]
 __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
 __all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
+__all__ += _smote.__all__  # type: ignore  # module name is not defined
 
 
 def file_paths(root_directory: str) -> List[str]:
