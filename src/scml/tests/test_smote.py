@@ -1,4 +1,7 @@
 # noinspection PyUnresolvedReferences
+import random
+
+# noinspection PyUnresolvedReferences
 from typing import List, Dict, Union
 
 # noinspection PyUnresolvedReferences
