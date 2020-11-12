@@ -1,9 +1,13 @@
 __all__ = ["smote"]
 import random
+import logging
 import numpy as np
 import pandas as pd
 from sklearn.metrics import pairwise_distances
 from typing import Iterable, List, Dict, NamedTuple, Union
+
+
+log = logging.getLogger(__name__)
 
 
 class Neighbour(NamedTuple):
@@ -40,9 +44,9 @@ def smote(
         _embedding_columns = set(embedding_columns)
     if random_state is not None:
         random.seed(random_state)
-    print(f"_columns={_columns}, _embedding_columns={_embedding_columns}")
+    log.debug(f"_columns={_columns}, _embedding_columns={_embedding_columns}")
     distances = pairwise_distances(df[_embedding_columns], metric=distance_measure)
-    print(f"distances={distances}")
+    log.debug(f"distances={distances}")
     neighbours: List[List[Neighbour]] = []
     for ds in distances:
         ns: List[Neighbour] = []
