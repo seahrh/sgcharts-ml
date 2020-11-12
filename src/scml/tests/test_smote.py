@@ -1,4 +1,5 @@
-import random
+# noinspection PyUnresolvedReferences
+from typing import List, Dict, Union
 
 # noinspection PyUnresolvedReferences
 import numpy as np
@@ -6,8 +7,8 @@ import numpy as np
 # noinspection PyUnresolvedReferences
 import pandas as pd
 import pytest
+
 from scml import *
-from typing import List, Dict, Union, Iterable
 
 Numeric = Union[int, float]
 
