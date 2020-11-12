@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from scml import *
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Iterable
 
 Numeric = Union[int, float]
 
@@ -22,6 +22,19 @@ def _cluster(vector: Dict[str, Numeric], clusters: List[Dict[str, Numeric]]) -> 
         if is_member:
             return i
     return -1
+
+
+def _input_dataframe(clusters: List[Dict[str, Numeric]], size: int) -> pd.DataFrame:
+    rows = []
+    for c in clusters:
+        for _ in range(size):
+            rows.append(
+                {
+                    "a": random.randint(int(c["a_min"]), int(c["a_max"])),
+                    "b": random.uniform(c["b_min"], c["b_max"]),
+                }
+            )
+    return pd.DataFrame.from_records(rows)
 
 
 class TestSmote:
@@ -63,23 +76,44 @@ class TestSmote:
             {"a_min": -100, "a_max": -90, "b_min": -0.1, "b_max": -0.001},
             {"a_min": 90, "a_max": 100, "b_min": 0.90, "b_max": 0.9999},
         ]
-        rows = []
-        for c in clusters:
-            for _ in range(k_neighbours + 1):
-                rows.append(
-                    {
-                        "a": random.randint(c["a_min"], c["a_max"]),
-                        "b": random.uniform(c["b_min"], c["b_max"]),
-                    }
-                )
-        inp = pd.DataFrame.from_records(rows)
+        inp = _input_dataframe(clusters, size=k_neighbours + 1)
         out = smote(inp, size=1000, k_neighbours=k_neighbours)
         counts = [0 for _ in range(len(clusters))]
-        for row in out.itertuples():
-            d = row._asdict()
-            del d["Index"]
-            i = _cluster(d, clusters=clusters)
+        for t in out.itertuples():
+            row = t._asdict()
+            del row["Index"]
+            i = _cluster(row, clusters=clusters)
             assert i >= 0
             counts[i] += 1
+        for c in counts:
+            assert c > 0
+
+    def test_embedding_columns_are_used_for_nearest_neighbours_but_not_synthesized(
+        self,
+    ):
+        k_neighbours = 2
+        columns = {"a"}
+        embedding_columns = {"b"}
+        clusters = [
+            {"a_min": 0, "a_max": 0, "b_min": -0.1, "b_max": -0.001},
+            {"a_min": 1, "a_max": 1, "b_min": 0.90, "b_max": 0.9999},
+        ]
+        inp = _input_dataframe(clusters, size=k_neighbours + 1)
+        out = smote(
+            inp,
+            size=1000,
+            k_neighbours=k_neighbours,
+            columns=columns,
+            embedding_columns=embedding_columns,
+        )
+        counts = [0 for _ in range(len(clusters))]
+        for t in out.itertuples():
+            row = t._asdict()
+            for col in embedding_columns:
+                assert col not in row
+            for col in columns:
+                i = int(row[col])
+                assert 0 <= i <= len(clusters) - 1
+                counts[i] += 1
         for c in counts:
             assert c > 0
