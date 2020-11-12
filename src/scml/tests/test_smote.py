@@ -57,7 +57,7 @@ class TestSmote:
         with pytest.raises(ValueError, match=r"^column must be integer or float"):
             smote(df, size=2)
 
-    def test_2_clusters(self):
+    def test_synthetic_point_must_belong_to_a_cluster(self):
         k_neighbours = 2
         clusters = [
             {"a_min": -100, "a_max": -90, "b_min": -0.1, "b_max": -0.001},
