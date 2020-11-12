@@ -56,12 +56,13 @@ class TestSmote:
 
     def test_synthetic_values_bound_by_neighbours(self):
         df = pd.DataFrame.from_records(
-            [{"a": -100, "b": -9e-10}, {"a": 100, "b": 9e-10}]
+            [{"a": -100, "b": -9e-10, "c": 0}, {"a": 100, "b": 9e-10, "c": 0}]
         )
         a = smote(df, size=1000)
         for row in a.itertuples():
             assert -100 <= row.a <= 100
             assert -9e-10 <= row.b <= 9e-10
+            assert row.c == 0
 
     def test_when_column_is_not_numeric_then_raise_error(self):
         df = pd.DataFrame.from_records(
