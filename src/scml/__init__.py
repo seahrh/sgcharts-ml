@@ -3,26 +3,26 @@ import random
 import re
 import pandas as pd
 import tensorflow as tf
-from typing import List, Dict
+from typing import List
 
 import numpy as np
 
 from .ml_stratifiers import *
 from .model_checkpoint import *
 from ._smote import *
+from .encoders import *
 
 __all__ = [
     "file_paths",
     "seed_everything",
     "var_name",
-    "normalized_counts",
-    "freq_encode",
     "quantize",
     "find_missing_values",
 ]
 __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
 __all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
 __all__ += _smote.__all__  # type: ignore  # module name is not defined
+__all__ += encoders.__all__  # type: ignore  # module name is not defined
 
 
 def file_paths(root_directory: str) -> List[str]:
@@ -46,21 +46,6 @@ def var_name(s: str) -> str:
     res = re.sub(r"[\s]+", "_", res)
     res = re.sub(r"[\W]", "", res)
     return res
-
-
-def normalized_counts(s: pd.Series) -> Dict[str, float]:
-    return dict(s.value_counts(normalize=True))
-
-
-def freq_encode(
-    s: pd.Series,
-    dtype=np.float64,
-    encoding_map: Dict[str, float] = None,
-    default: float = 0,
-) -> pd.Series:
-    if encoding_map is None:
-        encoding_map = normalized_counts(s)
-    return s.map(encoding_map).astype(dtype).fillna(default)
 
 
 def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
