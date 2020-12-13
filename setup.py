@@ -12,7 +12,8 @@ setup(
             "mypy>=0.780",
             "pytest>=5.4.2",
             "pytest-cov>=2.9.0",
-        ]
+        ],
+        "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
     },
     packages=find_packages("src", exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_dir={"": "src"},
