@@ -69,3 +69,37 @@ class TestCyclicalEncode:
         assert D[7][8] - d <= abs(self._tol)
         assert D[8][9] - d <= abs(self._tol)
         assert D[9][0] - d <= abs(self._tol)
+
+
+class TestGroupFeatures:
+    def test_one_group_column(self):
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            }
+        )
+        a = group_features(data, column="a", group_columns=["b"])
+        assert list(data.index) == list(a.index)
+        assert list(a["median"]) == [7, 4, 7, 4, 7, 4]
+        assert list(a["mean"]) == [7, 4, 7, 4, 7, 4]
+        assert list(a["min"]) == [1, 2, 1, 2, 1, 2]
+        assert list(a["max"]) == [13, 6, 13, 6, 13, 6]
+        assert list(a["std"]) == [6, 2, 6, 2, 6, 2]
+
+    def test_two_group_columns(self):
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            }
+        )
+        a = group_features(data, column="a", group_columns=["b", "c"])
+        assert list(data.index) == list(a.index)
+        assert list(a["median"]) == [7, 4, 7, 4, 7, 4]
+        assert list(a["mean"]) == [7, 4, 7, 4, 7, 4]
+        assert list(a["min"]) == [1, 2, 1, 2, 1, 2]
+        assert list(a["max"]) == [13, 6, 13, 6, 13, 6]
+        assert list(a["std"]) == [6, 2, 6, 2, 6, 2]

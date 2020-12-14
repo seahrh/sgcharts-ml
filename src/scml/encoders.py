@@ -1,7 +1,7 @@
-__all__ = ["normalized_counts", "freq_encode", "cyclical_encode"]
+__all__ = ["normalized_counts", "freq_encode", "cyclical_encode", "group_features"]
 import numpy as np
 import pandas as pd
-from typing import Dict, Tuple, Union
+from typing import Dict, Tuple, Union, Iterable
 
 Numeric = Union[int, float]
 
@@ -29,3 +29,28 @@ def cyclical_encode(
     cos = pd.Series(np.cos(2 * np.pi * t)).astype(dtype)
     sin = pd.Series(np.sin(2 * np.pi * t)).astype(dtype)
     return cos, sin
+
+
+def group_features(
+    data: pd.DataFrame,
+    column: str,
+    group_columns: Iterable[str],
+    functions: Tuple[str, ...] = ("median", "mean", "min", "max", "std"),
+) -> pd.DataFrame:
+    grouped = data.groupby(group_columns, sort=False)[column].agg(functions)
+    rows = []
+    for t in data.itertuples():
+        # noinspection PyProtectedMember
+        t_row = t._asdict()
+        fields = [t_row[col] for col in group_columns]
+        g = grouped.loc[tuple(fields)]
+        row = {"Index": t_row["Index"]}
+        for f in functions:
+            row[f] = g[f]
+        rows.append(row)
+    res = pd.DataFrame.from_records(rows)
+    if "std" in res.columns:  # prevent division-by-zero error
+        eps = np.finfo(np.float32).eps
+        res["std"].fillna(eps, inplace=True)
+    res.set_index("Index", drop=True, inplace=True)
+    return res
