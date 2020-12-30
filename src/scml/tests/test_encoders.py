@@ -73,33 +73,47 @@ class TestCyclicalEncode:
 
 class TestGroupFeatures:
     def test_one_group_column(self):
+        dtype = "float32"
         data = pd.DataFrame(
             {
                 "a": [1, 2, 7, 4, 13, 6],
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
-            }
+            },
+            dtype=dtype,
         )
         a = group_features(data, column="a", group_columns=["b"])
         assert list(data.index) == list(a.index)
-        assert list(a["median"]) == [7, 4, 7, 4, 7, 4]
-        assert list(a["mean"]) == [7, 4, 7, 4, 7, 4]
-        assert list(a["min"]) == [1, 2, 1, 2, 1, 2]
-        assert list(a["max"]) == [13, 6, 13, 6, 13, 6]
-        assert list(a["std"]) == [6, 2, 6, 2, 6, 2]
+        assert list(a["a_p50"]) == [7, 4, 7, 4, 7, 4]
+        assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
+        assert list(a["a_min"]) == [1, 2, 1, 2, 1, 2]
+        assert list(a["a_max"]) == [13, 6, 13, 6, 13, 6]
+        assert list(a["a_std"]) == [6, 2, 6, 2, 6, 2]
+        assert str(a["a_p50"].dtype) == dtype
+        assert str(a["a_mean"].dtype) == dtype
+        assert str(a["a_min"].dtype) == dtype
+        assert str(a["a_max"].dtype) == dtype
+        assert str(a["a_std"].dtype) == dtype
 
     def test_two_group_columns(self):
+        dtype = "float32"
         data = pd.DataFrame(
             {
                 "a": [1, 2, 7, 4, 13, 6],
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
-            }
+            },
+            dtype=dtype,
         )
         a = group_features(data, column="a", group_columns=["b", "c"])
         assert list(data.index) == list(a.index)
-        assert list(a["median"]) == [7, 4, 7, 4, 7, 4]
-        assert list(a["mean"]) == [7, 4, 7, 4, 7, 4]
-        assert list(a["min"]) == [1, 2, 1, 2, 1, 2]
-        assert list(a["max"]) == [13, 6, 13, 6, 13, 6]
-        assert list(a["std"]) == [6, 2, 6, 2, 6, 2]
+        assert list(a["a_p50"]) == [7, 4, 7, 4, 7, 4]
+        assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
+        assert list(a["a_min"]) == [1, 2, 1, 2, 1, 2]
+        assert list(a["a_max"]) == [13, 6, 13, 6, 13, 6]
+        assert list(a["a_std"]) == [6, 2, 6, 2, 6, 2]
+        assert str(a["a_p50"].dtype) == dtype
+        assert str(a["a_mean"].dtype) == dtype
+        assert str(a["a_min"].dtype) == dtype
+        assert str(a["a_max"].dtype) == dtype
+        assert str(a["a_std"].dtype) == dtype

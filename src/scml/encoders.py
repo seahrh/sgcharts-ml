@@ -31,7 +31,7 @@ def cyclical_encode(
     return cos, sin
 
 
-def group_features(
+def deprecated_group_features(
     data: pd.DataFrame,
     column: str,
     group_columns: Iterable[str],
@@ -53,4 +53,22 @@ def group_features(
         eps = np.finfo(np.float32).eps
         res["std"].fillna(eps, inplace=True)
     res.set_index("Index", drop=True, inplace=True)
+    return res
+
+
+def group_features(
+    data: pd.DataFrame,
+    column: str,
+    group_columns: Iterable[str],
+    functions: Tuple[str, ...] = ("median", "mean", "min", "max", "std"),
+    dtype=np.float32,
+) -> pd.DataFrame:
+    grouped = data.groupby(group_columns, sort=False)[column].agg(functions)
+    columns = {f: f"{column}_{f}" for f in functions}
+    if "median" in columns:
+        columns["median"] = f"{column}_p50"
+    grouped.rename(columns=columns, inplace=True)
+    res = data.merge(grouped, how="left", left_on=group_columns, right_index=True)
+    for col in columns.values():
+        res[col] = res[col].astype(dtype)
     return res
