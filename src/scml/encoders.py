@@ -1,4 +1,10 @@
-__all__ = ["normalized_counts", "freq_encode", "cyclical_encode", "group_statistics"]
+__all__ = [
+    "normalized_counts",
+    "freq_encode",
+    "cyclical_encode",
+    "group_statistics",
+    "group_features",
+]
 import numpy as np
 import pandas as pd
 from typing import Dict, Tuple, Union, Iterable
