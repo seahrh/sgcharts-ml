@@ -34,21 +34,37 @@ def cyclical_encode(
 def group_features(
     data: pd.DataFrame, column: str, group_columns: Iterable[str], dtype=np.float32,
 ) -> pd.DataFrame:
-    columns = {
-        "median": f"{column}_p50",
-        "mean": f"{column}_mean",
-        "min": f"{column}_min",
-        "max": f"{column}_max",
-        "std": f"{column}_std",
-    }
+    columns = [
+        f"{column}_p50",
+        f"{column}_mean",
+        f"{column}_min",
+        f"{column}_max",
+        f"{column}_std",
+        f"{column}_p25",
+        f"{column}_p75",
+    ]
     grouped = data.groupby(group_columns, sort=False)
     agg = grouped[column].agg(["median", "mean", "min", "max"])
-    agg.rename(columns=columns, inplace=True)
+    agg.rename(
+        columns={
+            "median": columns[0],
+            "mean": columns[1],
+            "min": columns[2],
+            "max": columns[3],
+        },
+        inplace=True,
+    )
     res = data.merge(agg, how="left", left_on=group_columns, right_index=True)
     # population standard deviation to prevent NaN
     agg = grouped[column].std(ddof=0)
-    agg.rename(f"{column}_std", inplace=True)
+    agg.rename(columns[4], inplace=True)
     res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
-    for col in columns.values():
+    agg = grouped[column].quantile(0.25)
+    agg.rename(columns[5], inplace=True)
+    res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
+    agg = grouped[column].quantile(0.75)
+    agg.rename(columns[6], inplace=True)
+    res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
+    for col in columns:
         res[col] = res[col].astype(dtype)
     return res

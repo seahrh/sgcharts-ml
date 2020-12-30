@@ -88,6 +88,8 @@ class TestGroupFeatures:
         assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
         assert list(a["a_min"]) == [1, 2, 1, 2, 1, 2]
         assert list(a["a_max"]) == [13, 6, 13, 6, 13, 6]
+        assert list(a["a_p25"]) == [4, 3, 4, 3, 4, 3]
+        assert list(a["a_p75"]) == [10, 5, 10, 5, 10, 5]
         assert np.allclose(
             a["a_std"],
             [
@@ -104,6 +106,8 @@ class TestGroupFeatures:
         assert str(a["a_min"].dtype) == dtype
         assert str(a["a_max"].dtype) == dtype
         assert str(a["a_std"].dtype) == dtype
+        assert str(a["a_p25"].dtype) == dtype
+        assert str(a["a_p75"].dtype) == dtype
 
     def test_two_group_columns(self):
         dtype = "float32"
@@ -121,6 +125,8 @@ class TestGroupFeatures:
         assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
         assert list(a["a_min"]) == [1, 2, 1, 2, 1, 2]
         assert list(a["a_max"]) == [13, 6, 13, 6, 13, 6]
+        assert list(a["a_p25"]) == [4, 3, 4, 3, 4, 3]
+        assert list(a["a_p75"]) == [10, 5, 10, 5, 10, 5]
         assert np.allclose(
             a["a_std"],
             [
@@ -137,3 +143,5 @@ class TestGroupFeatures:
         assert str(a["a_min"].dtype) == dtype
         assert str(a["a_max"].dtype) == dtype
         assert str(a["a_std"].dtype) == dtype
+        assert str(a["a_p25"].dtype) == dtype
+        assert str(a["a_p75"].dtype) == dtype
