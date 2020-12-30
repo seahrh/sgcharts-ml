@@ -71,7 +71,7 @@ class TestCyclicalEncode:
         assert D[9][0] - d <= abs(self._tol)
 
 
-class TestGroupFeatures:
+class TestGroupStatistics:
     def test_one_group_column(self):
         dtype = "float32"
         data = pd.DataFrame(
@@ -82,7 +82,7 @@ class TestGroupFeatures:
             },
             dtype=dtype,
         )
-        a = group_features(data, column="a", group_columns=["b"])
+        a = group_statistics(data, column="a", group_columns=["b"])
         assert list(data.index) == list(a.index)
         assert list(a["a_p50"]) == [7, 4, 7, 4, 7, 4]
         assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
@@ -119,7 +119,7 @@ class TestGroupFeatures:
             },
             dtype=dtype,
         )
-        a = group_features(data, column="a", group_columns=["b", "c"])
+        a = group_statistics(data, column="a", group_columns=["b", "c"])
         assert list(data.index) == list(a.index)
         assert list(a["a_p50"]) == [7, 4, 7, 4, 7, 4]
         assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]

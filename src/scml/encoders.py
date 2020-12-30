@@ -1,4 +1,4 @@
-__all__ = ["normalized_counts", "freq_encode", "cyclical_encode", "group_features"]
+__all__ = ["normalized_counts", "freq_encode", "cyclical_encode", "group_statistics"]
 import numpy as np
 import pandas as pd
 from typing import Dict, Tuple, Union, Iterable
@@ -31,7 +31,7 @@ def cyclical_encode(
     return cos, sin
 
 
-def group_features(
+def group_statistics(
     data: pd.DataFrame, column: str, group_columns: Iterable[str], dtype=np.float32,
 ) -> pd.DataFrame:
     columns = [
