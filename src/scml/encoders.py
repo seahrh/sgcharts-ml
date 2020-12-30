@@ -31,44 +31,24 @@ def cyclical_encode(
     return cos, sin
 
 
-def deprecated_group_features(
-    data: pd.DataFrame,
-    column: str,
-    group_columns: Iterable[str],
-    functions: Tuple[str, ...] = ("median", "mean", "min", "max", "std"),
-) -> pd.DataFrame:
-    grouped = data.groupby(group_columns, sort=False)[column].agg(functions)
-    rows = []
-    for t in data.itertuples():
-        # noinspection PyProtectedMember
-        t_row = t._asdict()
-        fields = [t_row[col] for col in group_columns]
-        g = grouped.loc[tuple(fields)]
-        row = {"Index": t_row["Index"]}
-        for f in functions:
-            row[f] = g[f]
-        rows.append(row)
-    res = pd.DataFrame.from_records(rows)
-    if "std" in res.columns:  # prevent division-by-zero error
-        eps = np.finfo(np.float32).eps
-        res["std"].fillna(eps, inplace=True)
-    res.set_index("Index", drop=True, inplace=True)
-    return res
-
-
 def group_features(
-    data: pd.DataFrame,
-    column: str,
-    group_columns: Iterable[str],
-    functions: Tuple[str, ...] = ("median", "mean", "min", "max", "std"),
-    dtype=np.float32,
+    data: pd.DataFrame, column: str, group_columns: Iterable[str], dtype=np.float32,
 ) -> pd.DataFrame:
-    grouped = data.groupby(group_columns, sort=False)[column].agg(functions)
-    columns = {f: f"{column}_{f}" for f in functions}
-    if "median" in columns:
-        columns["median"] = f"{column}_p50"
-    grouped.rename(columns=columns, inplace=True)
-    res = data.merge(grouped, how="left", left_on=group_columns, right_index=True)
+    columns = {
+        "median": f"{column}_p50",
+        "mean": f"{column}_mean",
+        "min": f"{column}_min",
+        "max": f"{column}_max",
+        "std": f"{column}_std",
+    }
+    grouped = data.groupby(group_columns, sort=False)
+    agg = grouped[column].agg(["median", "mean", "min", "max"])
+    agg.rename(columns=columns, inplace=True)
+    res = data.merge(agg, how="left", left_on=group_columns, right_index=True)
+    # population standard deviation to prevent NaN
+    agg = grouped[column].std(ddof=0)
+    agg.rename(f"{column}_std", inplace=True)
+    res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
     for col in columns.values():
         res[col] = res[col].astype(dtype)
     return res

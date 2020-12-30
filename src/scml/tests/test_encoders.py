@@ -88,7 +88,17 @@ class TestGroupFeatures:
         assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
         assert list(a["a_min"]) == [1, 2, 1, 2, 1, 2]
         assert list(a["a_max"]) == [13, 6, 13, 6, 13, 6]
-        assert list(a["a_std"]) == [6, 2, 6, 2, 6, 2]
+        assert np.allclose(
+            a["a_std"],
+            [
+                4.898979663848877,
+                1.632993221282959,
+                4.898979663848877,
+                1.632993221282959,
+                4.898979663848877,
+                1.632993221282959,
+            ],
+        )
         assert str(a["a_p50"].dtype) == dtype
         assert str(a["a_mean"].dtype) == dtype
         assert str(a["a_min"].dtype) == dtype
@@ -111,7 +121,17 @@ class TestGroupFeatures:
         assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
         assert list(a["a_min"]) == [1, 2, 1, 2, 1, 2]
         assert list(a["a_max"]) == [13, 6, 13, 6, 13, 6]
-        assert list(a["a_std"]) == [6, 2, 6, 2, 6, 2]
+        assert np.allclose(
+            a["a_std"],
+            [
+                4.898979663848877,
+                1.632993221282959,
+                4.898979663848877,
+                1.632993221282959,
+                4.898979663848877,
+                1.632993221282959,
+            ],
+        )
         assert str(a["a_p50"].dtype) == dtype
         assert str(a["a_mean"].dtype) == dtype
         assert str(a["a_min"].dtype) == dtype
