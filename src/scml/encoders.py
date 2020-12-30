@@ -68,3 +68,16 @@ def group_statistics(
     for col in columns:
         res[col] = res[col].astype(dtype)
     return res
+
+
+def group_features(
+    df: pd.DataFrame, column: str, statistic_column: str, dtype=np.float32
+) -> None:
+    eps = np.finfo(dtype).eps
+    ratio_col = f"{statistic_column}_ratio"
+    diff_col = f"{statistic_column}_diff"
+    # Prevent division-by-zero error
+    df[ratio_col] = df[column] / df[statistic_column].replace(0, eps)
+    df[ratio_col] = df[ratio_col].astype(dtype)
+    df[diff_col] = df[column] - df[statistic_column]
+    df[diff_col] = df[diff_col].astype(df[column].dtype)
