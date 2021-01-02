@@ -1,5 +1,6 @@
 # noinspection PyUnresolvedReferences
 import pandas as pd
+import pytest
 
 # noinspection PyUnresolvedReferences
 import numpy as np
@@ -72,6 +73,85 @@ class TestCyclicalEncode:
 
 
 class TestGroupStatistics:
+    def test_one_group_column(self):
+        dtype = "float32"
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            },
+            dtype=dtype,
+        )
+        a = group_statistics(data, column="a", group_columns=["b"])
+        assert set(a.index) == {"bar", "foo"}
+        assert a.loc["foo"].to_dict() == {
+            "a_p50": 7,
+            "a_max": 13,
+            "a_mean": 7,
+            "a_min": 1,
+            "a_p25": 4,
+            "a_p75": 10,
+            "a_std": 4.898979663848877,
+        }
+        assert a.loc["bar"].to_dict() == {
+            "a_max": 6,
+            "a_mean": 4,
+            "a_min": 2,
+            "a_p25": 3,
+            "a_p50": 4,
+            "a_p75": 5,
+            "a_std": 1.632993221282959,
+        }
+        assert str(a["a_p50"].dtype) == dtype
+        assert str(a["a_mean"].dtype) == dtype
+        assert str(a["a_min"].dtype) == dtype
+        assert str(a["a_max"].dtype) == dtype
+        assert str(a["a_std"].dtype) == dtype
+        assert str(a["a_p25"].dtype) == dtype
+        assert str(a["a_p75"].dtype) == dtype
+
+    def test_two_group_columns(self):
+        dtype = "float32"
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            },
+            dtype=dtype,
+        )
+        a = group_statistics(data, column="a", group_columns=["b", "c"])
+        assert set(a.index) == {("foo", 1), ("bar", 2)}
+        assert a.loc[("foo", 1)].to_dict() == {
+            "a_p50": 7,
+            "a_max": 13,
+            "a_mean": 7,
+            "a_min": 1,
+            "a_p25": 4,
+            "a_p75": 10,
+            "a_std": 4.898979663848877,
+        }
+        assert a.loc[("bar", 2)].to_dict() == {
+            "a_max": 6,
+            "a_mean": 4,
+            "a_min": 2,
+            "a_p25": 3,
+            "a_p50": 4,
+            "a_p75": 5,
+            "a_std": 1.632993221282959,
+        }
+        assert str(a["a_p50"].dtype) == dtype
+        assert str(a["a_mean"].dtype) == dtype
+        assert str(a["a_min"].dtype) == dtype
+        assert str(a["a_max"].dtype) == dtype
+        assert str(a["a_std"].dtype) == dtype
+        assert str(a["a_p25"].dtype) == dtype
+        assert str(a["a_p75"].dtype) == dtype
+
+
+@pytest.mark.skip
+class TestGroupFeatures:
     def test_one_group_column(self):
         dtype = "float32"
         data = pd.DataFrame(

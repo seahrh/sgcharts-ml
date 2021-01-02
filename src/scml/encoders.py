@@ -50,8 +50,8 @@ def group_statistics(
         f"{column}_p75",
     ]
     grouped = data.groupby(group_columns, sort=False)
-    agg = grouped[column].agg(["median", "mean", "min", "max"])
-    agg.rename(
+    res = grouped[column].agg(["median", "mean", "min", "max"])
+    res.rename(
         columns={
             "median": columns[0],
             "mean": columns[1],
@@ -60,17 +60,16 @@ def group_statistics(
         },
         inplace=True,
     )
-    res = data.merge(agg, how="left", left_on=group_columns, right_index=True)
     # population standard deviation to prevent NaN
     agg = grouped[column].std(ddof=0)
     agg.rename(columns[4], inplace=True)
-    res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
+    res = res.merge(agg, left_index=True, right_index=True)
     agg = grouped[column].quantile(0.25)
     agg.rename(columns[5], inplace=True)
-    res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
+    res = res.merge(agg, left_index=True, right_index=True)
     agg = grouped[column].quantile(0.75)
     agg.rename(columns[6], inplace=True)
-    res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
+    res = res.merge(agg, left_index=True, right_index=True)
     for col in columns:
         res[col] = res[col].astype(dtype)
     return res
@@ -79,6 +78,7 @@ def group_statistics(
 def group_features(
     df: pd.DataFrame, column: str, statistic_column: str, dtype=np.float32
 ) -> None:
+    # res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
     eps = np.finfo(dtype).eps
     ratio_col = f"{statistic_column}_ratio"
     diff_col = f"{statistic_column}_diff"
