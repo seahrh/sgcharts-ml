@@ -18,6 +18,7 @@ __all__ = [
     "var_name",
     "quantize",
     "find_missing_values",
+    "rescale_as_int",
 ]
 __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
 __all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
@@ -46,6 +47,23 @@ def var_name(s: str) -> str:
     res = re.sub(r"[\s]+", "_", res)
     res = re.sub(r"[\W]", "", res)
     return res
+
+
+def rescale_as_int(
+    s: pd.Series, min_value: float = None, max_value: float = None, dtype=np.int16
+) -> pd.Series:
+    valid_dtypes = {np.int8, np.int16, np.int32}
+    if dtype not in valid_dtypes:
+        raise ValueError(f"dtype: expecting [{valid_dtypes}] but found [{dtype}]")
+    if min_value is None:
+        min_value = min(s)
+    if max_value is None:
+        max_value = max(s)
+    if min_value == 0 and max_value == 0:
+        raise ValueError("Both min_value and max_value must not be zero")
+    limit = max(abs(min_value), abs(max_value))
+    res = s / limit * np.iinfo(dtype).max
+    return res.astype(dtype)
 
 
 def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
