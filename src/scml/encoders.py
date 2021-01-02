@@ -76,14 +76,21 @@ def group_statistics(
 
 
 def group_features(
-    df: pd.DataFrame, column: str, statistic_column: str, dtype=np.float32
-) -> None:
-    # res = res.merge(agg, how="left", left_on=group_columns, right_index=True)
+    df: pd.DataFrame,
+    statistics: pd.DataFrame,
+    column: str,
+    group_columns: Iterable[str],
+    dtype=np.float32,
+) -> pd.DataFrame:
+    res = df.merge(statistics, how="left", left_on=group_columns, right_index=True)
     eps = np.finfo(dtype).eps
-    ratio_col = f"{statistic_column}_ratio"
-    diff_col = f"{statistic_column}_diff"
-    # Prevent division-by-zero error
-    df[ratio_col] = df[column] / df[statistic_column].replace(0, eps)
-    df[ratio_col] = df[ratio_col].astype(dtype)
-    df[diff_col] = df[column] - df[statistic_column]
-    df[diff_col] = df[diff_col].astype(df[column].dtype)
+    for statistic_column in statistics.columns:
+        ratio_col = f"{statistic_column}_ratio"
+        diff_col = f"{statistic_column}_diff"
+        # Prevent division-by-zero error
+        res[ratio_col] = res[column] / res[statistic_column].replace(0, eps)
+        res[diff_col] = res[column] - res[statistic_column]
+        res[statistic_column] = res[statistic_column].astype(dtype)
+        res[ratio_col] = res[ratio_col].astype(dtype)
+        res[diff_col] = res[diff_col].astype(dtype)
+    return res

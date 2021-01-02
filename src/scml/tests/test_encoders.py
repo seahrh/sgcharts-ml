@@ -150,7 +150,6 @@ class TestGroupStatistics:
         assert str(a["a_p75"].dtype) == dtype
 
 
-@pytest.mark.skip
 class TestGroupFeatures:
     def test_one_group_column(self):
         dtype = "float32"
@@ -162,7 +161,13 @@ class TestGroupFeatures:
             },
             dtype=dtype,
         )
-        a = group_statistics(data, column="a", group_columns=["b"])
+        a = group_features(
+            data,
+            statistics=group_statistics(data, column="a", group_columns=["b"]),
+            column="a",
+            group_columns=["b"],
+            dtype=dtype,
+        )
         assert list(data.index) == list(a.index)
         assert list(a["a_p50"]) == [7, 4, 7, 4, 7, 4]
         assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
@@ -181,6 +186,20 @@ class TestGroupFeatures:
                 1.632993221282959,
             ],
         )
+        assert np.allclose(a["a_p50_ratio"], a["a"] / a["a_p50"])
+        assert np.allclose(a["a_mean_ratio"], a["a"] / a["a_mean"])
+        assert np.allclose(a["a_min_ratio"], a["a"] / a["a_min"])
+        assert np.allclose(a["a_max_ratio"], a["a"] / a["a_max"])
+        assert np.allclose(a["a_std_ratio"], a["a"] / a["a_std"])
+        assert np.allclose(a["a_p25_ratio"], a["a"] / a["a_p25"])
+        assert np.allclose(a["a_p75_ratio"], a["a"] / a["a_p75"])
+        assert np.allclose(a["a_p50_diff"], a["a"] - a["a_p50"])
+        assert np.allclose(a["a_mean_diff"], a["a"] - a["a_mean"])
+        assert np.allclose(a["a_min_diff"], a["a"] - a["a_min"])
+        assert np.allclose(a["a_max_diff"], a["a"] - a["a_max"])
+        assert np.allclose(a["a_std_diff"], a["a"] - a["a_std"])
+        assert np.allclose(a["a_p25_diff"], a["a"] - a["a_p25"])
+        assert np.allclose(a["a_p75_diff"], a["a"] - a["a_p75"])
         assert str(a["a_p50"].dtype) == dtype
         assert str(a["a_mean"].dtype) == dtype
         assert str(a["a_min"].dtype) == dtype
@@ -188,6 +207,20 @@ class TestGroupFeatures:
         assert str(a["a_std"].dtype) == dtype
         assert str(a["a_p25"].dtype) == dtype
         assert str(a["a_p75"].dtype) == dtype
+        assert str(a["a_p50_ratio"].dtype) == dtype
+        assert str(a["a_mean_ratio"].dtype) == dtype
+        assert str(a["a_min_ratio"].dtype) == dtype
+        assert str(a["a_max_ratio"].dtype) == dtype
+        assert str(a["a_std_ratio"].dtype) == dtype
+        assert str(a["a_p25_ratio"].dtype) == dtype
+        assert str(a["a_p75_ratio"].dtype) == dtype
+        assert str(a["a_p50_diff"].dtype) == dtype
+        assert str(a["a_mean_diff"].dtype) == dtype
+        assert str(a["a_min_diff"].dtype) == dtype
+        assert str(a["a_max_diff"].dtype) == dtype
+        assert str(a["a_std_diff"].dtype) == dtype
+        assert str(a["a_p25_diff"].dtype) == dtype
+        assert str(a["a_p75_diff"].dtype) == dtype
 
     def test_two_group_columns(self):
         dtype = "float32"
@@ -199,7 +232,13 @@ class TestGroupFeatures:
             },
             dtype=dtype,
         )
-        a = group_statistics(data, column="a", group_columns=["b", "c"])
+        a = group_features(
+            data,
+            statistics=group_statistics(data, column="a", group_columns=["b", "c"]),
+            column="a",
+            group_columns=["b", "c"],
+            dtype=dtype,
+        )
         assert list(data.index) == list(a.index)
         assert list(a["a_p50"]) == [7, 4, 7, 4, 7, 4]
         assert list(a["a_mean"]) == [7, 4, 7, 4, 7, 4]
@@ -218,6 +257,20 @@ class TestGroupFeatures:
                 1.632993221282959,
             ],
         )
+        assert np.allclose(a["a_p50_ratio"], a["a"] / a["a_p50"])
+        assert np.allclose(a["a_mean_ratio"], a["a"] / a["a_mean"])
+        assert np.allclose(a["a_min_ratio"], a["a"] / a["a_min"])
+        assert np.allclose(a["a_max_ratio"], a["a"] / a["a_max"])
+        assert np.allclose(a["a_std_ratio"], a["a"] / a["a_std"])
+        assert np.allclose(a["a_p25_ratio"], a["a"] / a["a_p25"])
+        assert np.allclose(a["a_p75_ratio"], a["a"] / a["a_p75"])
+        assert np.allclose(a["a_p50_diff"], a["a"] - a["a_p50"])
+        assert np.allclose(a["a_mean_diff"], a["a"] - a["a_mean"])
+        assert np.allclose(a["a_min_diff"], a["a"] - a["a_min"])
+        assert np.allclose(a["a_max_diff"], a["a"] - a["a_max"])
+        assert np.allclose(a["a_std_diff"], a["a"] - a["a_std"])
+        assert np.allclose(a["a_p25_diff"], a["a"] - a["a_p25"])
+        assert np.allclose(a["a_p75_diff"], a["a"] - a["a_p75"])
         assert str(a["a_p50"].dtype) == dtype
         assert str(a["a_mean"].dtype) == dtype
         assert str(a["a_min"].dtype) == dtype
@@ -225,3 +278,17 @@ class TestGroupFeatures:
         assert str(a["a_std"].dtype) == dtype
         assert str(a["a_p25"].dtype) == dtype
         assert str(a["a_p75"].dtype) == dtype
+        assert str(a["a_p50_ratio"].dtype) == dtype
+        assert str(a["a_mean_ratio"].dtype) == dtype
+        assert str(a["a_min_ratio"].dtype) == dtype
+        assert str(a["a_max_ratio"].dtype) == dtype
+        assert str(a["a_std_ratio"].dtype) == dtype
+        assert str(a["a_p25_ratio"].dtype) == dtype
+        assert str(a["a_p75_ratio"].dtype) == dtype
+        assert str(a["a_p50_diff"].dtype) == dtype
+        assert str(a["a_mean_diff"].dtype) == dtype
+        assert str(a["a_min_diff"].dtype) == dtype
+        assert str(a["a_max_diff"].dtype) == dtype
+        assert str(a["a_std_diff"].dtype) == dtype
+        assert str(a["a_p25_diff"].dtype) == dtype
+        assert str(a["a_p75_diff"].dtype) == dtype
