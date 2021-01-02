@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import pytest
 from scml import MultilabelStratifiedKFold
@@ -13,10 +12,9 @@ def _test(y, n_samples, n_splits):
         y_train = y_train / np.sum(y_train)
         y_test = np.sum(y[test_index], axis=0)
         y_test = y_test / np.sum(y_test)
-        for r1, r2 in zip(y_train, y_test):
-            assert r1 > 0
-            assert r2 > 0
-            assert math.fabs(r1 - r2) < 0.08
+        assert min(y_train) > 0
+        assert min(y_test) > 0
+        assert np.allclose(y_train, y_test, atol=0.1)
 
 
 class TestMultilabelStratifiedKFold:
