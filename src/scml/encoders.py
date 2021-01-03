@@ -1,5 +1,6 @@
 __all__ = [
     "FrequencyEncoder",
+    "TargetEncoder",
     "cyclical_encode",
     "group_statistics",
     "group_features",
@@ -24,6 +25,37 @@ class FrequencyEncoder:
         if self._map is None:
             self.encoding_map(s)
         return s.map(self._map).astype(dtype).fillna(default)
+
+
+class TargetEncoder:
+    def __init__(self, encoding_map: Dict[str, float] = None):
+        self._map = encoding_map
+
+    def encoding_map(
+        self, target: pd.Series, categorical: pd.Series, method: str
+    ) -> Dict[str, float]:
+        if len(target) == 0:
+            raise ValueError("target must not be empty")
+        if len(categorical) == 0:
+            raise ValueError("categorical must not be empty")
+        if len(target) != len(categorical):
+            raise ValueError("target and categorical must have the same length")
+        if self._map is None:
+            df = pd.DataFrame({"target": target, "categorical": categorical})
+            self._map = df.groupby(categorical)["target"].agg(method).to_dict()
+        return self._map
+
+    def encode(
+        self,
+        categorical: pd.Series,
+        method: str = "mean",
+        dtype=np.float32,
+        default: float = 0,
+        target: pd.Series = None,
+    ) -> pd.Series:
+        if self._map is None:
+            self.encoding_map(target, categorical, method=method)
+        return categorical.map(self._map).astype(dtype).fillna(default)
 
 
 def cyclical_encode(
