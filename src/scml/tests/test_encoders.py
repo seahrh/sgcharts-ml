@@ -1,34 +1,31 @@
-# noinspection PyUnresolvedReferences
 import pandas as pd
-import pytest
-
-# noinspection PyUnresolvedReferences
 import numpy as np
 from sklearn.metrics import pairwise_distances
-from scml import *
+from scml import FrequencyEncoder, cyclical_encode, group_statistics, group_features
 
 
-class TestNormalizedCounts:
+class TestFrequencyEncoder:
     def test_one_distinct_value(self):
-        assert normalized_counts(pd.Series(["a", "a", "a", "a"])) == {"a": 1}
+        assert FrequencyEncoder().encoding_map(pd.Series(["a", "a", "a", "a"])) == {
+            "a": 1
+        }
 
     def test_many_distinct_values(self):
-        assert normalized_counts(pd.Series(["a", "b", "c", "d"])) == {
+        assert FrequencyEncoder().encoding_map(pd.Series(["a", "b", "c", "d"])) == {
             "a": 0.25,
             "b": 0.25,
             "c": 0.25,
             "d": 0.25,
         }
 
-
-class TestFreqEncode:
-    def test_case_1(self):
+    def test_encoding(self):
         default = 0
-        assert freq_encode(
-            pd.Series(["a", "b", "c"]),
-            encoding_map={"a": 0.75, "b": 0.25},
-            default=default,
-        ).to_list() == [0.75, 0.25, default]
+        dtype = np.float32
+        a = FrequencyEncoder(encoding_map={"a": 0.75, "b": 0.25}).encode(
+            pd.Series(["a", "b", "c"]), default=default, dtype=dtype
+        )
+        assert list(a) == [0.75, 0.25, default]
+        assert a.dtype == dtype
 
 
 class TestCyclicalEncode:

@@ -1,6 +1,5 @@
 __all__ = [
-    "normalized_counts",
-    "freq_encode",
+    "FrequencyEncoder",
     "cyclical_encode",
     "group_statistics",
     "group_features",
@@ -12,19 +11,19 @@ from typing import Dict, Tuple, Union, Iterable
 Numeric = Union[int, float]
 
 
-def normalized_counts(s: pd.Series) -> Dict[str, float]:
-    return dict(s.value_counts(normalize=True))
+class FrequencyEncoder:
+    def __init__(self, encoding_map: Dict[str, float] = None):
+        self._map = encoding_map
 
+    def encoding_map(self, s: pd.Series) -> Dict[str, float]:
+        if self._map is None:
+            self._map = dict(s.value_counts(normalize=True))
+        return self._map
 
-def freq_encode(
-    s: pd.Series,
-    dtype=np.float32,
-    encoding_map: Dict[str, float] = None,
-    default: float = 0,
-) -> pd.Series:
-    if encoding_map is None:
-        encoding_map = normalized_counts(s)
-    return s.map(encoding_map).astype(dtype).fillna(default)
+    def encode(self, s: pd.Series, dtype=np.float32, default: float = 0) -> pd.Series:
+        if self._map is None:
+            self.encoding_map(s)
+        return s.map(self._map).astype(dtype).fillna(default)
 
 
 def cyclical_encode(
