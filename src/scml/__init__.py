@@ -2,15 +2,10 @@ import os
 import random
 import re
 import pandas as pd
-import tensorflow as tf
 from typing import List
 
 import numpy as np
-
-from .ml_stratifiers import *
-from .model_checkpoint import *
-from ._smote import *
-from .encoders import *
+import warnings
 
 __all__ = [
     "file_paths",
@@ -20,9 +15,29 @@ __all__ = [
     "find_missing_values",
     "rescale_as_int",
 ]
-__all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
-__all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
-__all__ += _smote.__all__  # type: ignore  # module name is not defined
+
+try:
+    import sklearn
+    from .ml_stratifiers import *
+    from ._smote import *
+
+    __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
+    __all__ += _smote.__all__  # type: ignore  # module name is not defined
+except ImportError:
+    sklearn = None
+    warnings.warn("Install scikit-learn to use this feature", ImportWarning)
+
+try:
+    import tensorflow as tf
+    from .model_checkpoint import *
+
+    __all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
+except ImportError:
+    tf = None
+    warnings.warn("Install tensorflow to use this feature", ImportWarning)
+
+from .encoders import *
+
 __all__ += encoders.__all__  # type: ignore  # module name is not defined
 
 
@@ -39,7 +54,8 @@ def seed_everything(seed: int = 31) -> None:
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     np.random.seed(seed)
-    tf.random.set_seed(seed)
+    if tf is not None:
+        tf.random.set_seed(seed)
 
 
 def var_name(s: str) -> str:

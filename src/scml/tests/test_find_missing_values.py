@@ -1,9 +1,6 @@
-# noinspection PyUnresolvedReferences
 import pandas as pd
-
-# noinspection PyUnresolvedReferences
 import numpy as np
-from scml import *
+from scml import find_missing_values
 
 
 class TestFindMissingValues:

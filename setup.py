@@ -5,13 +5,15 @@ setup(
     name="sgcharts-ml",
     version=__version__,
     python_requires="~=3.7",
-    install_requires=["pandas>=1.0.0", "scikit-learn>=0.23.0", "tensorflow>=2.1.0"],
+    install_requires=["pandas>=1.0.0"],
     extras_require={
         "tests": [
             "black~=19.10b0",
             "mypy>=0.780",
             "pytest>=5.4.2",
             "pytest-cov>=2.9.0",
+            "scikit-learn>=0.23.0",
+            "tensorflow>=2.1.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
     },
