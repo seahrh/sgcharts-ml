@@ -7,7 +7,7 @@ __all__ = [
 ]
 import numpy as np
 import pandas as pd
-from typing import Dict, Tuple, Union, Iterable
+from typing import Dict, Tuple, Union, Iterable, List
 
 Numeric = Union[int, float]
 
@@ -106,7 +106,7 @@ def group_statistics(
     return res
 
 
-def group_features(
+def _deprecated_group_features(
     df: pd.DataFrame,
     statistics: pd.DataFrame,
     column: str,
@@ -114,6 +114,35 @@ def group_features(
     dtype=np.float32,
 ) -> pd.DataFrame:
     res = df.merge(statistics, how="left", left_on=group_columns, right_index=True)
+    eps = np.finfo(dtype).eps
+    for statistic_column in statistics.columns:
+        ratio_col = f"{statistic_column}_ratio"
+        diff_col = f"{statistic_column}_diff"
+        # Prevent division-by-zero error
+        res[ratio_col] = res[column] / res[statistic_column].replace(0, eps)
+        res[diff_col] = res[column] - res[statistic_column]
+        res[statistic_column] = res[statistic_column].astype(dtype)
+        res[ratio_col] = res[ratio_col].astype(dtype)
+        res[diff_col] = res[diff_col].astype(dtype)
+    return res
+
+
+def group_features(
+    df: pd.DataFrame,
+    statistics: pd.DataFrame,
+    column: str,
+    group_columns: List[str],
+    dtype=np.float32,
+) -> pd.DataFrame:
+    left = df[group_columns[0]].unique()
+    if len(group_columns) > 1:
+        left = set(df[group_columns].itertuples(index=False))
+    res = df.merge(
+        statistics.loc[statistics.index.isin(left)],
+        how="left",
+        left_on=group_columns,
+        right_index=True,
+    )
     eps = np.finfo(dtype).eps
     for statistic_column in statistics.columns:
         ratio_col = f"{statistic_column}_ratio"
