@@ -1,6 +1,7 @@
 import os
 import random
 import re
+from numba import njit
 import pandas as pd
 from typing import List
 
@@ -14,6 +15,7 @@ __all__ = [
     "quantize",
     "find_missing_values",
     "rescale_as_int",
+    "fillna",
 ]
 
 try:
@@ -129,3 +131,8 @@ def find_missing_values(
     types = [str(df[col].dtype) for col in df.columns]
     res["Type"] = types
     return res
+
+
+@njit
+def fillna(arr: np.ndarray, values: np.ndarray) -> np.ndarray:
+    return np.where(np.isnan(arr), values, arr)
