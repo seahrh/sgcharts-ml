@@ -70,6 +70,7 @@ def var_name(s: str) -> str:
 def rescale_as_int(
     s: pd.Series, min_value: float = None, max_value: float = None, dtype=np.int16
 ) -> pd.Series:
+    """Cannot be converted to njit because np.clip is unsupported."""
     valid_dtypes = {np.int8, np.int16, np.int32}
     if dtype not in valid_dtypes:
         raise ValueError(f"dtype: expecting [{valid_dtypes}] but found [{dtype}]")
@@ -80,7 +81,7 @@ def rescale_as_int(
     if min_value == 0 and max_value == 0:
         raise ValueError("Both min_value and max_value must not be zero")
     limit = max(abs(min_value), abs(max_value))
-    res = s / limit * np.iinfo(dtype).max
+    res = np.clip(s / limit, 0, 1) * np.iinfo(dtype).max
     return res.astype(dtype)
 
 

@@ -102,3 +102,17 @@ class TestRescaleAsInt:
             2147483647,
         ]
         assert a.dtype == dtype
+
+    def test_scaling_is_bounded(self):
+        a = rescale_as_int(
+            pd.Series([-0.2, 1.2]), min_value=0, max_value=1, dtype=np.int8
+        )
+        assert list(a) == [0, np.iinfo(np.int8).max]
+        a = rescale_as_int(
+            pd.Series([-0.2, 1.2]), min_value=0, max_value=1, dtype=np.int16
+        )
+        assert list(a) == [0, np.iinfo(np.int16).max]
+        a = rescale_as_int(
+            pd.Series([-0.2, 1.2]), min_value=0, max_value=1, dtype=np.int32
+        )
+        assert list(a) == [0, np.iinfo(np.int32).max]
