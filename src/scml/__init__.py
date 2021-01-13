@@ -7,6 +7,9 @@ from typing import List
 
 import numpy as np
 import warnings
+from .ml_stratifiers import *
+from ._smote import *
+from .encoders import *
 
 __all__ = [
     "file_paths",
@@ -17,17 +20,9 @@ __all__ = [
     "rescale_as_int",
     "fillna",
 ]
-
-try:
-    import sklearn
-    from .ml_stratifiers import *
-    from ._smote import *
-
-    __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
-    __all__ += _smote.__all__  # type: ignore  # module name is not defined
-except ImportError:
-    sklearn = None
-    warnings.warn("Install scikit-learn to use this feature", ImportWarning)
+__all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
+__all__ += _smote.__all__  # type: ignore  # module name is not defined
+__all__ += encoders.__all__  # type: ignore  # module name is not defined
 
 try:
     import tensorflow as tf
@@ -37,10 +32,6 @@ try:
 except ImportError:
     tf = None
     warnings.warn("Install tensorflow to use this feature", ImportWarning)
-
-from .encoders import *
-
-__all__ += encoders.__all__  # type: ignore  # module name is not defined
 
 
 def file_paths(root_directory: str) -> List[str]:
