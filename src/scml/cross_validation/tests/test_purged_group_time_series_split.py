@@ -28,34 +28,63 @@ class TestPurgedGroupTimeSeriesSplit:
             assert fold != 5
             if fold == 0:
                 assert ti == [0, 1, 2, 3, 4, 5, 6, 7]
-                np.testing.assert_array_equal(groups[ti], [0, 0, 1, 1, 2, 2, 3, 3])
-                assert vi == [11]
-                np.testing.assert_array_equal(groups[vi], [5])
+                assert set(groups[ti]) == {0, 1, 2, 3}
+                assert vi == [10, 11]
+                assert set(groups[vi]) == {5}
             if fold == 1:
                 assert ti == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-                np.testing.assert_array_equal(
-                    groups[ti], [0, 0, 1, 1, 2, 2, 3, 3, 4, 4]
-                )
-                assert vi == [13]
-                np.testing.assert_array_equal(groups[vi], [6])
+                assert set(groups[ti]) == {0, 1, 2, 3, 4}
+                assert vi == [12, 13]
+                assert set(groups[vi]) == {6}
             if fold == 2:
                 assert ti == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-                np.testing.assert_array_equal(
-                    groups[ti], [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
-                )
-                assert vi == [15]
-                np.testing.assert_array_equal(groups[vi], [7])
+                assert set(groups[ti]) == {0, 1, 2, 3, 4, 5}
+                assert vi == [14, 15]
+                assert set(groups[vi]) == {7}
             if fold == 3:
                 assert ti == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-                np.testing.assert_array_equal(
-                    groups[ti], [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6]
-                )
-                assert vi == [17]
-                np.testing.assert_array_equal(groups[vi], [8])
+                assert set(groups[ti]) == {0, 1, 2, 3, 4, 5, 6}
+                assert vi == [16, 17]
+                assert set(groups[vi]) == {8}
             if fold == 4:
                 assert ti == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-                np.testing.assert_array_equal(
-                    groups[ti], [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7]
-                )
-                assert vi == [19]
-                np.testing.assert_array_equal(groups[vi], [9])
+                assert set(groups[ti]) == {0, 1, 2, 3, 4, 5, 6, 7}
+                assert vi == [18, 19]
+                assert set(groups[vi]) == {9}
+
+    def test_group_gap_equals_2(self, even_group_sizes):
+        X, groups = even_group_sizes
+        for fold, (ti, vi) in enumerate(
+            PurgedGroupTimeSeriesSplit(
+                n_splits=5,
+                group_gap=2,
+                max_train_group_size=None,
+                max_test_group_size=None,
+            ).split(X=X, y=None, groups=groups)
+        ):
+            assert fold != 5
+            if fold == 0:
+                assert ti == [0, 1, 2, 3, 4, 5]
+                assert set(groups[ti]) == {0, 1, 2}
+                assert vi == [10, 11]
+                assert set(groups[vi]) == {5}
+            if fold == 1:
+                assert ti == [0, 1, 2, 3, 4, 5, 6, 7]
+                assert set(groups[ti]) == {0, 1, 2, 3}
+                assert vi == [12, 13]
+                assert set(groups[vi]) == {6}
+            if fold == 2:
+                assert ti == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                assert set(groups[ti]) == {0, 1, 2, 3, 4}
+                assert vi == [14, 15]
+                assert set(groups[vi]) == {7}
+            if fold == 3:
+                assert ti == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                assert set(groups[ti]) == {0, 1, 2, 3, 4, 5}
+                assert vi == [16, 17]
+                assert set(groups[vi]) == {8}
+            if fold == 4:
+                assert ti == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+                assert set(groups[ti]) == {0, 1, 2, 3, 4, 5, 6}
+                assert vi == [18, 19]
+                assert set(groups[vi]) == {9}

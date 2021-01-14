@@ -1,6 +1,7 @@
 __all__ = ["PurgedGroupTimeSeriesSplit"]
 
 import sys
+import logging
 import numpy as np
 
 # noinspection PyProtectedMember
@@ -9,6 +10,8 @@ from sklearn.model_selection._split import _BaseKFold, indexable, _num_samples
 # noinspection PyProtectedMember
 from sklearn.utils.validation import _deprecate_positional_args
 from typing import Dict, List
+
+log = logging.getLogger(__name__)
 
 # modified code for group gaps; source
 # https://github.com/getgaurav2/scikit-learn/blob/d4a3af5cc9da3a76f0266932644b884c99724c57/sklearn/model_selection/_split.py#L2243
@@ -89,6 +92,7 @@ class PurgedGroupTimeSeriesSplit(_BaseKFold):
         unique_groups = u[np.argsort(ind)]
         n_samples = _num_samples(X)
         n_groups = _num_samples(unique_groups)
+        log.debug(f"unique_groups={unique_groups}")
         if n_folds > n_groups:
             raise ValueError(
                 (
@@ -112,6 +116,9 @@ class PurgedGroupTimeSeriesSplit(_BaseKFold):
             group_st = max(
                 0, group_test_start - self.group_gap - self.max_train_group_size
             )
+            log.debug(
+                f"group_st={group_st}, group_test_size={group_test_size}, group_test_starts={group_test_starts}"
+            )
             for train_group_idx in unique_groups[
                 group_st : (group_test_start - self.group_gap)
             ]:
@@ -130,5 +137,5 @@ class PurgedGroupTimeSeriesSplit(_BaseKFold):
                     np.unique(np.concatenate((test_array, test_array_tmp)), axis=None),
                     axis=None,
                 )
-            test_array = test_array[self.group_gap :]
+            log.debug(f"test_array={test_array}")
             yield [int(i) for i in train_array], [int(i) for i in test_array]
