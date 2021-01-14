@@ -40,7 +40,7 @@ class PurgedGroupTimeSeriesSplit(_BaseKFold):
     n_splits : int, default=5
         Number of splits. Must be at least 2.
     max_train_group_size : int, default=None
-        Maximum group size for a single training set.
+        Maximum size for a single training set, as number of groups
     group_gap : int, default=1
         Gap between train and test
     max_test_group_size : int, default=None
