@@ -88,11 +88,13 @@ class PurgedGroupTimeSeriesSplit(_BaseKFold):
             raise ValueError("The 'groups' parameter should not be None")
         X, y, groups = indexable(X, y, groups)
         n_folds = self.n_splits + 1
+        # np.unique returns sorted groups
         u, ind = np.unique(groups, return_index=True)
+        # re-sort unique groups in order of first occurrence
         unique_groups = u[np.argsort(ind)]
+        log.debug(f"u={u}, unique_groups={unique_groups}")
         n_samples = _num_samples(X)
         n_groups = _num_samples(unique_groups)
-        log.debug(f"unique_groups={unique_groups}")
         if n_folds > n_groups:
             raise ValueError(
                 (
@@ -137,5 +139,4 @@ class PurgedGroupTimeSeriesSplit(_BaseKFold):
                     np.unique(np.concatenate((test_array, test_array_tmp)), axis=None),
                     axis=None,
                 )
-            log.debug(f"test_array={test_array}")
             yield [int(i) for i in train_array], [int(i) for i in test_array]

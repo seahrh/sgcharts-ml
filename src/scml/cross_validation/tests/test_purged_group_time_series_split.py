@@ -8,18 +8,17 @@ class TestPurgedGroupTimeSeriesSplit:
     @pytest.fixture(scope="class")
     def even_sized_groups(self) -> Tuple[np.ndarray, np.ndarray]:
         n_samples = 20
-        n_groups = 10
         X = np.random.random(size=(n_samples, 2))
-        groups = np.repeat(
-            np.linspace(0, n_groups - 1, num=n_groups), n_samples / n_groups
-        )
+        # sorted array except for first 2 groups
+        groups = np.array([1, 1, 0, 0, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9])
         return X, groups
 
     @pytest.fixture(scope="class")
     def uneven_sized_groups(self) -> Tuple[np.ndarray, np.ndarray]:
         n_samples = 20
         X = np.random.random(size=(n_samples, 2))
-        groups = np.array([0, 1, 2, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9])
+        # sorted array except for first 2 groups
+        groups = np.array([1, 0, 2, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9])
         return X, groups
 
     def test_group_gap_equals_1_on_even_sized_groups(self, even_sized_groups):
