@@ -7,6 +7,7 @@ def _test(y, n_samples, n_splits):
     x = np.zeros((n_samples, 2))  # This is not used in the split
     mskf = MultilabelStratifiedKFold(n_splits=n_splits, shuffle=True)
     for train_index, test_index in mskf.split(x, y):
+        # no indices in common
         assert len(set(train_index) & set(test_index)) == 0
         y_train = np.sum(y[train_index], axis=0)  # sum column-wise
         y_train = y_train / np.sum(y_train)
@@ -14,7 +15,7 @@ def _test(y, n_samples, n_splits):
         y_test = y_test / np.sum(y_test)
         assert min(y_train) > 0
         assert min(y_test) > 0
-        assert np.allclose(y_train, y_test, atol=0.1)
+        assert np.allclose(y_train, y_test, atol=0.15)
 
 
 class TestMultilabelStratifiedKFold:
