@@ -100,7 +100,7 @@ class TestCyclicalEncode:
         _min, _max = 0, 9
         features = pd.DataFrame(columns=["cos", "sin"])
         features["cos"], features["sin"] = cyclical_encode(
-            pd.Series(range(_min, _max + 1)), interval=(_min, _max)
+            np.arange(_min, _max + 1), interval=(_min, _max)
         )
         D = pairwise_distances(features, metric="euclidean")
         d = D[0][1]
@@ -116,10 +116,9 @@ class TestCyclicalEncode:
 
     def test_one_indexed_cycle_is_equidistant(self):
         _min, _max = 1, 10
-        self._tol = 1e-7
         features = pd.DataFrame(columns=["cos", "sin"])
         features["cos"], features["sin"] = cyclical_encode(
-            pd.Series(range(_min, _max + 1)), interval=(_min, _max)
+            np.arange(_min, _max + 1), interval=(_min, _max)
         )
         D = pairwise_distances(features, metric="euclidean")
         d = D[0][1]

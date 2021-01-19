@@ -5,12 +5,10 @@ __all__ = [
     "group_statistics",
     "group_features",
 ]
-from typing import Dict, Tuple, Union, Iterable
-
+from typing import Dict, Tuple, Iterable
+from numba import njit
 import numpy as np
 import pandas as pd
-
-Numeric = Union[int, float]
 
 
 class FrequencyEncoder:
@@ -59,13 +57,14 @@ class TargetEncoder:
         return categorical.map(self._map).astype(dtype).fillna(default)
 
 
+@njit
 def cyclical_encode(
-    s: pd.Series, interval: Tuple[Numeric, Numeric], dtype=np.float32,
-) -> Tuple[pd.Series, pd.Series]:
+    a: np.ndarray, interval: Tuple[float, float], dtype=np.float32,
+) -> Tuple[np.ndarray, np.ndarray]:
     rg = interval[1] - interval[0]
-    t = (s.to_numpy() - interval[0]) / rg
-    cos = pd.Series(np.cos(2 * np.pi * t)).astype(dtype)
-    sin = pd.Series(np.sin(2 * np.pi * t)).astype(dtype)
+    frac = (a - interval[0]) / rg
+    cos = np.cos(2 * np.pi * frac).astype(dtype)
+    sin = np.sin(2 * np.pi * frac).astype(dtype)
     return cos, sin
 
 
