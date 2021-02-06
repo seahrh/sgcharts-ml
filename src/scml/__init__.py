@@ -1,15 +1,16 @@
 import os
 import random
 import re
-from numba import njit
-import pandas as pd
-from typing import List, Any
+import warnings
+from typing import List
 
 import numpy as np
-import warnings
-from .ml_stratifiers import *
+import pandas as pd
+from numba import njit
+
 from ._smote import *
 from .encoders import *
+from .ml_stratifiers import *
 from .streaming import *
 
 __all__ = [
@@ -95,18 +96,18 @@ def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
         if col_type in numerics:
             _min = df[col].min()
             _max = df[col].max()
-            dtype: Any = np.float64
+            dtype = np.float64  # type: ignore
             if str(col_type)[:3] == "int":
                 if _min >= np.iinfo(np.int8).min and _max <= np.iinfo(np.int8).max:
-                    dtype = np.int8
+                    dtype = np.int8  # type: ignore
                 elif _min >= np.iinfo(np.int16).min and _max <= np.iinfo(np.int16).max:
-                    dtype = np.int16
+                    dtype = np.int16  # type: ignore
                 elif _min >= np.iinfo(np.int32).min and _max <= np.iinfo(np.int32).max:
-                    dtype = np.int32
+                    dtype = np.int32  # type: ignore
                 else:
-                    dtype = np.int64
+                    dtype = np.int64  # type: ignore
             elif _min >= np.finfo(np.float32).min and _max <= np.finfo(np.float32).max:
-                dtype = np.float32
+                dtype = np.float32  # type: ignore
             df[col] = df[col].astype(dtype)
     if verbose:
         end_mem: float = df.memory_usage().sum() / 1024 ** 2
