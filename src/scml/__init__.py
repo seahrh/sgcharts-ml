@@ -10,6 +10,7 @@ import warnings
 from .ml_stratifiers import *
 from ._smote import *
 from .encoders import *
+from .streaming import *
 
 __all__ = [
     "file_paths",
@@ -23,6 +24,7 @@ __all__ = [
 __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
 __all__ += _smote.__all__  # type: ignore  # module name is not defined
 __all__ += encoders.__all__  # type: ignore  # module name is not defined
+__all__ += streaming.__all__  # type: ignore  # module name is not defined
 
 try:
     import tensorflow as tf
