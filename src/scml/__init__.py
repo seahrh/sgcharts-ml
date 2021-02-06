@@ -3,7 +3,7 @@ import random
 import re
 from numba import njit
 import pandas as pd
-from typing import List
+from typing import List, Any
 
 import numpy as np
 import warnings
@@ -95,7 +95,7 @@ def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
         if col_type in numerics:
             _min = df[col].min()
             _max = df[col].max()
-            dtype = np.float64
+            dtype: Any = np.float64
             if str(col_type)[:3] == "int":
                 if _min >= np.iinfo(np.int8).min and _max <= np.iinfo(np.int8).max:
                     dtype = np.int8
