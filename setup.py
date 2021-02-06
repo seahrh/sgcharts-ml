@@ -9,7 +9,7 @@ setup(
     extras_require={
         "tests": [
             "black~=19.10b0",
-            "mypy==0.780",
+            "mypy>=0.780",
             "pytest>=5.4.2",
             "pytest-cov>=2.9.0",
             "tensorflow>=2.1.0",
