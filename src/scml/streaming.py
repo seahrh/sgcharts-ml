@@ -23,6 +23,11 @@ class RollingWindow:
 
 
 class IterativeMean:
+    """Process each value just once, and the variables never get larger than the largest value in the stream,
+    so you won't get an overflow.
+    Adapted from @url https://stackoverflow.com/a/1934266/519951
+    """
+
     def __init__(self):
         self._res: float = 0
         self._n: int = 1
