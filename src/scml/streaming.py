@@ -1,4 +1,4 @@
-__all__ = ["RollingWindow"]
+__all__ = ["RollingWindow", "IterativeMean"]
 
 from collections import deque
 from typing import Deque, Optional
@@ -20,3 +20,16 @@ class RollingWindow:
         if len(self._buf) == 0:
             return None
         return self._sum / len(self._buf)
+
+
+class IterativeMean:
+    def __init__(self):
+        self._res: float = 0
+        self._n: int = 1
+
+    def add(self, x: float) -> None:
+        self._res += (x - self._res) / self._n
+        self._n += 1
+
+    def get(self) -> float:
+        return self._res
