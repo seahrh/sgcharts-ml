@@ -130,10 +130,7 @@ def find_missing_values(
 
 @njit
 def fillna(
-    arr: np.ndarray,
-    values: np.ndarray,
-    add_flag: bool = False,
-    dtype: np.dtype = np.float32,  # type: ignore
+    arr: np.ndarray, values: np.ndarray, add_flag: bool = False, dtype=np.float32
 ) -> np.ndarray:
     mask = np.isnan(arr)
     res = np.where(mask, values, arr).astype(dtype)
