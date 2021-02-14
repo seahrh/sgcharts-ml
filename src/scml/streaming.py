@@ -1,6 +1,8 @@
 __all__ = ["RollingWindow", "IterativeMean"]
 
 from collections import deque
+from numba import typed, types
+from numba.experimental import jitclass
 from typing import Deque, Optional
 
 
@@ -22,6 +24,7 @@ class RollingWindow:
         return self._sum / len(self._buf)
 
 
+@jitclass([("_res", types.float64), ("_n", types.int64)])
 class IterativeMean:
     """Process each value just once, and the variables never get larger than the largest value in the stream,
     so you won't get an overflow.
