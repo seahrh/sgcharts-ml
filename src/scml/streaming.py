@@ -1,7 +1,7 @@
 __all__ = ["RollingWindow", "IterativeMean"]
 
 from collections import deque
-from numba import typed, types
+from numba import types
 from numba.experimental import jitclass
 from typing import Deque, Optional
 
