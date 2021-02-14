@@ -59,10 +59,8 @@ class TargetEncoder:
 
 @njit
 def cyclical_encode(
-    a: np.ndarray, interval: Tuple[float, float], dtype=None
+    a: np.ndarray, interval: Tuple[float, float], dtype=np.float32,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    if dtype is None:
-        dtype = np.float32
     rg = interval[1] - interval[0]
     frac = (a - interval[0]) / rg
     cos = np.cos(2 * np.pi * frac).astype(dtype)
