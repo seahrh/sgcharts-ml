@@ -128,7 +128,7 @@ def count_punctuation(s: str) -> int:
     return n
 
 
-def split(delimiters: Iterable[str], s, maxsplit=0) -> List[str]:
+def split(delimiters: Iterable[str], s: str, maxsplit: int = 0) -> List[str]:
     """Split the string over an iterable of delimiters.
     Based on https://stackoverflow.com/a/13184791
     """
