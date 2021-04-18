@@ -12,6 +12,10 @@ __all__ = [
     "split",
 ]
 
+from .contractions import *
+
+__all__ += contractions.__all__  # type: ignore  # module name is not defined
+
 import string
 import re
 from unicodedata import normalize
