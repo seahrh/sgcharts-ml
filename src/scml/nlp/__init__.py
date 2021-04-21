@@ -10,6 +10,7 @@ __all__ = [
     "count_space",
     "count_punctuation",
     "split",
+    "decode_escaped_bytes",
 ]
 
 from .contractions import *
@@ -138,3 +139,13 @@ def split(delimiters: Iterable[str], s: str, maxsplit: int = 0) -> List[str]:
     """
     pattern = "|".join(map(re.escape, delimiters))
     return re.split(pattern, s, maxsplit)
+
+
+def decode_escaped_bytes(s: str, encoding="utf-8") -> str:
+    """Convert escaped bytes in the \\xhh format to unicode characters."""
+    return (
+        s.encode("latin1")  # To bytes, required by 'unicode-escape'
+        .decode("unicode-escape")  # Perform the actual octal-escaping decode
+        .encode("latin1")  # 1:1 mapping back to bytes
+        .decode(encoding)
+    )
