@@ -94,43 +94,23 @@ def is_number(s: str) -> bool:
 
 
 def count_digit(s: str) -> int:
-    n = 0
-    for c in s:
-        if c.isdigit():
-            n += 1
-    return n
+    return sum(c.isdigit() for c in s)
 
 
 def count_alpha(s: str) -> int:
-    n = 0
-    for c in s:
-        if c.isalpha():
-            n += 1
-    return n
+    return sum(c.isalpha() for c in s)
 
 
 def count_upper(s: str) -> int:
-    n = 0
-    for c in s:
-        if c.isupper():
-            n += 1
-    return n
+    return sum(c.isupper() for c in s)
 
 
 def count_space(s: str) -> int:
-    n = 0
-    for c in s:
-        if c.isspace():
-            n += 1
-    return n
+    return sum(c.isspace() for c in s)
 
 
 def count_punctuation(s: str) -> int:
-    n = 0
-    for c in s:
-        if c in string.punctuation:
-            n += 1
-    return n
+    return sum(c in string.punctuation for c in s)
 
 
 def split(delimiters: Iterable[str], s: str, maxsplit: int = 0) -> List[str]:
