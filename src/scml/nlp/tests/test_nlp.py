@@ -5,6 +5,7 @@ from scml.nlp import (
     count_alpha,
     count_upper,
     count_punctuation,
+    word_ngrams,
 )
 
 
@@ -62,3 +63,34 @@ class TestSplit:
             delimiters=["!", ".", "?", ")", "("],
             s="hi there! greetings. how are you? (foo) end",
         ) == ["hi there", " greetings", " how are you", " ", "foo", " end"]
+
+
+class TestWordNgrams:
+    def test_separator(self):
+        assert word_ngrams("hello,world", n=1, sep=",") == [("hello",), ("world",)]
+
+    def test_gram_number(self):
+        assert word_ngrams("hello world foo bar", n=1) == [
+            ("hello",),
+            ("world",),
+            ("foo",),
+            ("bar",),
+        ]
+        assert word_ngrams("hello world foo bar", n=2) == [
+            ("hello", "world"),
+            ("world", "foo"),
+            ("foo", "bar"),
+        ]
+        assert word_ngrams("hello world foo bar", n=3) == [
+            ("hello", "world", "foo"),
+            ("world", "foo", "bar"),
+        ]
+        assert word_ngrams("hello world foo bar", n=4) == [
+            ("hello", "world", "foo", "bar"),
+        ]
+        assert word_ngrams("hello world foo bar", n=5) == []
+
+    def test_skip_set(self):
+        assert word_ngrams("hello world foo bar", n=2, skip={"hello", "foo"}) == [
+            ("world", "bar"),
+        ]

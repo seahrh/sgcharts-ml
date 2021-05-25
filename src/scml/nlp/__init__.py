@@ -11,6 +11,7 @@ __all__ = [
     "count_punctuation",
     "split",
     "decode_escaped_bytes",
+    "word_ngrams",
 ]
 
 from .contractions import *
@@ -20,7 +21,7 @@ __all__ += contractions.__all__  # type: ignore  # module name is not defined
 import string
 import re
 from unicodedata import normalize
-from typing import AnyStr, Iterable, Callable, List
+from typing import AnyStr, Iterable, Callable, List, Tuple, Set
 
 
 def to_str(bytes_or_str: AnyStr, encoding="utf-8") -> str:
@@ -129,3 +130,18 @@ def decode_escaped_bytes(s: str, encoding="utf-8") -> str:
         .encode("latin1")  # 1:1 mapping back to bytes
         .decode(encoding)
     )
+
+
+def word_ngrams(
+    s: str, n: int, sep: str = None, skip: Set[str] = None
+) -> List[Tuple[str, ...]]:
+    tokens = s.split(sep)
+    tmp = []
+    for t in tokens:
+        if skip is not None and t in skip:
+            continue
+        tmp.append(t)
+    tokens = tmp
+    # do not enter loop if n > len(tokens)
+    res = [tuple(tokens[i : i + n]) for i in range(len(tokens) - n + 1)]
+    return res
