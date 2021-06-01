@@ -6,6 +6,7 @@ from scml.nlp import (
     count_upper,
     count_punctuation,
     word_ngrams,
+    sentences,
 )
 
 
@@ -94,3 +95,23 @@ class TestWordNgrams:
         assert word_ngrams("hello world foo bar", n=2, skip={"hello", "foo"}) == [
             ("world", "bar"),
         ]
+
+
+class TestSentences:
+    def test_end_of_sentence_punctuation(self):
+        assert sentences("Full stop. Question mark? Exclamation mark! The end.") == [
+            "Full stop.",
+            "Question mark?",
+            "Exclamation mark!",
+            "The end.",
+        ]
+
+    def test_salutations(self):
+        assert sentences("Mr. Huckleberry Finn met Dr. Watson for coffee.") == [
+            "Mr. Huckleberry Finn met Dr. Watson for coffee."
+        ]
+
+    def test_period_delimited_strings(self):
+        assert sentences("foo 123.456 bar") == ["foo 123.456 bar"]
+        assert sentences("foo 123.456.789.123 bar") == ["foo 123.456.789.123 bar"]
+        assert sentences("foo abc.def.ghk bar") == ["foo abc.def.ghk bar"]

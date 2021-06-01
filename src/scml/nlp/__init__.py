@@ -12,6 +12,7 @@ __all__ = [
     "split",
     "decode_escaped_bytes",
     "word_ngrams",
+    "sentences",
 ]
 
 from .contractions import *
@@ -120,6 +121,19 @@ def split(delimiters: Iterable[str], s: str, maxsplit: int = 0) -> List[str]:
     """
     pattern = "|".join(map(re.escape, delimiters))
     return re.split(pattern, s, maxsplit)
+
+
+# (?<!...) is a negative look-behind assertion.
+# (?<=...) is a positive look-behind assertion.
+# No spacing after period.
+# Salutations like Dr. Mr.
+# Sentence boundaries like period, question mark, exclamation mark.
+# Based on https://stackoverflow.com/a/25736082/519951
+SENTENCE_BOUNDARY_PATTERN = re.compile(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=[.?!])\s")
+
+
+def sentences(s: str, maxsplit: int = 0) -> List[str]:
+    return SENTENCE_BOUNDARY_PATTERN.split(s, maxsplit)
 
 
 def decode_escaped_bytes(s: str, encoding="utf-8") -> str:
