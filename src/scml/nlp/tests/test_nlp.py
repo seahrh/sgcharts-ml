@@ -62,9 +62,9 @@ class TestSplit:
 
     def test_punctuation(self):
         assert split(
-            delimiters=["!", ".", "?", ")", "("],
-            s="hi there! greetings. how are you? (foo) end",
-        ) == ["hi there", " greetings", " how are you", " ", "foo", " end"]
+            delimiters=["!", ".", "?", ")", "(", ","],
+            s="hi, there! greetings. how are you? (foo) end",
+        ) == ["hi", " there", " greetings", " how are you", " ", "foo", " end"]
 
 
 class TestWordNgrams:
