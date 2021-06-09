@@ -13,6 +13,7 @@ __all__ = [
     "decode_escaped_bytes",
     "word_ngrams",
     "sentences",
+    "has_at_least_1D1L",
 ]
 
 from .contractions import *
@@ -159,3 +160,15 @@ def word_ngrams(
     # do not enter loop if n > len(tokens)
     res = [tuple(tokens[i : i + n]) for i in range(len(tokens) - n + 1)]
     return res
+
+
+def has_at_least_1D1L(s: str, include: str = "") -> bool:
+    es = re.escape(include)
+    # Positive lookahead: at least one digit AND at least one letter
+    # Allow only chars inside the whitelist
+    ps = r"(?=.*\d)(?=.*[A-Za-z])^[A-Za-z\d" + es + r"]+$"
+    p = re.compile(ps)
+    m = p.match(s)
+    if m is None:
+        return False
+    return True

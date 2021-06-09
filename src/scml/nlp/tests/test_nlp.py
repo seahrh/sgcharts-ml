@@ -7,6 +7,7 @@ from scml.nlp import (
     count_punctuation,
     word_ngrams,
     sentences,
+    has_at_least_1D1L,
 )
 
 
@@ -115,3 +116,41 @@ class TestSentences:
         assert sentences("foo 123.456 bar") == ["foo 123.456 bar"]
         assert sentences("foo 123.456.789.123 bar") == ["foo 123.456.789.123 bar"]
         assert sentences("foo abc.def.ghk bar") == ["foo abc.def.ghk bar"]
+
+
+class TestHasAtLeastOneDigitAndOneLetter:
+    def test_no_matches(self):
+        assert not has_at_least_1D1L("")
+        assert not has_at_least_1D1L("A")
+        assert not has_at_least_1D1L("a")
+        assert not has_at_least_1D1L("1")
+        assert not has_at_least_1D1L("Aa")
+        assert not has_at_least_1D1L("aA")
+        assert not has_at_least_1D1L("12")
+        assert not has_at_least_1D1L("1.2")
+        assert not has_at_least_1D1L("1,234")
+
+    def test_matches(self):
+        assert has_at_least_1D1L("A1")
+        assert has_at_least_1D1L("a1")
+        assert has_at_least_1D1L("1A")
+        assert has_at_least_1D1L("1a")
+
+    def test_include_chars(self):
+        include = ":-"
+        assert has_at_least_1D1L("a-1", include=include)
+        assert has_at_least_1D1L("A-1", include=include)
+        assert has_at_least_1D1L("1-a", include=include)
+        assert has_at_least_1D1L("1-A", include=include)
+        assert has_at_least_1D1L("a:1", include=include)
+        assert has_at_least_1D1L("A:1", include=include)
+        assert has_at_least_1D1L("1:a", include=include)
+        assert has_at_least_1D1L("1:A", include=include)
+        assert has_at_least_1D1L("-a1", include=include)
+        assert has_at_least_1D1L("a1-", include=include)
+        assert has_at_least_1D1L(":a1", include=include)
+        assert has_at_least_1D1L("a1:", include=include)
+        # Allow only chars inside the whitelist
+        assert not has_at_least_1D1L(",a1", include=include)
+        assert not has_at_least_1D1L("a,1", include=include)
+        assert not has_at_least_1D1L("a1,", include=include)
