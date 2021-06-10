@@ -13,7 +13,7 @@ __all__ = [
     "decode_escaped_bytes",
     "word_ngrams",
     "sentences",
-    "has_at_least_1D1L",
+    "has_1a1d",
 ]
 
 from .contractions import *
@@ -162,7 +162,10 @@ def word_ngrams(
     return res
 
 
-def has_at_least_1D1L(s: str, include: str = "") -> bool:
+def has_1a1d(s: str, include: str = "") -> bool:
+    """Returns True if the string has at least one letter and one digit.
+    Useful for detecting product or model codes.
+    """
     es = re.escape(include)
     # Positive lookahead: at least one digit AND at least one letter
     # Allow only chars inside the whitelist
