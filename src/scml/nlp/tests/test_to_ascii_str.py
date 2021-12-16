@@ -1,11 +1,9 @@
-from scml.nlp import to_ascii_str
+from scml.nlp import to_ascii
 
 
-class TestToAsciiString:
+class TestToAscii:
     def test_alphabet(self):
-        assert (
-            to_ascii_str("abcdefghijklmnopqrstuvwxyz") == "abcdefghijklmnopqrstuvwxyz"
-        )
+        assert to_ascii("abcdefghijklmnopqrstuvwxyz") == "abcdefghijklmnopqrstuvwxyz"
 
     def test_accented_chars(self):
         aa_map = {
@@ -71,4 +69,4 @@ class TestToAsciiString:
             "”": '"',
         }
         for k, v in aa_map.items():
-            assert to_ascii_str(k) == v
+            assert to_ascii(k) == v

@@ -2,7 +2,8 @@ __all__ = [
     "to_str",
     "to_bytes",
     "strip_punctuation",
-    "to_ascii_str",
+    "straight_quotes",
+    "to_ascii",
     "is_number",
     "count_digit",
     "count_alpha",
@@ -23,7 +24,7 @@ __all__ += contractions.__all__  # type: ignore  # module name is not defined
 import string
 import re
 from unicodedata import normalize
-from typing import AnyStr, Iterable, Callable, List, Tuple, Set
+from typing import AnyStr, Iterable, List, Tuple, Set
 
 
 def to_str(bytes_or_str: AnyStr, encoding="utf-8") -> str:
@@ -60,7 +61,8 @@ def strip_punctuation(s: str) -> str:
     return s.translate(translator)
 
 
-def _to_ascii_str_transform_fn(s: str) -> str:
+def straight_quotes(s: str) -> str:
+    """Replaces curly quotes with straight quotes."""
     res = s.replace("‘", "'")  # opening single quote
     res = res.replace("’", "'")  # closing single quote
     res = res.replace("“", '"')  # opening double quote
@@ -68,7 +70,7 @@ def _to_ascii_str_transform_fn(s: str) -> str:
     return res
 
 
-def to_ascii_str(s: AnyStr, transform_fn: Callable = _to_ascii_str_transform_fn) -> str:
+def to_ascii(s: AnyStr) -> str:
     """Normalise (normalize) unicode data in Python to remove umlauts, accents etc.
     Also converts curly quotes [] to straight quotes.
     Based on https://gist.github.com/j4mie/557354
@@ -78,7 +80,7 @@ def to_ascii_str(s: AnyStr, transform_fn: Callable = _to_ascii_str_transform_fn)
     # i.e. replace all compatibility characters with their equivalents.
     # @url https://docs.python.org/3/library/unicodedata.html
     res = to_str(s)
-    res = transform_fn(res)
+    res = straight_quotes(res)
     res = to_str(normalize("NFKD", res).encode("ASCII", "ignore"))
     return res
 
