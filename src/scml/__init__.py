@@ -16,7 +16,6 @@ from .ml_stratifiers import *
 from .streaming import *
 
 __all__ = [
-    "get_logger",
     "file_paths",
     "seed_everything",
     "var_name",

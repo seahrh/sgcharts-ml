@@ -11,7 +11,7 @@ __all__ = [
     "count_punctuation",
     "split",
     "decode_escaped_bytes",
-    "word_ngrams",
+    "ngrams",
     "sentences",
     "has_1a1d",
 ]
@@ -147,10 +147,7 @@ def decode_escaped_bytes(s: str, encoding="utf-8") -> str:
     )
 
 
-def word_ngrams(
-    s: str, n: int, sep: str = None, skip: Set[str] = None
-) -> List[Tuple[str, ...]]:
-    tokens = s.split(sep)
+def ngrams(tokens: List[str], n: int, skip: Set[str] = None) -> List[Tuple[str, ...]]:
     tmp = []
     for t in tokens:
         if skip is not None and t in skip:

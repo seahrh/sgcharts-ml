@@ -5,7 +5,7 @@ from scml.nlp import (
     count_alpha,
     count_upper,
     count_punctuation,
-    word_ngrams,
+    ngrams,
     sentences,
     has_1a1d,
 )
@@ -43,7 +43,13 @@ class TestCountPunctuation:
 
 class TestSplit:
     def test_delimiter_length_equals_1(self):
-        assert split(delimiters=["a"], s="a1a2a",) == ["", "1", "2", ""]
+        assert (
+            split(
+                delimiters=["a"],
+                s="a1a2a",
+            )
+            == ["", "1", "2", ""]
+        )
         assert split(delimiters=["a", "b"], s="ab1ba2ab",) == [
             "",
             "",
@@ -55,45 +61,48 @@ class TestSplit:
         ]
 
     def test_delimiter_length_greater_than_1(self):
-        assert split(
-            delimiters=["a", "...", "(c)"],
-            s="stackoverflow (c) is awesome... isn't it?",
-        ) == ["st", "ckoverflow ", " is ", "wesome", " isn't it?"]
+        assert (
+            split(
+                delimiters=["a", "...", "(c)"],
+                s="stackoverflow (c) is awesome... isn't it?",
+            )
+            == ["st", "ckoverflow ", " is ", "wesome", " isn't it?"]
+        )
 
     def test_punctuation(self):
-        assert split(
-            delimiters=["!", ".", "?", ")", "(", ","],
-            s="hi, there! greetings. how are you? (foo) end",
-        ) == ["hi", " there", " greetings", " how are you", " ", "foo", " end"]
+        assert (
+            split(
+                delimiters=["!", ".", "?", ")", "(", ","],
+                s="hi, there! greetings. how are you? (foo) end",
+            )
+            == ["hi", " there", " greetings", " how are you", " ", "foo", " end"]
+        )
 
 
-class TestWordNgrams:
-    def test_separator(self):
-        assert word_ngrams("hello,world", n=1, sep=",") == [("hello",), ("world",)]
-
+class TestNgrams:
     def test_gram_number(self):
-        assert word_ngrams("hello world foo bar", n=1) == [
+        assert ngrams(["hello", "world", "foo", "bar"], n=1) == [
             ("hello",),
             ("world",),
             ("foo",),
             ("bar",),
         ]
-        assert word_ngrams("hello world foo bar", n=2) == [
+        assert ngrams(["hello", "world", "foo", "bar"], n=2) == [
             ("hello", "world"),
             ("world", "foo"),
             ("foo", "bar"),
         ]
-        assert word_ngrams("hello world foo bar", n=3) == [
+        assert ngrams(["hello", "world", "foo", "bar"], n=3) == [
             ("hello", "world", "foo"),
             ("world", "foo", "bar"),
         ]
-        assert word_ngrams("hello world foo bar", n=4) == [
+        assert ngrams(["hello", "world", "foo", "bar"], n=4) == [
             ("hello", "world", "foo", "bar"),
         ]
-        assert word_ngrams("hello world foo bar", n=5) == []
+        assert ngrams(["hello", "world", "foo", "bar"], n=5) == []
 
     def test_skip_set(self):
-        assert word_ngrams("hello world foo bar", n=2, skip={"hello", "foo"}) == [
+        assert ngrams(["hello", "world", "foo", "bar"], n=2, skip={"hello", "foo"}) == [
             ("world", "bar"),
         ]
 
