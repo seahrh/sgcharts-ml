@@ -147,15 +147,16 @@ def decode_escaped_bytes(s: str, encoding="utf-8") -> str:
     )
 
 
-def ngrams(tokens: List[str], n: int, skip: Set[str] = None) -> List[Tuple[str, ...]]:
-    tmp = []
+def ngrams(
+    tokens: Iterable[str], n: int, skip: Set[str] = None
+) -> List[Tuple[str, ...]]:
+    ts = []
     for t in tokens:
         if skip is not None and t in skip:
             continue
-        tmp.append(t)
-    tokens = tmp
+        ts.append(t)
     # do not enter loop if n > len(tokens)
-    res = [tuple(tokens[i : i + n]) for i in range(len(tokens) - n + 1)]
+    res = [tuple(ts[i : i + n]) for i in range(len(ts) - n + 1)]
     return res
 
 
