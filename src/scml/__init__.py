@@ -1,6 +1,8 @@
 import os
+import sys
 import random
 import re
+import logging
 import warnings
 from typing import List
 
@@ -14,6 +16,7 @@ from .ml_stratifiers import *
 from .streaming import *
 
 __all__ = [
+    "get_logger",
     "file_paths",
     "seed_everything",
     "var_name",
@@ -35,6 +38,21 @@ try:
 except ImportError:
     tf = None
     warnings.warn("Install tensorflow to use this feature", ImportWarning)
+
+
+def get_logger(name: str = None):
+    # suppress matplotlib logging
+    logging.getLogger(name="matplotlib").setLevel(logging.WARNING)
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+        "[%(levelname)s|%(filename)s:%(lineno)s] %(asctime)s >> %(message)s"
+    )
+    sh.setFormatter(formatter)
+    logger.addHandler(sh)
+    return logger
 
 
 def file_paths(root_directory: str) -> List[str]:
