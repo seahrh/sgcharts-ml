@@ -17,9 +17,6 @@ __all__ = [
     "has_1a1d",
 ]
 
-from .contractions import *
-
-__all__ += contractions.__all__  # type: ignore  # module name is not defined
 
 import string
 import re
@@ -175,3 +172,12 @@ def has_1a1d(s: str, include: str = "") -> bool:
     if m is None:
         return False
     return True
+
+
+from .contractions import *
+
+__all__ += contractions.__all__  # type: ignore  # module name is not defined
+
+from .punctnorm import *
+
+__all__ += punctnorm.__all__  # type: ignore  # module name is not defined
