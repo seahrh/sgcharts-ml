@@ -2,7 +2,6 @@ __all__ = [
     "to_str",
     "to_bytes",
     "strip_punctuation",
-    "straight_quotes",
     "to_ascii",
     "is_number",
     "count_digit",
@@ -56,30 +55,6 @@ def strip_punctuation(s: str) -> str:
     """
     translator = str.maketrans(dict.fromkeys(string.punctuation))
     return s.translate(translator)
-
-
-def straight_quotes(s: str) -> str:
-    """Replaces curly quotes with straight quotes."""
-    res = s.replace("‘", "'")  # opening single quote
-    res = res.replace("’", "'")  # closing single quote
-    res = res.replace("“", '"')  # opening double quote
-    res = res.replace("”", '"')  # closing double quote
-    return res
-
-
-def to_ascii(s: AnyStr) -> str:
-    """Normalise (normalize) unicode data in Python to remove umlauts, accents etc.
-    Also converts curly quotes [] to straight quotes.
-    Based on https://gist.github.com/j4mie/557354
-    """
-    # unicodedata normalize
-    # The normal form KD (NFKD) will apply the compatibility decomposition
-    # i.e. replace all compatibility characters with their equivalents.
-    # @url https://docs.python.org/3/library/unicodedata.html
-    res = to_str(s)
-    res = straight_quotes(res)
-    res = to_str(normalize("NFKD", res).encode("ASCII", "ignore"))
-    return res
 
 
 def is_number(s: str) -> bool:
@@ -181,3 +156,17 @@ __all__ += contractions.__all__  # type: ignore  # module name is not defined
 from .punctnorm import *
 
 __all__ += punctnorm.__all__  # type: ignore  # module name is not defined
+
+
+def to_ascii(s: AnyStr) -> str:
+    """Normalise (normalize) unicode data in Python to remove umlauts, accents etc.
+    Also converts curly quotes [] to straight quotes.
+    Based on https://gist.github.com/j4mie/557354
+    """
+    # unicodedata normalize
+    # The normal form KD (NFKD) will apply the compatibility decomposition
+    # i.e. replace all compatibility characters with their equivalents.
+    # @url https://docs.python.org/3/library/unicodedata.html
+    res = to_str(s)
+    res = MosesPunctNormalizer(pre_replace_unicode_punct=True).normalize(res)
+    return to_str(normalize("NFKD", res).encode("ASCII", "ignore"))

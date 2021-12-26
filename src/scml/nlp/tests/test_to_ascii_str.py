@@ -63,10 +63,6 @@ class TestToAscii:
             "ý": "y",
             "ÿ": "y",
             "ž": "z",
-            "‘": "'",
-            "’": "'",
-            "“": '"',
-            "”": '"',
         }
         for k, v in aa_map.items():
             assert to_ascii(k) == v

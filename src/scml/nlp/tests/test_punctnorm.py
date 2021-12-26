@@ -60,3 +60,11 @@ class TestNormalizer:
         text = u"０《１２３》      ４５６％  '' 【７８９】"
         expected = u'0"123" 456% " [789]'
         assert moses_norm_unicode.normalize(text) == expected
+
+    def test_normalize_curly_quotes(self):
+        pn = MosesPunctNormalizer(pre_replace_unicode_punct=True)
+        assert pn.normalize("‘") == "'"  # opening single quote
+        assert pn.normalize("’") == "'"  # closing double quote
+        assert pn.normalize("‘’") == '"'
+        assert pn.normalize("‘a’") == "'a'"
+        assert pn.normalize("“”") == '""'
