@@ -8,6 +8,7 @@ from scml.nlp import (
     ngrams,
     sentences,
     has_1a1d,
+    emoji_shortcode_to_text,
 )
 
 
@@ -166,3 +167,45 @@ class TestHasAtLeastOneDigitAndOneLetter:
         assert not has_1a1d("a1,", include=include)
         # Missing either letter or digit
         assert not has_1a1d('15"', include='"')
+
+
+class TestEmojiShortcodeToText:
+    def test_no_matches(self):
+        assert emoji_shortcode_to_text("") == ""
+        assert emoji_shortcode_to_text(":a=1:") == ":a=1:"
+
+    def test_single_match(self):
+        assert emoji_shortcode_to_text("1 :joy: 2") == "1 (joy) 2"
+        assert (
+            emoji_shortcode_to_text("1 :person_in_suit_levitating_light_skin_tone: 2")
+            == "1 (person in suit levitating light skin tone) 2"
+        )
+        assert (
+            emoji_shortcode_to_text("1 :person-in-suit-levitating-light-skin-tone: 2")
+            == "1 (person in suit levitating light skin tone) 2"
+        )
+        assert (
+            emoji_shortcode_to_text("1 :person in suit levitating light skin tone: 2")
+            == "1 (person in suit levitating light skin tone) 2"
+        )
+
+    def test_multiple_matches(self):
+        assert emoji_shortcode_to_text("1 :joy: 2 :foo: 3") == "1 (joy) 2 (foo) 3"
+        assert (
+            emoji_shortcode_to_text(
+                "1 :person_in_suit_levitating_light_skin_tone: 2 :foo_bar: 3"
+            )
+            == "1 (person in suit levitating light skin tone) 2 (foo bar) 3"
+        )
+        assert (
+            emoji_shortcode_to_text(
+                "1 :person-in-suit-levitating-light-skin-tone: 2 :foo-bar: 3"
+            )
+            == "1 (person in suit levitating light skin tone) 2 (foo bar) 3"
+        )
+        assert (
+            emoji_shortcode_to_text(
+                "1 :person in suit levitating light skin tone: 2 :foo bar: 3"
+            )
+            == "1 (person in suit levitating light skin tone) 2 (foo bar) 3"
+        )

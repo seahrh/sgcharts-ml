@@ -14,6 +14,7 @@ __all__ = [
     "ngrams",
     "sentences",
     "has_1a1d",
+    "emoji_shortcode_to_text",
 ]
 
 
@@ -147,6 +148,27 @@ def has_1a1d(s: str, include: str = "") -> bool:
     if m is None:
         return False
     return True
+
+
+EMOJI_SHORTCODE_PATTERN = re.compile(r":([\w\s\-]+):", re.IGNORECASE)
+
+
+def emoji_shortcode_to_text(
+    s: str,
+    prefix: str = "(",
+    suffix: str = ")",
+    separator: str = " ",
+    shortcode_separators: Tuple[str, ...] = ("\\s", "_", "-"),
+) -> str:
+    res = s
+    for m in EMOJI_SHORTCODE_PATTERN.finditer(s):
+        if len(m[1]) == 0:
+            continue
+        tokens = split(shortcode_separators, s=m[1])
+        res = (
+            res[: m.start()] + prefix + separator.join(tokens) + suffix + res[m.end() :]
+        )
+    return res
 
 
 from .contractions import *
