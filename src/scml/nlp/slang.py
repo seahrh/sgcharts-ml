@@ -1110,8 +1110,11 @@ class Slang:
         rs = rules if rules is not None else DEFAULT_RULES
         self._rules = []
         for pattern, replacement in rs:
-            pattern = r"[\b\s]" + re.escape(pattern) + r"[\b\s]"
-            replacement = f" {prefix}{replacement}{suffix} "
+            # custom word boundary: add chars like '+'
+            # negative lookbehind and lookahead
+            # see https://stackoverflow.com/questions/14232931/custom-word-boundaries-in-regular-expression
+            pattern = r"(?<![\w+])" + re.escape(pattern) + r"(?![\w+])"
+            replacement = f"{prefix}{replacement}{suffix}"
             self._rules.append((re.compile(pattern, re.IGNORECASE), replacement))
 
     def expand(self, s: str) -> str:
