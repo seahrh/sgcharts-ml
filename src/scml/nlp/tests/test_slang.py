@@ -12,12 +12,27 @@ class TestSlang:
         assert slang.expand("1 lol 2") == "1 [laughing out loud] 2"
         assert slang.expand("lol 2") == "[laughing out loud] 2"
         assert slang.expand("1 lol") == "1 [laughing out loud]"
+        assert (
+            slang.expand("1 s4s 2")
+            == "1 [share for share; mutual promotion on social media] 2"
+        )
+        assert (
+            slang.expand("s4s 2")
+            == "[share for share; mutual promotion on social media] 2"
+        )
+        assert (
+            slang.expand("1 s4s")
+            == "1 [share for share; mutual promotion on social media]"
+        )
 
     def test_replacement_with_punctuation(self):
         slang = Slang(prefix="[", suffix="]")
-        assert slang.expand("1 +1 2") == "1 [I agree] 2"
-        assert slang.expand("+1 2") == "[I agree] 2"
-        assert slang.expand("1 +1") == "1 [I agree]"
+        assert slang.expand("1 +1 2") == "1 [expression of agreement or approval] 2"
+        assert slang.expand("+1 2") == "[expression of agreement or approval] 2"
+        assert slang.expand("1 +1") == "1 [expression of agreement or approval]"
+        assert slang.expand("1 v-bag 2") == "1 [a repulsive sexual act] 2"
+        assert slang.expand("v-bag 2") == "[a repulsive sexual act] 2"
+        assert slang.expand("1 v-bag") == "1 [a repulsive sexual act]"
         assert slang.expand("1 punk'd 2") == "1 [to be the victim of a prank] 2"
         assert slang.expand("punk'd 2") == "[to be the victim of a prank] 2"
         assert slang.expand("1 punk'd") == "1 [to be the victim of a prank]"
