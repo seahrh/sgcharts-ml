@@ -7,6 +7,10 @@ class TestSlang:
         assert f.apply("") == ""
         assert f.apply("bar") == "bar"
 
+    def test_pattern_is_not_case_sensitive(self):
+        f = SlangExpansion(prefix="[", suffix="]")
+        assert f.apply("LOL") == "[laughing out loud]"
+
     def test_replacement_without_punctuation(self):
         f = SlangExpansion(prefix="[", suffix="]")
         assert f.apply("lol") == "[laughing out loud]"
