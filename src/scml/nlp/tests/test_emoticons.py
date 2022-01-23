@@ -29,3 +29,19 @@ class TestEmoticonToText:
         assert f.apply("1 o_O 2") == "1 [Surprised] 2"
         assert f.apply("1 o_O") == "1 [Surprised]"
         assert f.apply("o_O 2") == "[Surprised] 2"
+        assert (
+            f.apply("=p")
+            == "[Tongue sticking out, cheeky, playful or blowing a raspberry]"
+        )
+        assert (
+            f.apply("1 =p 2")
+            == "1 [Tongue sticking out, cheeky, playful or blowing a raspberry] 2"
+        )
+        assert (
+            f.apply("1 =p")
+            == "1 [Tongue sticking out, cheeky, playful or blowing a raspberry]"
+        )
+        assert (
+            f.apply("=p 2")
+            == "[Tongue sticking out, cheeky, playful or blowing a raspberry] 2"
+        )

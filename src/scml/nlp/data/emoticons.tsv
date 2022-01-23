@@ -17,15 +17,15 @@
 :-)	Happy face smiley
 :c)	Happy face smiley
 :^)	Happy face smiley
-#ERROR!	Happy face smiley
-#ERROR!	Happy face smiley
+=]	Happy face smiley
+=)	Happy face smiley
 :-D	Laughing, big grin or laugh with glasses
 :D	Laughing, big grin or laugh with glasses
 8-D	Laughing, big grin or laugh with glasses
 8D	Laughing, big grin or laugh with glasses
 X-D	Laughing, big grin or laugh with glasses
 XD	Laughing, big grin or laugh with glasses
-#NAME?	Laughing, big grin or laugh with glasses
+=D	Laughing, big grin or laugh with glasses
 3	Laughing, big grin or laugh with glasses
 B^D	Laughing, big grin or laugh with glasses
 :-))	Happy face or smiley
@@ -81,7 +81,7 @@ XP	Tongue sticking out, cheeky, playful or blowing a raspberry
 :Þ	Tongue sticking out, cheeky, playful or blowing a raspberry
 :b	Tongue sticking out, cheeky, playful or blowing a raspberry
 d:	Tongue sticking out, cheeky, playful or blowing a raspberry
-#NAME?	Tongue sticking out, cheeky, playful or blowing a raspberry
+=p	Tongue sticking out, cheeky, playful or blowing a raspberry
 >:P	Tongue sticking out, cheeky, playful or blowing a raspberry
 :-/	Skeptical, annoyed, undecided, uneasy or hesitant
 :/	Skeptical, annoyed, undecided, uneasy or hesitant
@@ -89,10 +89,10 @@ d:	Tongue sticking out, cheeky, playful or blowing a raspberry
 >:[(\)]	Skeptical, annoyed, undecided, uneasy or hesitant
 >:/	Skeptical, annoyed, undecided, uneasy or hesitant
 :[(\)]	Skeptical, annoyed, undecided, uneasy or hesitant
-#ERROR!	Skeptical, annoyed, undecided, uneasy or hesitant
-#ERROR!	Skeptical, annoyed, undecided, uneasy or hesitant
+=/	Skeptical, annoyed, undecided, uneasy or hesitant
+=[(\)]	Skeptical, annoyed, undecided, uneasy or hesitant
 :L	Skeptical, annoyed, undecided, uneasy or hesitant
-#NAME?	Skeptical, annoyed, undecided, uneasy or hesitant
+=L	Skeptical, annoyed, undecided, uneasy or hesitant
 :S	Skeptical, annoyed, undecided, uneasy or hesitant
 :-|	Straight face
 :|	Straight face
@@ -105,7 +105,7 @@ d:	Tongue sticking out, cheeky, playful or blowing a raspberry
 :&	Sealed lips or wearing braces or tongue-tied
 O:-)	Angel, saint or innocent
 O:)	Angel, saint or innocent
--0:03:00	Angel, saint or innocent
+0:-3	Angel, saint or innocent
 0:3	Angel, saint or innocent
 0:-)	Angel, saint or innocent
 0:)	Angel, saint or innocent
@@ -174,7 +174,7 @@ Q_Q	Sad or Crying
 (=_=)	Tired
 (=^·^=)	cat
 (=^··^=)	cat
-#ERROR!	cat
+=_^=	cat
 (..)	Looking down
 (._.)	Looking down
 ^m^	Giggling with hand covering mouth
