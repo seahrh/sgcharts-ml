@@ -183,6 +183,10 @@ from .slang import *
 
 __all__ += slang.__all__  # type: ignore  # module name is not defined
 
+from .emoticons import *
+
+__all__ += emoticons.__all__  # type: ignore  # module name is not defined
+
 
 def to_ascii(s: AnyStr) -> str:
     """Normalise (normalize) unicode data in Python to remove umlauts, accents etc.
