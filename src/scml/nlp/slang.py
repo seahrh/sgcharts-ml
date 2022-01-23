@@ -4,7 +4,7 @@ import importlib.resources
 import scml
 from typing import Iterable, Tuple
 
-__all__ = ["Slang"]
+__all__ = ["SlangExpansion"]
 
 log = scml.get_logger()
 
@@ -20,7 +20,7 @@ def _load() -> Tuple[Tuple[str, str], ...]:
     return tuple(res)
 
 
-class Slang:
+class SlangExpansion:
     def __init__(
         self,
         rules: Iterable[Tuple[str, str]] = None,
@@ -37,7 +37,7 @@ class Slang:
             replacement = f"{prefix}{replacement}{suffix}"
             self._rules.append((re.compile(pattern, re.IGNORECASE), replacement))
 
-    def expand(self, s: str) -> str:
+    def apply(self, s: str) -> str:
         res = s
         for pattern, replacement in self._rules:
             res = pattern.sub(replacement, res)

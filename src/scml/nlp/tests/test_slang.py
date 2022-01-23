@@ -1,65 +1,76 @@
-from scml.nlp import Slang
+from scml.nlp import SlangExpansion
 
 
 class TestSlang:
     def test_no_replacement(self):
-        slang = Slang()
-        assert slang.expand("") == ""
-        assert slang.expand("bar") == "bar"
+        f = SlangExpansion()
+        assert f.apply("") == ""
+        assert f.apply("bar") == "bar"
 
     def test_replacement_without_punctuation(self):
-        slang = Slang(prefix="[", suffix="]")
-        assert slang.expand("1 lol 2") == "1 [laughing out loud] 2"
-        assert slang.expand("lol 2") == "[laughing out loud] 2"
-        assert slang.expand("1 lol") == "1 [laughing out loud]"
+        f = SlangExpansion(prefix="[", suffix="]")
+        assert f.apply("lol") == "[laughing out loud]"
+        assert f.apply("1 lol 2") == "1 [laughing out loud] 2"
+        assert f.apply("lol 2") == "[laughing out loud] 2"
+        assert f.apply("1 lol") == "1 [laughing out loud]"
+        assert f.apply("s4s") == "[share for share; mutual promotion on social media]"
         assert (
-            slang.expand("1 s4s 2")
+            f.apply("1 s4s 2")
             == "1 [share for share; mutual promotion on social media] 2"
         )
         assert (
-            slang.expand("s4s 2")
-            == "[share for share; mutual promotion on social media] 2"
+            f.apply("s4s 2") == "[share for share; mutual promotion on social media] 2"
         )
         assert (
-            slang.expand("1 s4s")
-            == "1 [share for share; mutual promotion on social media]"
+            f.apply("1 s4s") == "1 [share for share; mutual promotion on social media]"
         )
 
     def test_replacement_with_punctuation(self):
-        slang = Slang(prefix="[", suffix="]")
-        assert slang.expand("1 +1 2") == "1 [expression of agreement or approval] 2"
-        assert slang.expand("+1 2") == "[expression of agreement or approval] 2"
-        assert slang.expand("1 +1") == "1 [expression of agreement or approval]"
-        assert slang.expand("1 v-bag 2") == "1 [a repulsive sexual act] 2"
-        assert slang.expand("v-bag 2") == "[a repulsive sexual act] 2"
-        assert slang.expand("1 v-bag") == "1 [a repulsive sexual act]"
-        assert slang.expand("1 punk'd 2") == "1 [to be the victim of a prank] 2"
-        assert slang.expand("punk'd 2") == "[to be the victim of a prank] 2"
-        assert slang.expand("1 punk'd") == "1 [to be the victim of a prank]"
+        f = SlangExpansion(prefix="[", suffix="]")
+        assert f.apply("+1") == "[expression of agreement or approval]"
+        assert f.apply("1 +1 2") == "1 [expression of agreement or approval] 2"
+        assert f.apply("+1 2") == "[expression of agreement or approval] 2"
+        assert f.apply("1 +1") == "1 [expression of agreement or approval]"
+        assert f.apply("v-bag") == "[a repulsive sexual act]"
+        assert f.apply("1 v-bag 2") == "1 [a repulsive sexual act] 2"
+        assert f.apply("v-bag 2") == "[a repulsive sexual act] 2"
+        assert f.apply("1 v-bag") == "1 [a repulsive sexual act]"
+        assert f.apply("punk'd") == "[to be the victim of a prank]"
+        assert f.apply("1 punk'd 2") == "1 [to be the victim of a prank] 2"
+        assert f.apply("punk'd 2") == "[to be the victim of a prank] 2"
+        assert f.apply("1 punk'd") == "1 [to be the victim of a prank]"
         assert (
-            slang.expand("1 5-0 2")
+            f.apply("5-0") == "[police officers or warning that police is approaching]"
+        )
+        assert (
+            f.apply("1 5-0 2")
             == "1 [police officers or warning that police is approaching] 2"
         )
         assert (
-            slang.expand("5-0 2")
+            f.apply("5-0 2")
             == "[police officers or warning that police is approaching] 2"
         )
         assert (
-            slang.expand("1 5-0")
+            f.apply("1 5-0")
             == "1 [police officers or warning that police is approaching]"
         )
         assert (
-            slang.expand("1 8-ball 2")
+            f.apply("8-ball")
+            == "[1/8 of an ounce (approximately 3.5 grams) of abused drugs]"
+        )
+        assert (
+            f.apply("1 8-ball 2")
             == "1 [1/8 of an ounce (approximately 3.5 grams) of abused drugs] 2"
         )
         assert (
-            slang.expand("1 8-ball")
+            f.apply("1 8-ball")
             == "1 [1/8 of an ounce (approximately 3.5 grams) of abused drugs]"
         )
         assert (
-            slang.expand("8-ball 2")
+            f.apply("8-ball 2")
             == "[1/8 of an ounce (approximately 3.5 grams) of abused drugs] 2"
         )
-        assert slang.expand("1 b.o. 2") == "1 [body odour] 2"
-        assert slang.expand("b.o. 2") == "[body odour] 2"
-        assert slang.expand("1 b.o.") == "1 [body odour]"
+        assert f.apply("b.o.") == "[body odour]"
+        assert f.apply("1 b.o. 2") == "1 [body odour] 2"
+        assert f.apply("b.o. 2") == "[body odour] 2"
+        assert f.apply("1 b.o.") == "1 [body odour]"
