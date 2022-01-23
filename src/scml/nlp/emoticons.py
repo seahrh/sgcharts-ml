@@ -16,10 +16,6 @@ def _load() -> Tuple[Tuple[str, str], ...]:
     with importlib.resources.open_text(data, "emoticons.tsv") as f:
         rows = csv.reader(f, delimiter="\t")
         for row in rows:
-            # handle some strange lines where \t is not working
-            if len(row) == 1:
-                parts = row[0].split()
-                row = [parts[0], " ".join(parts[1:])]
             res.append((row[0].strip(), row[1].strip()))
     return tuple(res)
 
@@ -39,7 +35,8 @@ class EmoticonToText:
             # see https://stackoverflow.com/questions/14232931/custom-word-boundaries-in-regular-expression
             pattern = re.escape(pattern)
             replacement = f"{prefix}{replacement}{suffix}"
-            self._rules.append((re.compile(pattern, re.IGNORECASE), replacement))
+            # pattern should be case sensitive!
+            self._rules.append((re.compile(pattern), replacement))
 
     def apply(self, s: str) -> str:
         res = s

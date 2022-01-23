@@ -7,7 +7,11 @@ class TestEmoticonToText:
         assert f.apply("") == ""
         assert f.apply("bar") == "bar"
 
-    def test_replacement(self):
+    def test_pattern_is_case_sensitive(self):
+        f = EmoticonToText()
+        assert f.apply("t.t") == "t.t"
+
+    def test_replacement_is_position_invariant(self):
         f = EmoticonToText()
         assert f.apply(":)") == "[Happy face smiley]"
         assert f.apply("1 :) 2") == "1 [Happy face smiley] 2"

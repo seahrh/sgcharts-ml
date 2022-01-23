@@ -1,4 +1,4 @@
-﻿:-)	Happy face smiley
+:-)	Happy face smiley
 :-))	Happy face smiley
 :-)))	Happy face smiley
 :)	Happy face smiley
@@ -17,16 +17,16 @@
 :-)	Happy face smiley
 :c)	Happy face smiley
 :^)	Happy face smiley
-=]	Happy face smiley
-=)	Happy face smiley
+#ERROR!	Happy face smiley
+#ERROR!	Happy face smiley
 :-D	Laughing, big grin or laugh with glasses
 :D	Laughing, big grin or laugh with glasses
 8-D	Laughing, big grin or laugh with glasses
 8D	Laughing, big grin or laugh with glasses
 X-D	Laughing, big grin or laugh with glasses
 XD	Laughing, big grin or laugh with glasses
-=D	Laughing, big grin or laugh with glasses
-=3	Laughing, big grin or laugh with glasses
+#NAME?	Laughing, big grin or laugh with glasses
+3	Laughing, big grin or laugh with glasses
 B^D	Laughing, big grin or laugh with glasses
 :-))	Happy face or smiley
 :-(	Frown, sad, angry or pouting
@@ -81,7 +81,7 @@ XP	Tongue sticking out, cheeky, playful or blowing a raspberry
 :Þ	Tongue sticking out, cheeky, playful or blowing a raspberry
 :b	Tongue sticking out, cheeky, playful or blowing a raspberry
 d:	Tongue sticking out, cheeky, playful or blowing a raspberry
-=p	Tongue sticking out, cheeky, playful or blowing a raspberry
+#NAME?	Tongue sticking out, cheeky, playful or blowing a raspberry
 >:P	Tongue sticking out, cheeky, playful or blowing a raspberry
 :-/	Skeptical, annoyed, undecided, uneasy or hesitant
 :/	Skeptical, annoyed, undecided, uneasy or hesitant
@@ -89,10 +89,10 @@ d:	Tongue sticking out, cheeky, playful or blowing a raspberry
 >:[(\)]	Skeptical, annoyed, undecided, uneasy or hesitant
 >:/	Skeptical, annoyed, undecided, uneasy or hesitant
 :[(\)]	Skeptical, annoyed, undecided, uneasy or hesitant
-=/	Skeptical, annoyed, undecided, uneasy or hesitant
-=[(\)]	Skeptical, annoyed, undecided, uneasy or hesitant
+#ERROR!	Skeptical, annoyed, undecided, uneasy or hesitant
+#ERROR!	Skeptical, annoyed, undecided, uneasy or hesitant
 :L	Skeptical, annoyed, undecided, uneasy or hesitant
-=L	Skeptical, annoyed, undecided, uneasy or hesitant
+#NAME?	Skeptical, annoyed, undecided, uneasy or hesitant
 :S	Skeptical, annoyed, undecided, uneasy or hesitant
 :-|	Straight face
 :|	Straight face
@@ -105,7 +105,7 @@ d:	Tongue sticking out, cheeky, playful or blowing a raspberry
 :&	Sealed lips or wearing braces or tongue-tied
 O:-)	Angel, saint or innocent
 O:)	Angel, saint or innocent
-0:-3	Angel, saint or innocent
+-0:03:00	Angel, saint or innocent
 0:3	Angel, saint or innocent
 0:-)	Angel, saint or innocent
 0:)	Angel, saint or innocent
@@ -152,7 +152,7 @@ m(__)m	Deep bow or kowtow as a sign of respect or apology
 m(_ _)m	Deep bow or kowtow as a sign of respect or apology
 ('_')	Sad or Crying
 (/_;)	Sad or Crying
-(T_T)   Sad or Crying
+(T_T) 	Sad or Crying
 (;_;)	Sad or Crying
 (;_;	Sad of Crying
 (;_:)	Sad or Crying
@@ -174,27 +174,27 @@ Q_Q	Sad or Crying
 (=_=)	Tired
 (=^·^=)	cat
 (=^··^=)	cat
-=_^=	 cat
+#ERROR!	cat
 (..)	Looking down
 (._.)	Looking down
 ^m^	Giggling with hand covering mouth
 (・・?	Confusion
 (?_?)	Confusion
->^_^< Laughing
-<^!^> Laughing
-^/^ Laughing
-(*^_^*) Laughing
-(^<^) Laughing
-(^.^) Laughing
-(^^)  Laughing
-(^.^) Laughing
-(^_^.)  Laughing
-(^_^) Laughing
-(^^)  Laughing
-(^J^) Laughing
-(*^.^*) Laughing
-(#^.^#) Laughing
-(^—^) Laughing
+>^_^<	Laughing
+<^!^>	Laughing
+^/^	Laughing
+(*^_^*)	Laughing
+(^<^)	Laughing
+(^.^)	Laughing
+(^^)	Laughing
+(^.^)	Laughing
+(^_^.)	Laughing
+(^_^)	Laughing
+(^^)	Laughing
+(^J^)	Laughing
+(*^.^*)	Laughing
+(#^.^#)	Laughing
+(^—^)	Laughing
 (;_;)/~~~	Waving
 (^.^)/~~~	Waving
 (-_-)/~~~	Waving
@@ -218,7 +218,7 @@ Q_Q	Sad or Crying
 (^O^)	Happy
 (^o^)	Happy
 )^o^(	Happy
-:O	 Surprised
+:O	Surprised
 o_O	Surprised
 o_0	Surprised
 o.O	Surprised
