@@ -1,4 +1,5 @@
 from scml.nlp import (
+    to_str,
     split,
     count_digit,
     count_space,
@@ -10,6 +11,15 @@ from scml.nlp import (
     has_1a1d,
     emoji_shortcode_to_text,
 )
+
+
+class TestToStr:
+    def test_case_1(self):
+        assert to_str("a1") == "a1"
+
+    def test_numerics_cast_to_string(self):
+        assert to_str(1) == "1"
+        assert to_str(1.2) == "1.2"
 
 
 class TestCountDigit:

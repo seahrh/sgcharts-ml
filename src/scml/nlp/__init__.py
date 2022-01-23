@@ -31,7 +31,7 @@ def to_str(bytes_or_str: AnyStr, encoding="utf-8") -> str:
     if isinstance(bytes_or_str, bytes):
         return bytes_or_str.decode(encoding)
     # Instance of str
-    return bytes_or_str
+    return str(bytes_or_str)
 
 
 def to_bytes(bytes_or_str: AnyStr, encoding="utf-8") -> bytes:
