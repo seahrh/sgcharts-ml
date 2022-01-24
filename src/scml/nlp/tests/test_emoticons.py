@@ -11,6 +11,10 @@ class TestEmoticonToText:
         f = EmoticonToText()
         assert f.apply("t.t") == "t.t"
 
+    def test_ip_address_should_not_be_replaced(self):
+        f = EmoticonToText()
+        assert f.apply("10:3:10:3") == "10:3:10:3"
+
     def test_replacement_is_position_invariant(self):
         f = EmoticonToText()
         assert f.apply(":)") == "[Happy face smiley]"
