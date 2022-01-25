@@ -9,6 +9,7 @@ __all__ = [
     "count_upper",
     "count_space",
     "count_punctuation",
+    "collapse_whitespace",
     "split",
     "decode_escaped_bytes",
     "ngrams",
@@ -97,6 +98,13 @@ def split(delimiters: Iterable[str], s: str, maxsplit: int = 0) -> List[str]:
     """
     pattern = "|".join(map(re.escape, delimiters))
     return re.split(pattern, s, maxsplit)
+
+
+MULTIPLE_WHITESPACE_PATTERN = re.compile(r"\s{2,}")
+
+
+def collapse_whitespace(s: str, replacement: str = " ") -> str:
+    return MULTIPLE_WHITESPACE_PATTERN.sub(replacement, s)
 
 
 # (?<!...) is a negative look-behind assertion.

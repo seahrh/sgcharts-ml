@@ -10,6 +10,7 @@ from scml.nlp import (
     sentences,
     has_1a1d,
     emoji_shortcode_to_text,
+    collapse_whitespace,
 )
 
 
@@ -50,6 +51,18 @@ class TestCountPunctuation:
     def test_case_1(self):
         assert count_punctuation(" a1A") == 0
         assert count_punctuation(" ?a1A!") == 2
+
+
+class TestCollapseWhitespace:
+    def test_no_replacement(self):
+        assert collapse_whitespace("") == ""
+        assert collapse_whitespace(" ") == " "
+        assert collapse_whitespace("a") == "a"
+
+    def test_case_1(self):
+        assert collapse_whitespace("\t\r\n\f") == " "
+        assert collapse_whitespace("1\t\r\n\f2") == "1 2"
+        assert collapse_whitespace(" \t \r \n \f ") == " "
 
 
 class TestSplit:
