@@ -12,6 +12,7 @@ from scml.nlp import (
     emoji_shortcode_to_text,
     collapse_whitespace,
     strip_xml,
+    strip_url,
 )
 
 
@@ -19,6 +20,7 @@ class TestToStr:
     def test_case_1(self):
         assert to_str("a1") == "a1"
 
+    # noinspection PyTypeChecker
     def test_numerics_cast_to_string(self):
         assert to_str(1) == "1"
         assert to_str(1.2) == "1.2"
@@ -207,6 +209,77 @@ class TestStripXml:
         assert strip_xml("<strong>a</strong>") == "a"
         assert strip_xml("<p>a</p><p>b</p>") == "ab"
         assert strip_xml("<br />") == ""
+
+
+class TestStripUrl:
+    def test_no_replacement(self):
+        assert strip_url("") == ""
+        assert strip_url("a") == "a"
+        assert strip_url(".com") == ".com"
+        assert strip_url("a.com") == "a.com"
+        assert strip_url("www.a") == "www.a"
+        assert strip_url("sub1.a.com") == "sub1.a.com"
+        assert strip_url("www.a#.com") == "www.a#.com"
+        assert strip_url("www.a-.com") == "www.a-.com"
+        assert strip_url("www.-a.com") == "www.-a.com"
+        assert strip_url("http://www.a") == "http://www.a"
+        assert strip_url("http://a") == "http://a"
+        assert strip_url("s3://a.com") == "s3://a.com"
+        assert strip_url("a.com/dir1") == "a.com/dir1"
+        assert strip_url("a.com/file.html") == "a.com/file.html"
+
+    def test_scheme_and_domain_name(self):
+        assert strip_url("http://a.com") == ""
+        assert strip_url("https://a.com") == ""
+        assert strip_url("https://mp3.com") == ""
+        assert strip_url("1 https://mp3.com 2") == "1  2"
+
+    def test_subdomain(self):
+        assert strip_url("www.a.com") == ""
+        assert strip_url("www.mp3.com") == ""
+        assert strip_url("1 www.mp3.com 2") == "1  2"
+        assert strip_url("http://www.a.com") == ""
+        assert strip_url("https://www.a.com") == ""
+        assert strip_url("https://www.mp3.com") == ""
+        assert strip_url("1 https://www.mp3.com 2") == "1  2"
+        assert strip_url("http://sub1.a.com") == ""
+        assert strip_url("https://sub1.a.com") == ""
+        assert strip_url("https://sub1.mp3.com") == ""
+        assert strip_url("1 https://sub1.mp3.com 2") == "1  2"
+        assert strip_url("http://sub2.sub1.a.com") == ""
+        assert strip_url("https://sub2.sub1.a.com") == ""
+        assert strip_url("https://sub2.sub1.mp3.com") == ""
+        assert strip_url("1 https://sub2.sub1.mp3.com 2") == "1  2"
+        assert strip_url("http://sub3.sub2.sub1.a.com") == ""
+        assert strip_url("https://sub3.sub2.sub1.a.com") == ""
+        assert strip_url("https://sub3.sub2.sub1.mp3.com") == ""
+        assert strip_url("1 https://sub3.sub2.sub1.mp3.com 2") == "1  2"
+
+    def test_subdirectories(self):
+        assert strip_url("http://a.com/dir1") == ""
+        assert strip_url("https://a.com/dir1") == ""
+        assert strip_url("https://mp3.com/dir1") == ""
+        assert strip_url("1 https://mp3.com/dir1 2") == "1  2"
+        assert strip_url("http://a.com/dir1/dir2") == ""
+        assert strip_url("https://a.com/dir1/dir2") == ""
+        assert strip_url("https://mp3.com/dir1/dir2") == ""
+        assert strip_url("1 https://mp3.com/dir1/dir2 2") == "1  2"
+        assert strip_url("http://a.com/dir1/dir2/dir3") == ""
+        assert strip_url("https://a.com/dir1/dir2/dir3") == ""
+        assert strip_url("https://mp3.com/dir1/dir2/dir3") == ""
+        assert strip_url("1 https://mp3.com/dir1/dir2/dir3 2") == "1  2"
+
+    def test_file_extension(self):
+        assert strip_url("http://a.com/file.html") == ""
+        assert strip_url("http://a.com/file.xml") == ""
+        assert strip_url("http://a.com/file.pdf") == ""
+        assert strip_url("http://a.com/file.json") == ""
+        assert strip_url("1 http://a.com/file.html 2") == "1  2"
+        assert strip_url("http://a.com/dir1/file.html") == ""
+        assert strip_url("http://a.com/dir1/file.xml") == ""
+        assert strip_url("http://a.com/dir1/file.pdf") == ""
+        assert strip_url("http://a.com/dir1/file.json") == ""
+        assert strip_url("1 http://a.com/dir1/file.html 2") == "1  2"
 
 
 class TestEmojiShortcodeToText:

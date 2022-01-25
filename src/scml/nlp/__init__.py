@@ -16,6 +16,7 @@ __all__ = [
     "sentences",
     "has_1a1d",
     "strip_xml",
+    "strip_url",
     "emoji_shortcode_to_text",
 ]
 
@@ -166,6 +167,15 @@ XML_PATTERN = re.compile(r"<[^\d\s][^>]*>", re.IGNORECASE)
 
 def strip_xml(s: str, replacement: str = "") -> str:
     return XML_PATTERN.sub(replacement, s)
+
+
+URL_PATTERN = re.compile(
+    r"(https?://(?:www\.|(?!www))[a-zA-Z0-9]{3,}\.[^\s]{2,}|www\.[a-zA-Z0-9]{3,}\.[^\s]{2,}|https?://(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+)
+
+
+def strip_url(s: str, replacement: str = "") -> str:
+    return URL_PATTERN.sub(replacement, s)
 
 
 EMOJI_SHORTCODE_PATTERN = re.compile(r":([\w\s\-]+):", re.IGNORECASE)
