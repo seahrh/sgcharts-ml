@@ -15,6 +15,7 @@ __all__ = [
     "ngrams",
     "sentences",
     "has_1a1d",
+    "strip_xml",
     "emoji_shortcode_to_text",
 ]
 
@@ -100,10 +101,11 @@ def split(delimiters: Iterable[str], s: str, maxsplit: int = 0) -> List[str]:
     return re.split(pattern, s, maxsplit)
 
 
-MULTIPLE_WHITESPACE_PATTERN = re.compile(r"\s{2,}")
+MULTIPLE_WHITESPACE_PATTERN = re.compile(r"\s+")
 
 
 def collapse_whitespace(s: str, replacement: str = " ") -> str:
+    """Collapse multiple whitespace into a single space character. Also converts \n\r\f\t to space character."""
     return MULTIPLE_WHITESPACE_PATTERN.sub(replacement, s)
 
 
@@ -156,6 +158,14 @@ def has_1a1d(s: str, include: str = "") -> bool:
     if m is None:
         return False
     return True
+
+
+# first char in the angular bracket cannot be digit or whitespace
+XML_PATTERN = re.compile(r"<[^\d\s][^>]*>", re.IGNORECASE)
+
+
+def strip_xml(s: str, replacement: str = "") -> str:
+    return XML_PATTERN.sub(replacement, s)
 
 
 EMOJI_SHORTCODE_PATTERN = re.compile(r":([\w\s\-]+):", re.IGNORECASE)

@@ -11,6 +11,7 @@ from scml.nlp import (
     has_1a1d,
     emoji_shortcode_to_text,
     collapse_whitespace,
+    strip_xml,
 )
 
 
@@ -59,9 +60,12 @@ class TestCollapseWhitespace:
         assert collapse_whitespace(" ") == " "
         assert collapse_whitespace("a") == "a"
 
-    def test_case_1(self):
+    def test_convert_whitespace_to_space_char(self):
+        assert collapse_whitespace("\t") == " "
+        assert collapse_whitespace("\r") == " "
+        assert collapse_whitespace("\n") == " "
+        assert collapse_whitespace("\f") == " "
         assert collapse_whitespace("\t\r\n\f") == " "
-        assert collapse_whitespace("1\t\r\n\f2") == "1 2"
         assert collapse_whitespace(" \t \r \n \f ") == " "
 
 
@@ -190,6 +194,19 @@ class TestHasAtLeastOneDigitAndOneLetter:
         assert not has_1a1d("a1,", include=include)
         # Missing either letter or digit
         assert not has_1a1d('15"', include='"')
+
+
+class TestStripXml:
+    def test_no_replacement(self):
+        assert strip_xml("") == ""
+        assert strip_xml("a") == "a"
+        assert strip_xml("1 < 2 and 2 > 1") == "1 < 2 and 2 > 1"
+        assert strip_xml("1<2 and 2>1") == "1<2 and 2>1"
+
+    def test_replacement(self):
+        assert strip_xml("<strong>a</strong>") == "a"
+        assert strip_xml("<p>a</p><p>b</p>") == "ab"
+        assert strip_xml("<br />") == ""
 
 
 class TestEmojiShortcodeToText:
