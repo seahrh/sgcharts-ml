@@ -10,6 +10,7 @@ __all__ = [
     "count_space",
     "count_punctuation",
     "collapse_whitespace",
+    "CollapseRepeatingLetter",
     "split",
     "decode_escaped_bytes",
     "ngrams",
@@ -24,7 +25,7 @@ __all__ = [
 import string
 import re
 from unicodedata import normalize
-from typing import AnyStr, Iterable, List, Tuple, Set
+from typing import AnyStr, Iterable, List, Tuple, Set, NamedTuple
 
 
 def to_str(bytes_or_str: AnyStr, encoding="utf-8") -> str:
@@ -108,6 +109,23 @@ MULTIPLE_WHITESPACE_PATTERN = re.compile(r"\s+")
 def collapse_whitespace(s: str, replacement: str = " ") -> str:
     """Collapse multiple whitespace into a single space character. Also converts \n\r\f\t to space character."""
     return MULTIPLE_WHITESPACE_PATTERN.sub(replacement, s)
+
+
+class CollapseRepeatingLetter:
+    """Collapse repeating letters into `max_repeat` length.
+    Based on https://stackoverflow.com/a/1660739/519951
+    """
+
+    def __init__(self, max_repeat: int = 2):
+        self.max_repeat = max_repeat
+        if self.max_repeat < 2:
+            raise ValueError("max_repeat must be greater than 1")
+        self.pattern: re.Pattern = re.compile(
+            r"([a-zA-Z])\1{" + str(max_repeat) + r",}"
+        )
+
+    def apply(self, s: str) -> str:
+        return str(self.pattern.sub(r"\1" * self.max_repeat, s))
 
 
 # (?<!...) is a negative look-behind assertion.

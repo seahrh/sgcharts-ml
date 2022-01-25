@@ -11,6 +11,7 @@ from scml.nlp import (
     has_1a1d,
     emoji_shortcode_to_text,
     collapse_whitespace,
+    CollapseRepeatingLetter,
     strip_xml,
     strip_url,
 )
@@ -69,6 +70,21 @@ class TestCollapseWhitespace:
         assert collapse_whitespace("\f") == " "
         assert collapse_whitespace("\t\r\n\f") == " "
         assert collapse_whitespace(" \t \r \n \f ") == " "
+
+
+class TestCollapseRepeatingLetter:
+    def test_no_replacement(self):
+        f = CollapseRepeatingLetter(max_repeat=2)
+        assert f.apply("") == ""
+        assert f.apply("a") == "a"
+        assert f.apply("aa") == "aa"
+
+    def test_replacement(self):
+        f = CollapseRepeatingLetter(max_repeat=2)
+        assert f.apply("aaa") == "aa"
+        assert f.apply("aaabbb") == "aabb"
+        assert f.apply("abbba") == "abba"
+        assert f.apply("abbba abbba") == "abba abba"
 
 
 class TestSplit:
