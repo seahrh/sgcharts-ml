@@ -1,3 +1,4 @@
+import string
 from scml.nlp import (
     to_str,
     split,
@@ -11,7 +12,7 @@ from scml.nlp import (
     has_1a1d,
     emoji_shortcode_to_text,
     collapse_whitespace,
-    CollapseRepeatingLetter,
+    CollapseRepeatingCharacter,
     strip_xml,
     strip_url,
 )
@@ -72,19 +73,40 @@ class TestCollapseWhitespace:
         assert collapse_whitespace(" \t \r \n \f ") == " "
 
 
-class TestCollapseRepeatingLetter:
+class TestCollapseRepeatingCharacter:
     def test_no_replacement(self):
-        f = CollapseRepeatingLetter(max_repeat=2)
+        max_repeat = 2
+        f = CollapseRepeatingCharacter(
+            max_repeat=max_repeat, letters=True, punctuation=True
+        )
         assert f.apply("") == ""
         assert f.apply("a") == "a"
         assert f.apply("aa") == "aa"
+        for p in string.punctuation:
+            inp = p * max_repeat
+            assert f.apply(inp) == inp
 
-    def test_replacement(self):
-        f = CollapseRepeatingLetter(max_repeat=2)
+    def test_repeating_letter(self):
+        f = CollapseRepeatingCharacter(max_repeat=2, letters=True, punctuation=False)
         assert f.apply("aaa") == "aa"
         assert f.apply("aaabbb") == "aabb"
         assert f.apply("abbba") == "abba"
         assert f.apply("abbba abbba") == "abba abba"
+
+    def test_repeating_letter_is_case_preserving(self):
+        f = CollapseRepeatingCharacter(max_repeat=2, letters=True, punctuation=False)
+        assert f.apply("AAA") == "AA"
+
+    def test_repeating_punctuation(self):
+        max_repeat = 2
+        f = CollapseRepeatingCharacter(
+            max_repeat=max_repeat, letters=False, punctuation=True
+        )
+        for p in string.punctuation:
+            inp = p * (max_repeat + 1)
+            e = p * max_repeat
+            assert f.apply(inp) == e
+        assert f.apply("a!!! b??? ***c*** --->d") == "a!! b?? **c** -->d"
 
 
 class TestSplit:

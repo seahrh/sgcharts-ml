@@ -13,6 +13,7 @@ class TestSlang:
 
     def test_replacement_without_punctuation(self):
         f = SlangExpansion(prefix="[", suffix="]")
+        assert f.apply("imo") == "[in my opinion]"
         assert f.apply("lol") == "[laughing out loud]"
         assert f.apply("1 lol 2") == "1 [laughing out loud] 2"
         assert f.apply("lol 2") == "[laughing out loud] 2"
