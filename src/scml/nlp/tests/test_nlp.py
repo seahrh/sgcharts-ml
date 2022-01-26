@@ -61,16 +61,21 @@ class TestCountPunctuation:
 class TestCollapseWhitespace:
     def test_no_replacement(self):
         assert collapse_whitespace("") == ""
-        assert collapse_whitespace(" ") == " "
         assert collapse_whitespace("a") == "a"
 
     def test_convert_whitespace_to_space_char(self):
-        assert collapse_whitespace("\t") == " "
-        assert collapse_whitespace("\r") == " "
-        assert collapse_whitespace("\n") == " "
-        assert collapse_whitespace("\f") == " "
-        assert collapse_whitespace("\t\r\n\f") == " "
-        assert collapse_whitespace(" \t \r \n \f ") == " "
+        assert collapse_whitespace("1\t2") == "1 2"
+        assert collapse_whitespace("1\r2") == "1 2"
+        assert collapse_whitespace("1\n2") == "1 2"
+        assert collapse_whitespace("1\f2") == "1 2"
+        assert collapse_whitespace("1\t2\r3\n4\f5") == "1 2 3 4 5"
+        assert collapse_whitespace("1\t 2\r 3\n 4\f 5") == "1 2 3 4 5"
+
+    def test_string_is_trimmed_on_both_ends(self):
+        assert collapse_whitespace(" ") == ""
+        assert collapse_whitespace("\t\r\n\f") == ""
+        assert collapse_whitespace("\na \t\r\n\fb\n") == "a b"
+        assert collapse_whitespace(" a \t\r\n\fb ") == "a b"
 
 
 class TestCollapseRepeatingCharacter:

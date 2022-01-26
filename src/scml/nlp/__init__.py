@@ -107,8 +107,10 @@ MULTIPLE_WHITESPACE_PATTERN = re.compile(r"\s+")
 
 
 def collapse_whitespace(s: str, replacement: str = " ") -> str:
-    """Collapse multiple whitespace into a single space character. Also converts \n\r\f\t to space character."""
-    return MULTIPLE_WHITESPACE_PATTERN.sub(replacement, s)
+    """Collapse multiple whitespace into a single space character. Converts "\\n\\r\\f\\t" to space character.
+    Also trim the string of whitespace on both ends.
+    """
+    return MULTIPLE_WHITESPACE_PATTERN.sub(replacement, s).strip()
 
 
 class CollapseRepeatingCharacter:
