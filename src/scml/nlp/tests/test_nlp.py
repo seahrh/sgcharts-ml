@@ -15,6 +15,7 @@ from scml.nlp import (
     CollapseRepeatingCharacter,
     strip_xml,
     strip_url,
+    strip_ip_address,
 )
 
 
@@ -323,6 +324,87 @@ class TestStripUrl:
         assert strip_url("http://a.com/dir1/file.pdf") == ""
         assert strip_url("http://a.com/dir1/file.json") == ""
         assert strip_url("1 http://a.com/dir1/file.html 2") == "1  2"
+
+
+class TestStripIpAddress:
+    def test_no_replacement(self):
+        assert strip_ip_address("") == ""
+        assert strip_ip_address("1.2") == "1.2"
+        assert strip_ip_address("1.2.3.") == "1.2.3."
+        assert strip_ip_address("256.1.2.3") == "256.1.2.3"
+        assert strip_ip_address("g:h:i:j:k:l:m:n") == "g:h:i:j:k:l:m:n"
+
+    def test_ipv4_address(self):
+        assert strip_ip_address("255.1.2.3") == ""
+        assert strip_ip_address("1.2.3.4") == ""
+        assert strip_ip_address(".1.2.3.4.") == ".."
+        assert strip_ip_address("a 1.2.3.4 b") == "a  b"
+
+    def test_ipv6_address_case_1(self):
+        assert strip_ip_address("1:2:3:4:5:6:7:8") == ""
+        assert strip_ip_address("g1:2:3:4:5:6:7:8g") == "gg"
+
+    def test_ipv6_address_case_2(self):
+        assert strip_ip_address("1::") == ""
+        assert strip_ip_address("1:2:3:4:5:6:7::") == ""
+        assert strip_ip_address("g1:2:3:4:5:6:7::g") == "gg"
+
+    def test_ipv6_address_case_3(self):
+        assert strip_ip_address("1::8") == ""
+        assert strip_ip_address("1:2:3:4:5:6::8") == ""
+        assert strip_ip_address("g1:2:3:4:5:6::8g") == "gg"
+
+    def test_ipv6_address_case_4(self):
+        assert strip_ip_address("1::7:8") == ""
+        assert strip_ip_address("1:2:3:4:5::7:8") == ""
+        assert strip_ip_address("1:2:3:4:5::8") == ""
+        assert strip_ip_address("g1:2:3:4:5::8g") == "gg"
+
+    def test_ipv6_address_case_5(self):
+        assert strip_ip_address("1::6:7:8") == ""
+        assert strip_ip_address("1:2:3:4::6:7:8") == ""
+        assert strip_ip_address("1:2:3:4::8") == ""
+        assert strip_ip_address("g1:2:3:4::8g") == "gg"
+
+    def test_ipv6_address_case_6(self):
+        assert strip_ip_address("1::5:6:7:8") == ""
+        assert strip_ip_address("1:2:3::5:6:7:8") == ""
+        assert strip_ip_address("1:2:3::8") == ""
+        assert strip_ip_address("g1:2:3::8g") == "gg"
+
+    def test_ipv6_address_case_7(self):
+        assert strip_ip_address("1::4:5:6:7:8") == ""
+        assert strip_ip_address("1:2::4:5:6:7:8") == ""
+        assert strip_ip_address("1:2::8") == ""
+        assert strip_ip_address("g1:2::8g") == "gg"
+
+    def test_ipv6_address_case_8(self):
+        assert strip_ip_address("1::3:4:5:6:7:8") == ""
+        assert strip_ip_address("g1::3:4:5:6:7:8g") == "gg"
+
+    def test_ipv6_address_case_9(self):
+        assert strip_ip_address("::2:3:4:5:6:7:8") == ""
+        assert strip_ip_address("::8") == ""
+        assert strip_ip_address("::") == ""
+        assert strip_ip_address("g::8g") == "gg"
+
+    def test_ipv6_address_case_10(self):
+        # link-local IPv6 addresses with zone index
+        assert strip_ip_address("fe80::7:8%eth0") == ""
+        assert strip_ip_address("fe80::7:8%1") == ""
+        assert strip_ip_address("gfe80::7:8%1g") == "g"
+
+    def test_ipv6_address_case_11(self):
+        # IPv4-mapped IPv6 addresses and IPv4-translated addresses
+        assert strip_ip_address("::255.255.255.255") == ""
+        assert strip_ip_address("::ffff:255.255.255.255") == ""
+        assert strip_ip_address("g ::ffff:0:255.255.255.255 g") == "g  g"
+
+    def test_ipv6_address_case_12(self):
+        # IPv4-Embedded IPv6 Address
+        assert strip_ip_address("2001:db8:3:4::192.0.2.33") == ""
+        assert strip_ip_address("64:ff9b::192.0.2.33") == ""
+        assert strip_ip_address("g 64:ff9b::192.0.2.33 g") == "g  g"
 
 
 class TestEmojiShortcodeToText:

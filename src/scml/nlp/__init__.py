@@ -18,6 +18,7 @@ __all__ = [
     "has_1a1d",
     "strip_xml",
     "strip_url",
+    "strip_ip_address",
     "emoji_shortcode_to_text",
 ]
 
@@ -205,6 +206,37 @@ URL_PATTERN = re.compile(
 
 def strip_url(s: str, replacement: str = "") -> str:
     return URL_PATTERN.sub(replacement, s)
+
+
+IPV4_SEGMENT = r"(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])"
+IPV4_ADDRESS = f"\\b({IPV4_SEGMENT}\\.){{3}}{IPV4_SEGMENT}\\b"
+IPV4_ADDRESS_PATTERN = re.compile(IPV4_ADDRESS)
+IPV6_SEGMENT = r"[0-9a-fA-F]{1,4}"
+p1 = f"({IPV6_SEGMENT}:){{7}}{IPV6_SEGMENT}"  # 1:2:3:4:5:6:7:8
+p2 = f"({IPV6_SEGMENT}:){{1,7}}:"  # 1::  or 1:2:3:4:5:6:7::
+p3 = f"({IPV6_SEGMENT}:){{1,6}}:{IPV6_SEGMENT}"  # 1::8  or 1:2:3:4:5:6::8
+p4 = f"({IPV6_SEGMENT}:){{1,5}}(:{IPV6_SEGMENT}){{1,2}}"  # 1::7:8 or 1:2:3:4:5::7:8 or 1:2:3:4:5::8
+p5 = f"({IPV6_SEGMENT}:){{1,4}}(:{IPV6_SEGMENT}){{1,3}}"  # 1::6:7:8  or 1:2:3:4::6:7:8 or 1:2:3:4::8
+p6 = f"({IPV6_SEGMENT}:){{1,3}}(:{IPV6_SEGMENT}){{1,4}}"  # 1::5:6:7:8         1:2:3::5:6:7:8   1:2:3::8
+p7 = f"({IPV6_SEGMENT}:){{1,2}}(:{IPV6_SEGMENT}){{1,5}}"  # 1::4:5:6:7:8       1:2::4:5:6:7:8   1:2::8
+p8 = f"{IPV6_SEGMENT}:((:{IPV6_SEGMENT}){{1,6}})"  # 1::3:4:5:6:7:8     1::8
+p9 = f":((:{IPV6_SEGMENT}){{1,7}}|:)"  # ::2:3:4:5:6:7:8   ::8   ::
+# fe80::7:8%eth0 or fe80::7:8%1 (link-local IPv6 addresses with zone index)
+p10 = f"[fF][eE]80:(:{IPV6_SEGMENT}){{0,4}}%[0-9a-zA-Z]+"
+# ::255.255.255.255  ::ffff:255.255.255.255  ::ffff:0:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+p11 = f"::([fF]{{4}}(:0{{1,4}})?:)?{IPV4_ADDRESS}"
+# 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33 (IPv4-Embedded IPv6 Address)
+p12 = f"({IPV6_SEGMENT}:){{1,4}}:{IPV4_ADDRESS}"
+# sort the patterns from more specific to less
+IPV6_ADDRESS = f"({p12}|{p11}|{p10}|{p9}|{p8}|{p7}|{p6}|{p5}|{p4}|{p3}|{p2}|{p1})"
+IPV6_ADDRESS_PATTERN = re.compile(IPV6_ADDRESS)
+
+
+def strip_ip_address(s: str, replacement: str = "") -> str:
+    res = s
+    res = IPV6_ADDRESS_PATTERN.sub(replacement, res)
+    res = IPV4_ADDRESS_PATTERN.sub(replacement, res)
+    return res
 
 
 EMOJI_SHORTCODE_PATTERN = re.compile(r":([\w\s\-]+):", re.IGNORECASE)
