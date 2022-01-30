@@ -12,7 +12,7 @@ from scml.nlp import (
     has_1a1d,
     emoji_shortcode_to_text,
     collapse_whitespace,
-    CollapseRepeatingCharacter,
+    RepeatingCharacter,
     RepeatingSubstring,
     strip_xml,
     strip_url,
@@ -80,40 +80,36 @@ class TestCollapseWhitespace:
         assert collapse_whitespace(" a \t\r\n\fb ") == "a b"
 
 
-class TestCollapseRepeatingCharacter:
+class TestRepeatingCharacter:
     def test_no_replacement(self):
-        max_repeat = 2
-        f = CollapseRepeatingCharacter(
-            max_repeat=max_repeat, letters=True, punctuation=True
-        )
-        assert f.apply("") == ""
-        assert f.apply("a") == "a"
-        assert f.apply("aa") == "aa"
+        max_times = 2
+        f = RepeatingCharacter(max_times=max_times, letters=True, punctuation=True)
+        assert f.collapse("") == ""
+        assert f.collapse("a") == "a"
+        assert f.collapse("aa") == "aa"
         for p in string.punctuation:
-            inp = p * max_repeat
-            assert f.apply(inp) == inp
+            inp = p * max_times
+            assert f.collapse(inp) == inp
 
     def test_repeating_letter(self):
-        f = CollapseRepeatingCharacter(max_repeat=2, letters=True, punctuation=False)
-        assert f.apply("aaa") == "aa"
-        assert f.apply("aaabbb") == "aabb"
-        assert f.apply("abbba") == "abba"
-        assert f.apply("abbba abbba") == "abba abba"
+        f = RepeatingCharacter(max_times=2, letters=True, punctuation=False)
+        assert f.collapse("aaa") == "aa"
+        assert f.collapse("aaabbb") == "aabb"
+        assert f.collapse("abbba") == "abba"
+        assert f.collapse("abbba abbba") == "abba abba"
 
     def test_repeating_letter_is_case_preserving(self):
-        f = CollapseRepeatingCharacter(max_repeat=2, letters=True, punctuation=False)
-        assert f.apply("AAA") == "AA"
+        f = RepeatingCharacter(max_times=2, letters=True, punctuation=False)
+        assert f.collapse("AAA") == "AA"
 
     def test_repeating_punctuation(self):
-        max_repeat = 2
-        f = CollapseRepeatingCharacter(
-            max_repeat=max_repeat, letters=False, punctuation=True
-        )
+        max_times = 2
+        f = RepeatingCharacter(max_times=max_times, letters=False, punctuation=True)
         for p in string.punctuation:
-            inp = p * (max_repeat + 1)
-            e = p * max_repeat
-            assert f.apply(inp) == e
-        assert f.apply("a!!! b??? ***c*** --->d") == "a!! b?? **c** -->d"
+            inp = p * (max_times + 1)
+            e = p * max_times
+            assert f.collapse(inp) == e
+        assert f.collapse("a!!! b??? ***c*** --->d") == "a!! b?? **c** -->d"
 
 
 class TestRepeatingSubstring:

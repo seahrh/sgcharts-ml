@@ -10,7 +10,7 @@ __all__ = [
     "count_space",
     "count_punctuation",
     "collapse_whitespace",
-    "CollapseRepeatingCharacter",
+    "RepeatingCharacter",
     "RepeatingSubstring",
     "split",
     "decode_escaped_bytes",
@@ -115,16 +115,16 @@ def collapse_whitespace(s: str, replacement: str = " ") -> str:
     return MULTIPLE_WHITESPACE_PATTERN.sub(replacement, s).strip()
 
 
-class CollapseRepeatingCharacter:
+class RepeatingCharacter:
     """Collapse repeating letters into `max_repeat` length.
     Based on https://stackoverflow.com/a/1660739/519951
     """
 
     def __init__(
-        self, max_repeat: int = 2, letters: bool = True, punctuation: bool = True
+        self, max_times: int = 2, letters: bool = True, punctuation: bool = True
     ):
-        self.max_repeat = max_repeat
-        if self.max_repeat < 2:
+        self.max_times = max_times
+        if self.max_times < 2:
             raise ValueError("max_repeat must be greater than 1")
         if not letters and not punctuation:
             raise ValueError("At least 1 flag must be true (letters, punctuation)")
@@ -133,10 +133,10 @@ class CollapseRepeatingCharacter:
             chars += "a-zA-Z"
         if punctuation:
             chars += re.escape(str(string.punctuation))
-        self.pattern: re.Pattern = re.compile(f"([{chars}])\\1{{{str(max_repeat)}}}")
+        self.pattern: re.Pattern = re.compile(f"([{chars}])\\1{{{str(max_times)}}}")
 
-    def apply(self, s: str) -> str:
-        return str(self.pattern.sub(r"\1" * self.max_repeat, s))
+    def collapse(self, s: str) -> str:
+        return str(self.pattern.sub(r"\1" * self.max_times, s))
 
 
 class RepeatingSubstring:
