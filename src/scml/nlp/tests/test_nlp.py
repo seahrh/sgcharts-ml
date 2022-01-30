@@ -124,6 +124,35 @@ class TestRepeatingCharacter:
 
 
 class TestRepeatingSubstring:
+    def test_count(self):
+        f = RepeatingSubstring(
+            min_length=2,
+            max_times=1,
+            letters=True,
+            punctuation=True,
+            whitespace=True,
+        )
+        assert f.count("") == 0
+        assert f.count("\n") == 0
+        assert f.count("\n\n") == 0
+        assert f.count("\n\n\n") == 0
+        assert f.count("a") == 0
+        assert f.count("aa") == 0
+        assert f.count("aaa") == 0
+        assert f.count("ab ab") == 0
+        assert f.count("abab") == 1
+        assert f.count("ababab") == 2
+        assert f.count("abababab") == 3
+        assert f.count("ab cdab cd") == 1
+        assert f.count("ab cdab cdab cd") == 2
+        assert f.count(" ab cd ab cd") == 1
+        assert f.count(" ab cd ab cd ab cd") == 2
+        assert f.count("ab?cd!ab?cd!") == 1
+        assert f.count("ab?cd!ab?cd!ab?cd!") == 2
+        assert f.count("ab? cd!ab? cd!") == 1
+        assert f.count("ab? cd!ab? cd!ab? cd!") == 2
+        assert f.count(" ab? cd! ab? cd! ab? cd!") == 2
+
     def test_no_replacement(self):
         min_length = 2
         max_times = 1

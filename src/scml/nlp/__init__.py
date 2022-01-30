@@ -182,6 +182,14 @@ class RepeatingSubstring:
     def collapse(self, s: str) -> str:
         return str(self.pattern.sub(r"\1" * self.max_times, s))
 
+    def count(self, s: str) -> int:
+        res = 0
+        for m in self.pattern.finditer(s):
+            if m[0] == "":
+                continue
+            res += m[0].count(m[1]) - 1
+        return res
+
 
 # (?<!...) is a negative look-behind assertion.
 # (?<=...) is a positive look-behind assertion.
