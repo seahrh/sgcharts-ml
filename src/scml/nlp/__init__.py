@@ -11,6 +11,7 @@ __all__ = [
     "count_punctuation",
     "collapse_whitespace",
     "CollapseRepeatingCharacter",
+    "RepeatingSubstring",
     "split",
     "decode_escaped_bytes",
     "ngrams",
@@ -23,10 +24,10 @@ __all__ = [
 ]
 
 
-import string
 import re
+import string
+from typing import AnyStr, Iterable, List, Tuple, Set
 from unicodedata import normalize
-from typing import AnyStr, Iterable, List, Tuple, Set, NamedTuple
 
 
 def to_str(bytes_or_str: AnyStr, encoding="utf-8") -> str:
@@ -132,12 +133,44 @@ class CollapseRepeatingCharacter:
             chars += "a-zA-Z"
         if punctuation:
             chars += re.escape(str(string.punctuation))
-        self.pattern: re.Pattern = re.compile(
-            r"([" + chars + r"])\1{" + str(max_repeat) + r",}"
-        )
+        self.pattern: re.Pattern = re.compile(f"([{chars}])\\1{{{str(max_repeat)}}}")
 
     def apply(self, s: str) -> str:
         return str(self.pattern.sub(r"\1" * self.max_repeat, s))
+
+
+class RepeatingSubstring:
+    """Collapse repeating substring of `min_length`.
+    Based on https://stackoverflow.com/a/33705982/519951
+    """
+
+    def __init__(
+        self,
+        min_length: int = 2,
+        max_times: int = 1,
+        letters: bool = True,
+        punctuation: bool = True,
+        whitespace: bool = True,
+    ):
+        if min_length < 2:
+            raise ValueError("min_length must be greater than 1")
+        self.max_times = max_times
+        if self.max_times < 1:
+            raise ValueError("max_times must be greater than 0")
+        chars = ""
+        if letters:
+            chars += "a-z"
+        if punctuation:
+            chars += re.escape(str(string.punctuation))
+        if whitespace:
+            chars += r"\s"
+        self.pattern: re.Pattern = re.compile(
+            f"([{chars}]{{{min_length},}}?)\\1{{{str(max_times)},}}",
+            re.IGNORECASE,
+        )
+
+    def collapse(self, s: str) -> str:
+        return str(self.pattern.sub(r"\1" * self.max_times, s))
 
 
 # (?<!...) is a negative look-behind assertion.

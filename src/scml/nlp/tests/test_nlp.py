@@ -13,6 +13,7 @@ from scml.nlp import (
     emoji_shortcode_to_text,
     collapse_whitespace,
     CollapseRepeatingCharacter,
+    RepeatingSubstring,
     strip_xml,
     strip_url,
     strip_ip_address,
@@ -113,6 +114,82 @@ class TestCollapseRepeatingCharacter:
             e = p * max_repeat
             assert f.apply(inp) == e
         assert f.apply("a!!! b??? ***c*** --->d") == "a!! b?? **c** -->d"
+
+
+class TestRepeatingSubstring:
+    def test_no_replacement(self):
+        min_length = 2
+        max_times = 1
+        f = RepeatingSubstring(
+            min_length=min_length,
+            max_times=max_times,
+            letters=True,
+            punctuation=True,
+            whitespace=True,
+        )
+        assert f.collapse("") == ""
+        assert f.collapse("\n") == "\n"
+        assert f.collapse("\n\n") == "\n\n"
+        assert f.collapse("\n\n\n") == "\n\n\n"
+        assert f.collapse("a") == "a"
+        assert f.collapse("aa") == "aa"
+        assert f.collapse("aaa") == "aaa"
+        assert f.collapse("ab ab") == "ab ab"
+        for p in string.punctuation:
+            inp = (p * min_length) * max_times
+            assert f.collapse(inp) == inp
+
+    def test_repeating_letter(self):
+        f = RepeatingSubstring(
+            min_length=2,
+            max_times=1,
+            letters=True,
+            punctuation=False,
+            whitespace=True,
+        )
+        assert f.collapse("abab") == "ab"
+        assert f.collapse("ab cdab cd") == "ab cd"
+        assert f.collapse(" ab cd ab cd") == " ab cd"
+
+    def test_repeating_letter_is_case_preserving(self):
+        f = RepeatingSubstring(
+            min_length=2,
+            max_times=1,
+            letters=True,
+            punctuation=False,
+            whitespace=False,
+        )
+        assert f.collapse("ABAB") == "AB"
+
+    def test_repeating_punctuation(self):
+        min_length = 2
+        max_times = 1
+        f = RepeatingSubstring(
+            min_length=min_length,
+            max_times=max_times,
+            letters=False,
+            punctuation=True,
+            whitespace=True,
+        )
+        for p in string.punctuation:
+            e = p * min_length
+            inp = e * (max_times + 1)
+            assert f.collapse(inp) == e
+        assert f.collapse("!?!?") == "!?"
+        assert f.collapse("!? $#!? $#") == "!? $#"
+        assert f.collapse(" !? $# !? $#") == " !? $#"
+
+    def test_all_allowed_chars(self):
+        f = RepeatingSubstring(
+            min_length=2,
+            max_times=1,
+            letters=True,
+            punctuation=True,
+            whitespace=True,
+        )
+        assert f.collapse("ab?cd!ab?cd!") == "ab?cd!"
+        assert f.collapse("ab? cd!ab? cd!") == "ab? cd!"
+        assert f.collapse(" ab? cd! ab? cd!") == " ab? cd!"
 
 
 class TestSplit:
