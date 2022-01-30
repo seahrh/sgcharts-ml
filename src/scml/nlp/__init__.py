@@ -190,6 +190,14 @@ class RepeatingSubstring:
             res += m[0].count(m[1]) - 1
         return res
 
+    def count_char(self, s: str) -> int:
+        res = 0
+        for m in self.pattern.finditer(s):
+            if m[0] == "":
+                continue
+            res += len(m[1]) * (m[0].count(m[1]) - 1)
+        return res
+
 
 # (?<!...) is a negative look-behind assertion.
 # (?<=...) is a positive look-behind assertion.

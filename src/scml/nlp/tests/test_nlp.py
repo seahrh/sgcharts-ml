@@ -153,6 +153,35 @@ class TestRepeatingSubstring:
         assert f.count("ab? cd!ab? cd!ab? cd!") == 2
         assert f.count(" ab? cd! ab? cd! ab? cd!") == 2
 
+    def test_count_char(self):
+        f = RepeatingSubstring(
+            min_length=2,
+            max_times=1,
+            letters=True,
+            punctuation=True,
+            whitespace=True,
+        )
+        assert f.count_char("") == 0
+        assert f.count_char("\n") == 0
+        assert f.count_char("\n\n") == 0
+        assert f.count_char("\n\n\n") == 0
+        assert f.count_char("a") == 0
+        assert f.count_char("aa") == 0
+        assert f.count_char("aaa") == 0
+        assert f.count_char("ab ab") == 0
+        assert f.count_char("abab") == 2
+        assert f.count_char("ababab") == 4
+        assert f.count_char("abababab") == 6
+        assert f.count_char("ab cdab cd") == 5
+        assert f.count_char("ab cdab cdab cd") == 10
+        assert f.count_char(" ab cd ab cd") == 6
+        assert f.count_char(" ab cd ab cd ab cd") == 12
+        assert f.count_char("ab?cd!ab?cd!") == 6
+        assert f.count_char("ab?cd!ab?cd!ab?cd!") == 12
+        assert f.count_char("ab? cd!ab? cd!") == 7
+        assert f.count_char("ab? cd!ab? cd!ab? cd!") == 14
+        assert f.count_char(" ab? cd! ab? cd! ab? cd!") == 16
+
     def test_no_replacement(self):
         min_length = 2
         max_times = 1
