@@ -81,6 +81,17 @@ class TestCollapseWhitespace:
 
 
 class TestRepeatingCharacter:
+    def test_count(self):
+        assert RepeatingCharacter.count("") == 0
+        assert RepeatingCharacter.count("a") == 0
+        assert RepeatingCharacter.count("aa") == 1
+        assert RepeatingCharacter.count("1") == 0
+        assert RepeatingCharacter.count("11") == 0
+        for p in string.punctuation:
+            assert RepeatingCharacter.count(p) == 0
+            assert RepeatingCharacter.count(p * 2) == 1
+        assert RepeatingCharacter.count("aa\n\naa\t\t!!") == 3
+
     def test_no_replacement(self):
         max_times = 2
         f = RepeatingCharacter(max_times=max_times, letters=True, punctuation=True)

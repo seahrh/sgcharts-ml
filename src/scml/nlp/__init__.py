@@ -120,6 +120,16 @@ class RepeatingCharacter:
     Based on https://stackoverflow.com/a/1660739/519951
     """
 
+    @staticmethod
+    def count(s: str) -> int:
+        """Count repeating characters except digits."""
+        res = 0
+        for i in range(1, len(s)):
+            if s[i].isdigit() or s[i].isspace() or s[i] != s[i - 1]:
+                continue
+            res += 1
+        return res
+
     def __init__(
         self, max_times: int = 2, letters: bool = True, punctuation: bool = True
     ):
