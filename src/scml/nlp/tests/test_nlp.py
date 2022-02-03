@@ -14,6 +14,7 @@ from scml.nlp import (
     collapse_whitespace,
     RepeatingCharacter,
     RepeatingSubstring,
+    strip_punctuation,
     strip_xml,
     strip_url,
     strip_ip_address,
@@ -382,6 +383,16 @@ class TestHasAtLeastOneDigitAndOneLetter:
         assert not has_1a1d("a1,", include=include)
         # Missing either letter or digit
         assert not has_1a1d('15"', include='"')
+
+
+class TestStripPunctuation:
+    def test_no_replacement(self):
+        assert strip_xml("") == ""
+        assert strip_xml("a1") == "a1"
+
+    def test_replacement(self):
+        for p in string.punctuation:
+            assert strip_punctuation(p) == ""
 
 
 class TestStripXml:

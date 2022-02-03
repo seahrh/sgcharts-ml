@@ -50,7 +50,14 @@ def to_bytes(bytes_or_str: AnyStr, encoding="utf-8") -> bytes:
     return bytes_or_str
 
 
-def strip_punctuation(s: str) -> str:
+PUNCTUATION_PATTERN = re.compile(f"[{re.escape(string.punctuation)}]")
+
+
+def strip_punctuation(s: str, replacement: str = "") -> str:
+    return PUNCTUATION_PATTERN.sub(replacement, s)
+
+
+def _strip_punctuation_deprecated(s: str) -> str:
     """This uses the 3-argument version of str.maketrans with arguments (x, y, z) where 'x' and 'y'
     must be equal-length strings and characters in 'x' are replaced by characters in 'y'.
     'z' is a string (string.punctuation here)
