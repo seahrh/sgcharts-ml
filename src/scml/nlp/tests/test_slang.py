@@ -7,12 +7,16 @@ class TestSlang:
         assert f.apply("") == ""
         assert f.apply("bar") == "bar"
 
+    def test_keep_original_term(self):
+        f = SlangExpansion(prefix="[", suffix="]", keep_original_term=True)
+        assert f.apply("lol") == "[lol; laughing out loud]"
+
     def test_pattern_is_not_case_sensitive(self):
-        f = SlangExpansion(prefix="[", suffix="]")
+        f = SlangExpansion(prefix="[", suffix="]", keep_original_term=False)
         assert f.apply("LOL") == "[laughing out loud]"
 
     def test_replacement_without_punctuation(self):
-        f = SlangExpansion(prefix="[", suffix="]")
+        f = SlangExpansion(prefix="[", suffix="]", keep_original_term=False)
         assert f.apply("imo") == "[in my opinion]"
         assert f.apply("lol") == "[laughing out loud]"
         assert f.apply("1 lol 2") == "1 [laughing out loud] 2"
@@ -31,7 +35,7 @@ class TestSlang:
         )
 
     def test_replacement_with_punctuation(self):
-        f = SlangExpansion(prefix="[", suffix="]")
+        f = SlangExpansion(prefix="[", suffix="]", keep_original_term=False)
         assert f.apply("+1") == "[expression of agreement or approval]"
         assert f.apply("1 +1 2") == "1 [expression of agreement or approval] 2"
         assert f.apply("+1 2") == "[expression of agreement or approval] 2"

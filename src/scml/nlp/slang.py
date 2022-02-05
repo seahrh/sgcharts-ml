@@ -26,6 +26,8 @@ class SlangExpansion:
         rules: Iterable[Tuple[str, str]] = None,
         prefix: str = "[",
         suffix: str = "]",
+        separator: str = "; ",
+        keep_original_term: bool = False,
     ):
         rs = rules if rules is not None else self._load()
         self._rules = []
@@ -33,9 +35,11 @@ class SlangExpansion:
             # custom word boundary: add chars like '+'
             # negative lookbehind and lookahead
             # see https://stackoverflow.com/questions/14232931/custom-word-boundaries-in-regular-expression
-            pattern = r"(?<![\w+])" + re.escape(pattern) + r"(?![\w+])"
-            replacement = f"{prefix}{replacement}{suffix}"
-            self._rules.append((re.compile(pattern, re.IGNORECASE), replacement))
+            p = r"(?<![\w+])(" + re.escape(pattern) + r")(?![\w+])"
+            r = f"{prefix}{replacement}{suffix}"
+            if keep_original_term:
+                r = f"{prefix}\\1{separator}{replacement}{suffix}"
+            self._rules.append((re.compile(p, re.IGNORECASE), r))
 
     def apply(self, s: str) -> str:
         res = s
