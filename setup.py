@@ -7,8 +7,8 @@ setup(
     python_requires="~=3.7",
     install_requires=["numba>=0.52.0", "pandas>=1.0.0", "scikit-learn>=0.23.0"],
     extras_require={
+        "lint": ["pre-commit==2.17.0", "black==22.1.0", ""],
         "tests": [
-            "black==22.1.0",
             "mypy>=0.780",
             "pytest>=5.4.2",
             "pytest-cov>=2.9.0",
