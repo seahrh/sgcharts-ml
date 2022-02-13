@@ -1,7 +1,8 @@
 import re
-import scml
 from itertools import chain
 from typing import List, Tuple
+
+import scml
 
 __all__ = ["MosesPunctNormalizer"]
 

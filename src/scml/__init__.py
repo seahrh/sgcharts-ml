@@ -1,8 +1,8 @@
+import logging
 import os
-import sys
 import random
 import re
-import logging
+import sys
 import warnings
 from typing import List
 
@@ -31,6 +31,7 @@ __all__ += streaming.__all__  # type: ignore  # module name is not defined
 
 try:
     import tensorflow as tf
+
     from .model_checkpoint import *
 
     __all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined

@@ -26,7 +26,7 @@ __all__ = [
 
 import re
 import string
-from typing import AnyStr, Iterable, List, Tuple, Set
+from typing import AnyStr, Iterable, List, Set, Tuple
 from unicodedata import normalize
 
 

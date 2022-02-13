@@ -1,15 +1,16 @@
 __all__ = ["PurgedGroupTimeSeriesSplit"]
 
-import sys
 import logging
+import sys
+from typing import Dict, List
+
 import numpy as np
 
 # noinspection PyProtectedMember
-from sklearn.model_selection._split import _BaseKFold, indexable, _num_samples
+from sklearn.model_selection._split import _BaseKFold, _num_samples, indexable
 
 # noinspection PyProtectedMember
 from sklearn.utils.validation import _deprecate_positional_args
-from typing import Dict, List
 
 log = logging.getLogger(__name__)
 

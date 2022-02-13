@@ -2,7 +2,7 @@
 import random
 
 # noinspection PyUnresolvedReferences
-from typing import List, Dict, Union
+from typing import Dict, List, Union
 
 # noinspection PyUnresolvedReferences
 import numpy as np

@@ -1,6 +1,8 @@
+from typing import Tuple
+
 import numpy as np
 import pytest
-from typing import Tuple
+
 from scml.cross_validation import PurgedGroupTimeSeriesSplit
 
 

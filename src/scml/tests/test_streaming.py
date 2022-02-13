@@ -1,4 +1,4 @@
-from scml import RollingWindow, IterativeMean
+from scml import IterativeMean, RollingWindow
 
 
 class TestRollingWindow:

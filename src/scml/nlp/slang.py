@@ -1,8 +1,9 @@
-import re
 import csv
 import importlib.resources
-import scml
+import re
 from typing import Iterable, Tuple
+
+import scml
 
 __all__ = ["SlangExpansion"]
 

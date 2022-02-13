@@ -29,21 +29,21 @@ __all__ = [
 ]
 
 import logging
+
 import numpy as np
-
-from sklearn.utils import check_random_state
-
-# noinspection PyProtectedMember
-from sklearn.utils.validation import _num_samples, check_array
-from sklearn.utils.multiclass import type_of_target
 
 # noinspection PyProtectedMember
 from sklearn.model_selection._split import (
+    BaseShuffleSplit,
     _BaseKFold,
     _RepeatedSplits,
-    BaseShuffleSplit,
     _validate_shuffle_split,
 )
+from sklearn.utils import check_random_state
+from sklearn.utils.multiclass import type_of_target
+
+# noinspection PyProtectedMember
+from sklearn.utils.validation import _num_samples, check_array
 
 
 def _iterative_stratification(labels, r, random_state):

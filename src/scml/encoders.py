@@ -5,10 +5,11 @@ __all__ = [
     "group_statistics",
     "group_features",
 ]
-from typing import Dict, Tuple, Iterable
-from numba import njit
+from typing import Dict, Iterable, Tuple
+
 import numpy as np
 import pandas as pd
+from numba import njit
 
 
 class FrequencyEncoder:

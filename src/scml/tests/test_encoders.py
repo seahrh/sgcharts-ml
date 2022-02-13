@@ -1,12 +1,13 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.metrics import pairwise_distances
+
 from scml import (
     FrequencyEncoder,
     TargetEncoder,
     cyclical_encode,
-    group_statistics,
     group_features,
+    group_statistics,
 )
 
 

@@ -1,11 +1,11 @@
 __all__ = ["smote"]
-import random
 import logging
+import random
+from typing import Dict, Iterable, List, NamedTuple, Union
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import pairwise_distances
-from typing import Iterable, List, Dict, NamedTuple, Union
-
 
 log = logging.getLogger(__name__)
 
