@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 setup(
     name="sgcharts-ml",
     version=__version__,
@@ -8,7 +8,7 @@ setup(
     install_requires=["numba>=0.52.0", "pandas>=1.0.0", "scikit-learn>=0.23.0"],
     extras_require={
         "tests": [
-            "black~=19.10b0",
+            "black==22.1.0",
             "mypy>=0.780",
             "pytest>=5.4.2",
             "pytest-cov>=2.9.0",
