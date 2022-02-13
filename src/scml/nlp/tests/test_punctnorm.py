@@ -36,29 +36,29 @@ class TestNormalizer:
         moses_norm_num = MosesPunctNormalizer("en", norm_numbers=True)
         moses_no_norm_num = MosesPunctNormalizer("en", norm_numbers=False)
 
-        text = u"12{}123".format(u"\u00A0")
-        expected = u"12.123"
+        text = "12{}123".format("\u00A0")
+        expected = "12.123"
         assert moses_norm_num.normalize(text) == expected
 
-        text = expected = u"12 123"
+        text = expected = "12 123"
         assert moses_no_norm_num.normalize(text) == expected
 
     def test_moses_normalize_single_apostrophe(self):
         moses_norm_num = MosesPunctNormalizer("en")
-        text = u"yesterday ’s reception"
-        expected = u"yesterday 's reception"
+        text = "yesterday ’s reception"
+        expected = "yesterday 's reception"
         assert moses_norm_num.normalize(text) == expected
 
     def test_replace_unicode_punct(self):
         moses_norm_unicode = MosesPunctNormalizer()
-        text = u"０《１２３》 ４５６％ 【７８９】"
-        expected = u'0"123" 456% [789]'
+        text = "０《１２３》 ４５６％ 【７８９】"
+        expected = '0"123" 456% [789]'
         assert moses_norm_unicode.replace_unicode_punct(text) == expected
 
     def test_normalization_pipeline(self):
         moses_norm_unicode = MosesPunctNormalizer(pre_replace_unicode_punct=True)
-        text = u"０《１２３》      ４５６％  '' 【７８９】"
-        expected = u'0"123" 456% " [789]'
+        text = "０《１２３》      ４５６％  '' 【７８９】"
+        expected = '0"123" 456% " [789]'
         assert moses_norm_unicode.normalize(text) == expected
 
     def test_normalize_curly_quotes(self):

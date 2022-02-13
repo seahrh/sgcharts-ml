@@ -126,13 +126,15 @@ class PurgedGroupTimeSeriesSplit(_BaseKFold):
             ]:
                 tmp = group_dict[train_group_idx]
                 train_array = np.sort(
-                    np.unique(np.concatenate((train_array, tmp)), axis=None), axis=None,
+                    np.unique(np.concatenate((train_array, tmp)), axis=None),
+                    axis=None,
                 )
             for test_group_idx in unique_groups[
                 group_test_start : group_test_start + group_test_size
             ]:
                 tmp = group_dict[test_group_idx]
                 test_array = np.sort(
-                    np.unique(np.concatenate((test_array, tmp)), axis=None), axis=None,
+                    np.unique(np.concatenate((test_array, tmp)), axis=None),
+                    axis=None,
                 )
             yield [int(i) for i in train_array], [int(i) for i in test_array]

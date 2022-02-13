@@ -59,7 +59,9 @@ class TargetEncoder:
 
 @njit
 def cyclical_encode(
-    a: np.ndarray, interval: Tuple[float, float], dtype=np.float32,
+    a: np.ndarray,
+    interval: Tuple[float, float],
+    dtype=np.float32,
 ) -> Tuple[np.ndarray, np.ndarray]:
     rg = interval[1] - interval[0]
     frac = (a - interval[0]) / rg
@@ -69,7 +71,10 @@ def cyclical_encode(
 
 
 def group_statistics(
-    data: pd.DataFrame, column: str, group_columns: Iterable[str], dtype=np.float32,
+    data: pd.DataFrame,
+    column: str,
+    group_columns: Iterable[str],
+    dtype=np.float32,
 ) -> pd.DataFrame:
     columns = [
         f"{column}_p50",

@@ -107,7 +107,7 @@ def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
     :return: None
     """
     numerics = ["int16", "int32", "int64", "float32", "float64"]
-    start_mem: float = df.memory_usage().sum() / 1024 ** 2
+    start_mem: float = df.memory_usage().sum() / 1024**2
     for col in df.columns:
         col_type = df[col].dtypes
         if col_type in numerics:
@@ -127,7 +127,7 @@ def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
                 dtype = np.float32  # type: ignore
             df[col] = df[col].astype(dtype)
     if verbose:
-        end_mem: float = df.memory_usage().sum() / 1024 ** 2
+        end_mem: float = df.memory_usage().sum() / 1024**2
         percent: float = 100 * (start_mem - end_mem) / start_mem
         print(f"Mem. usage decreased to {end_mem:5.2f} Mb ({percent:.1f}% reduction)")
 
