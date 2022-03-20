@@ -1,7 +1,7 @@
 import math
 import time
 
-from scml.timex import *
+from scml import Timer
 
 
 class TestTimer:

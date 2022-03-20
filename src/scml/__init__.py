@@ -10,11 +10,6 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from ._smote import *
-from .encoders import *
-from .ml_stratifiers import *
-from .streaming import *
-
 __all__ = [
     "file_paths",
     "seed_everything",
@@ -24,10 +19,23 @@ __all__ = [
     "rescale_as_int",
     "fillna",
 ]
+
+from .ml_stratifiers import *
+
 __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
+
+from ._smote import *
+
 __all__ += _smote.__all__  # type: ignore  # module name is not defined
+from .encoders import *
+
 __all__ += encoders.__all__  # type: ignore  # module name is not defined
+from .streaming import *
+
 __all__ += streaming.__all__  # type: ignore  # module name is not defined
+from .timex import *
+
+__all__ += timex.__all__  # type: ignore  # module name is not defined
 
 try:
     import tensorflow as tf
