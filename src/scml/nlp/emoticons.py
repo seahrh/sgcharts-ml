@@ -7,7 +7,7 @@ import scml
 
 __all__ = ["EmoticonToText"]
 
-log = scml.get_logger()
+log = scml.get_logger(__name__)
 
 
 class EmoticonToText:

@@ -6,7 +6,7 @@ import scml
 
 __all__ = ["MosesPunctNormalizer"]
 
-log = scml.get_logger()
+log = scml.get_logger(__name__)
 
 
 class MosesPunctNormalizer:
