@@ -25,6 +25,7 @@ jobs:
           pip install ."[tests]"
       - name: Style checks
         run: |
+          isort --check-only -v .
           black --check .
           flake8
       - name: Typing checks
