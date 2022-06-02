@@ -4,14 +4,14 @@ __version__ = "0.5.0"
 setup(
     name="sgcharts-ml",
     version=__version__,
-    python_requires="~=3.7",
+    python_requires=">=3.7",
     install_requires=["numba>=0.52.0", "pandas>=1.0.0", "scikit-learn>=0.23.0"],
     extras_require={
-        "lint": ["pre-commit==2.17.0", "black==22.1.0"],
+        "lint": ["black==22.3.0", "isort==5.10.1", "pre-commit==2.19.0"],
         "tests": [
-            "mypy>=0.780",
-            "pytest>=5.4.2",
-            "pytest-cov>=2.9.0",
+            "mypy==0.960",
+            "pytest==7.1.2",
+            "pytest-cov==3.0.0",
             "tensorflow>=2.1.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
