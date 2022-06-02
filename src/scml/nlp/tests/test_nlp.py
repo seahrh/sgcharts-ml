@@ -379,8 +379,8 @@ class TestHasAtLeastOneDigitAndOneLetter:
 
 class TestStripPunctuation:
     def test_no_replacement(self):
-        assert strip_xml("") == ""
-        assert strip_xml("a1") == "a1"
+        assert strip_punctuation("") == ""
+        assert strip_punctuation("a1") == "a1"
 
     def test_replacement(self):
         for p in string.punctuation:
