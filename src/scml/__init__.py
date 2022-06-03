@@ -3,7 +3,6 @@ import os
 import random
 import re
 import sys
-import warnings
 from typing import List
 
 import numpy as np
@@ -37,16 +36,6 @@ from .timex import *
 
 __all__ += timex.__all__  # type: ignore  # module name is not defined
 
-try:
-    import tensorflow as tf
-
-    from .model_checkpoint import *
-
-    __all__ += model_checkpoint.__all__  # type: ignore  # module name is not defined
-except ImportError:
-    tf = None
-    warnings.warn("Install tensorflow to use this feature", ImportWarning)
-
 
 def get_logger(name: str = None):
     # suppress matplotlib logging
@@ -76,8 +65,6 @@ def seed_everything(seed: int = 31) -> None:
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     np.random.seed(seed)
-    if tf is not None:
-        tf.random.set_seed(seed)
 
 
 def var_name(s: str) -> str:

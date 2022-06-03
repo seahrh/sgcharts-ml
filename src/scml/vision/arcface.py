@@ -1,7 +1,13 @@
 import math
+import warnings
 
-import tensorflow as tf
-from tensorflow import keras
+try:
+    import tensorflow as tf
+    from tensorflow import keras
+except ImportError:
+    tf = None
+    keras = None
+    warnings.warn("Install tensorflow to use this feature", ImportWarning)
 
 __all__ = ["ArcMarginProduct"]
 

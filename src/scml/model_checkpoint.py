@@ -1,8 +1,14 @@
 __all__ = ["ModelCheckpointInGcs"]
 import os
+import warnings
 
-from tensorflow import keras
-from tensorflow.python.lib.io import file_io
+try:
+    from tensorflow import keras
+    from tensorflow.python.lib.io import file_io
+except ImportError:
+    keras = None
+    file_io = None
+    warnings.warn("Install tensorflow to use this feature", ImportWarning)
 
 
 class ModelCheckpointInGcs(keras.callbacks.ModelCheckpoint):

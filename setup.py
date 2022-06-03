@@ -17,7 +17,6 @@ setup(
             "mypy==0.960",
             "pytest==7.1.2",
             "pytest-cov==3.0.0",
-            "tensorflow>=2.1.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
     },
