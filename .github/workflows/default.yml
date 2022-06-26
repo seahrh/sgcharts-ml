@@ -30,7 +30,7 @@ jobs:
           flake8
       - name: Typing checks
         run: |
-          mypy src
+          mypy
       - name: Tests
         run: |
           pytest -vv --cov=src

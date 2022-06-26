@@ -12,9 +12,9 @@ setup(
             "isort==5.10.1",
             "pre-commit==2.19.0",
             "flake8==4.0.1",
+            "mypy==0.961",
         ],
         "tests": [
-            "mypy==0.960",
             "pytest==7.1.2",
             "pytest-cov==3.0.0",
         ],
