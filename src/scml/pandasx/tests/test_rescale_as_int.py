@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from scml import rescale_as_int
+from scml.pandasx import rescale_as_int
 
 
 class TestRescaleAsInt:

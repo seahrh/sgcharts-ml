@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from scml import quantize
+from scml.pandasx import quantize
 
 
 class TestQuantize:

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from scml import find_missing_values
+from scml.pandasx import find_missing_values
 
 
 class TestFindMissingValues:
