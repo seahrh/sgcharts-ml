@@ -3,14 +3,12 @@ import os
 import random
 import re
 import sys
-from typing import List
 
 import numpy as np
 import pandas as pd
 from numba import njit
 
 __all__ = [
-    "file_paths",
     "seed_everything",
     "var_name",
     "quantize",
@@ -50,15 +48,6 @@ def get_logger(name: str = None):
     sh.setFormatter(formatter)
     logger.addHandler(sh)
     return logger
-
-
-def file_paths(root_directory: str) -> List[str]:
-    """Returns a list of file paths rooted at the given directory."""
-    res = []
-    for dirname, _, filenames in os.walk(root_directory):
-        for filename in filenames:
-            res.append(os.path.join(dirname, filename))
-    return res
 
 
 def seed_everything(seed: int = 31) -> None:
