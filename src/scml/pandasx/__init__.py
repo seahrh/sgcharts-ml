@@ -1,11 +1,7 @@
 import numpy as np
 import pandas as pd
 
-__all__ = [
-    "quantize",
-    "find_missing_values",
-    "rescale_as_int",
-]
+__all__ = ["quantize", "find_missing_values", "rescale_as_int", "value_counts"]
 
 
 def rescale_as_int(
@@ -73,6 +69,14 @@ def find_missing_values(
     types = [str(df[col].dtype) for col in df.columns]
     res["Type"] = types
     return res
+
+
+def value_counts(
+    s: pd.Series, sort: bool = True, ascending: bool = False, dropna: bool = False
+) -> pd.DataFrame:
+    c = s.value_counts(sort=sort, ascending=ascending, dropna=dropna)
+    p = s.value_counts(normalize=True, sort=sort, ascending=ascending, dropna=dropna)
+    return pd.concat([c, p], axis=1, keys=["count", "percent"])
 
 
 from .encoders import *
