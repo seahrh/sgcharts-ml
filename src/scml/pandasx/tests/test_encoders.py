@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import pairwise_distances
 
-from scml import (
+from scml.pandasx import (
     FrequencyEncoder,
     TargetEncoder,
     cyclical_encode,

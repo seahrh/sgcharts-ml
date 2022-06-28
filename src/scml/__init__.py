@@ -20,9 +20,7 @@ __all__ += ml_stratifiers.__all__  # type: ignore  # module name is not defined
 from ._smote import *
 
 __all__ += _smote.__all__  # type: ignore  # module name is not defined
-from .encoders import *
 
-__all__ += encoders.__all__  # type: ignore  # module name is not defined
 from .streaming import *
 
 __all__ += streaming.__all__  # type: ignore  # module name is not defined

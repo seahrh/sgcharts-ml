@@ -73,3 +73,8 @@ def find_missing_values(
     types = [str(df[col].dtype) for col in df.columns]
     res["Type"] = types
     return res
+
+
+from .encoders import *
+
+__all__ += encoders.__all__  # type: ignore  # module name is not defined
