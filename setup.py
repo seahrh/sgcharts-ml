@@ -19,6 +19,8 @@ setup(
             "pytest-cov==3.0.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
+        "torch": ["torch>=1.12.0"],
+        "transformers": ["transformers>=4.20.1"],
     },
     packages=find_packages("src", exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_dir={"": "src"},
