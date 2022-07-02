@@ -11,7 +11,13 @@ except ImportError:
     torch, nn, F = None, None, None  # type: ignore
     warnings.warn("Install torch to use this feature", ImportWarning)
 
-__all__ = ["whitening"]
+__all__ = [
+    "whitening",
+    "WeightedLayerPooling",
+    "AttentionPooling",
+    "max_pooling",
+    "mean_pooling",
+]
 
 
 def whitening(
