@@ -13,6 +13,7 @@ except ImportError:
 
 __all__ = [
     "whitening",
+    "MultiSampleDropout",
     "WeightedLayerPooling",
     "AttentionPooling",
     "max_pooling",
@@ -45,6 +46,36 @@ def whitening(
     if is_numpy:
         res = res.detach().cpu().numpy()
     return res
+
+
+class MultiSampleDropout(nn.Module):
+    def __init__(
+        self,
+        classifier: nn.Module,
+        size: int,
+        start_prob: float,
+        increment: float = 0,
+        dropout_cls=nn.Dropout,
+    ):
+        if size < 1:
+            raise ValueError("number of dropouts (size) must be a positive integer")
+        super().__init__()
+        self.dropouts = nn.ModuleList(
+            [dropout_cls(start_prob + (increment * i)) for i in range(size)]
+        )
+        self.classifier = classifier
+
+    def forward(self, x):
+        """
+        Call the module
+        Args:
+            x (`torch.tensor`): The input tensor to apply dropout
+        """
+        m = len(self.dropouts)
+        res = self.classifier(self.dropouts[0](x)) / float(m)
+        for i in range(1, m):
+            res += self.classifier(self.dropouts[i](x)) / float(m)
+        return res
 
 
 class WeightedLayerPooling(nn.Module):
