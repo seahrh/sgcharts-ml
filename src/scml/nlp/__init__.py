@@ -2,7 +2,6 @@ __all__ = [
     "to_str",
     "to_bytes",
     "strip_punctuation",
-    "to_ascii",
     "is_number",
     "count_digit",
     "count_alpha",
@@ -27,7 +26,6 @@ __all__ = [
 import re
 import string
 from typing import AnyStr, Iterable, List, Set, Tuple
-from unicodedata import normalize
 
 
 def to_str(bytes_or_str: AnyStr, encoding="utf-8") -> str:
@@ -342,16 +340,6 @@ from .emoticons import *
 
 __all__ += emoticons.__all__  # type: ignore  # module name is not defined
 
+from .charencoding import *
 
-def to_ascii(s: AnyStr) -> str:
-    """Normalise (normalize) unicode data in Python to remove umlauts, accents etc.
-    Also converts curly quotes [] to straight quotes.
-    Based on https://gist.github.com/j4mie/557354
-    """
-    # unicodedata normalize
-    # The normal form KD (NFKD) will apply the compatibility decomposition
-    # i.e. replace all compatibility characters with their equivalents.
-    # @url https://docs.python.org/3/library/unicodedata.html
-    res = to_str(s)
-    res = MosesPunctNormalizer(pre_replace_unicode_punct=True).normalize(res)
-    return to_str(normalize("NFKD", res).encode("ASCII", "ignore"))
+__all__ += charencoding.__all__  # type: ignore  # module name is not defined

@@ -1,4 +1,4 @@
-from scml.nlp import to_ascii
+from scml.nlp.charencoding import *
 
 
 class TestToAscii:
@@ -66,3 +66,8 @@ class TestToAscii:
         }
         for k, v in aa_map.items():
             assert to_ascii(k) == v
+
+
+class TestCp1252ToUtf8:
+    def test_no_error(self):
+        assert cp1252_to_utf8("foo ÃÅf bar") == "foo ÃÅf bar"
