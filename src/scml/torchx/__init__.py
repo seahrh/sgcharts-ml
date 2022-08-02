@@ -13,6 +13,7 @@ except ImportError:
 
 __all__ = [
     "whitening",
+    "noisy_tune",
     "MultiSampleDropout",
     "WeightedLayerPooling",
     "AttentionPooling",
@@ -46,6 +47,19 @@ def whitening(
     if is_numpy:
         res = res.detach().cpu().numpy()
     return res
+
+
+def noisy_tune(model: nn.Module, noise_intensity: float) -> None:
+    """Reference paper: NoisyTune: A Little Noise Can Help You Finetune Pretrained Language Models Better (ACL 2022)
+    https://aclanthology.org/2022.acl-short.76.pdf
+    """
+    if noise_intensity < 0:
+        raise ValueError("noise_intensity must be non-negative number")
+    sd = model.state_dict()
+    for name, param in model.named_parameters():
+        sd[name][:] += (
+            (torch.rand(param.size()) - 0.5) * noise_intensity * torch.std(param)
+        )
 
 
 class MultiSampleDropout(nn.Module):
