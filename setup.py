@@ -5,7 +5,12 @@ setup(
     name="sgcharts-ml",
     version=__version__,
     python_requires=">=3.7",
-    install_requires=["numba>=0.52.0", "pandas>=1.0.0", "scikit-learn>=0.23.0"],
+    install_requires=[
+        "numba>=0.52.0",
+        "pandas>=1.0.0",
+        "scikit-learn>=0.23.0",
+        "networkx>=2.6.3",
+    ],
     extras_require={
         "lint": [
             "black==22.3.0",
