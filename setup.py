@@ -8,7 +8,7 @@ setup(
     install_requires=[
         "numba>=0.52.0",
         "pandas>=1.0.0",
-        "scikit-learn>=0.23.0",
+        "scikit-learn>=1.0.2",
         "networkx>=2.6.3",
     ],
     extras_require={

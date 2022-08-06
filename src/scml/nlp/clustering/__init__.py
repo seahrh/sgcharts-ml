@@ -1,10 +1,62 @@
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import (
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+)
 
 import networkx as nx
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-__all__ = ["TfIdfClustering"]
+__all__ = ["TfIdfClustering", "Keyword", "keywords"]
+
+
+class Keyword(NamedTuple):
+    score: float
+    text: str
+
+
+def keywords(
+    docs: Iterable[str],
+    stop_words: Optional[List[str]] = None,
+    analyzer: str = "word",
+    lowercase: bool = True,
+    ngram_range: Tuple[int, int] = (1, 1),
+    max_df: Union[float, int] = 1.0,
+    min_df: Union[float, int] = 1,
+    max_features: Optional[int] = None,
+    vocabulary: Optional[Union[Dict, Iterable[str]]] = None,
+) -> Iterator[Keyword]:
+    vectorizer = TfidfVectorizer(
+        lowercase=lowercase,
+        analyzer=analyzer,
+        stop_words=stop_words,
+        ngram_range=ngram_range,
+        max_df=max_df,
+        min_df=min_df,
+        max_features=max_features,
+        vocabulary=vocabulary,
+        dtype=np.float32,  # vectorizer does not support float16
+    )
+    # rank tf-idf weights across all docs
+    x = vectorizer.fit_transform(docs).toarray().flatten()
+    ngrams = vectorizer.get_feature_names_out()
+    ordering = (-x).argsort()
+    seen: Set[str] = set()
+    i = 0
+    while len(seen) < len(ngrams) and i < len(ordering):
+        j = ordering[i] % len(ngrams)
+        if ngrams[j] not in seen:
+            seen.add(ngrams[j])
+            yield Keyword(score=x[ordering[i]], text=ngrams[j])
+        i += 1
 
 
 class TfIdfClustering:
