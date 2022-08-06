@@ -20,8 +20,9 @@ class TfIdfClustering:
         min_df: Union[float, int] = 1,
         max_features: Optional[int] = None,
         vocabulary: Optional[Union[Dict, Iterable[str]]] = None,
-        dtype=np.float32,
+        dtype=np.float16,
     ):
+        self.docs = docs
         self.vectorizer = TfidfVectorizer(
             lowercase=lowercase,
             analyzer=analyzer,
@@ -31,15 +32,15 @@ class TfIdfClustering:
             min_df=min_df,
             max_features=max_features,
             vocabulary=vocabulary,
-            dtype=dtype,
+            dtype=np.float32,  # vectorizer does not support float16
         )
-        self.X = self.vectorizer.fit_transform(docs).toarray()
-        n = self.X.shape[0]
-        self.sim = np.full((n, n), 1)
+        X = self.vectorizer.fit_transform(docs).toarray()
+        n = X.shape[0]
+        self.sim = np.full((n, n), 1, dtype=dtype)
         for i in range(n):
             for j in range(i + 1, n):
                 # vectors are already L2 norm, so just take dot product
-                cos_sim: float = float(np.dot(self.X[i], self.X[j]))
+                cos_sim: float = float(np.dot(X[i], X[j]))
                 # prune edges below threshold
                 if cos_sim < similarity_min:
                     cos_sim = 0
@@ -56,7 +57,7 @@ class TfIdfClustering:
             self.G,
             resolution=resolution,
         )
-        res = [-1] * self.X.shape[0]
+        res = [-1] * len(self.docs)
         for i in range(len(cs)):
             for j in cs[i]:
                 res[j] = i
