@@ -34,9 +34,9 @@ def uncertainty_weighted_loss(
         raise ValueError("losses must not be empty")
     if len(losses) != len(log_variances):
         raise ValueError("Length of losses must equal log_variances")
-    sm = torch.zeros((1,), dtype=torch.float32)
+    sm = torch.zeros((1,), dtype=torch.float32, device=log_variances[0].device)
     for i in range(len(losses)):
-        precision = torch.exp(-log_variances[i]).to(log_variances[i].device)
+        precision = torch.exp(-log_variances[i])
         sm += precision * losses[i] + log_variances[i]
     return sm
 
