@@ -1,5 +1,5 @@
 import warnings
-from typing import Optional, Tuple, Union
+from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -12,6 +12,7 @@ except ImportError:
     warnings.warn("Install torch to use this feature", ImportWarning)
 
 __all__ = [
+    "uncertainty_weighted_loss",
     "whitening",
     "noisy_tune",
     "MultiSampleDropout",
@@ -20,6 +21,26 @@ __all__ = [
     "max_pooling",
     "mean_pooling",
 ]
+
+
+def uncertainty_weighted_loss(
+    losses: Sequence[torch.Tensor], log_variances: Sequence[torch.Tensor]
+) -> torch.Tensor:
+    """Based on Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics (Kendall 2018).
+    Log variance represents the uncertainty. The higher the uncertainty, the smaller the weight.
+    To prevent the model from simply suppressing all weights to zero, add the uncertainty to final loss.
+
+    https://github.com/yaringal/multi-task-learning-example
+    """
+    if len(losses) == 0:
+        raise ValueError("losses must not be empty")
+    if len(losses) != len(log_variances):
+        raise ValueError("Length of losses must equal log_variances")
+    sm = torch.zeros((1,), dtype=torch.float32)
+    for i in range(len(losses)):
+        precision = torch.exp(-log_variances[i])
+        sm += precision * losses[i] + log_variances[i]
+    return sm
 
 
 def whitening(

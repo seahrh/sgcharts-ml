@@ -3,7 +3,6 @@ import os
 import random
 import re
 import sys
-from typing import Sequence
 
 import numpy as np
 from numba import njit
@@ -12,7 +11,6 @@ __all__ = [
     "seed_everything",
     "var_name",
     "fillna",
-    "uncertainty_weighted_loss",
 ]
 
 
@@ -54,27 +52,6 @@ def fillna(
         return res  # type: ignore
     flags = np.where(mask, np.full(arr.shape, 1), np.full(arr.shape, 0)).astype(dtype)
     return np.hstack((res, flags))
-
-
-def uncertainty_weighted_loss(
-    losses: Sequence[float], log_variances: Sequence[float]
-) -> float:
-    """Based on Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics (Kendall 2018).
-    Log variance represents the uncertainty. The higher the uncertainty, the smaller the weight.
-    To prevent the model from simply suppressing all weights to zero, add the uncertainty to final loss.
-
-    https://github.com/yaringal/multi-task-learning-example
-    """
-    if len(losses) == 0:
-        raise ValueError("losses must not be empty")
-    if len(losses) != len(log_variances):
-        raise ValueError("Length of losses must equal log_variances")
-    sm = 0
-    for i in range(len(losses)):
-        # weight ("precision") is a positive number between 0 and 1
-        w = np.exp(-log_variances[i])
-        sm += w * losses[i] + log_variances[i]
-    return sm / len(losses)
 
 
 from .ml_stratifiers import *
