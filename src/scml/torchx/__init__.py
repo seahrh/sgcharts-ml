@@ -1,7 +1,5 @@
 import warnings
-from typing import Optional, Sequence, Tuple, Union
-
-import numpy as np
+from typing import Optional, Sequence, Tuple
 
 try:
     import torch
@@ -43,9 +41,7 @@ def uncertainty_weighted_loss(
     return sm
 
 
-def whitening(
-    embeddings: Union[torch.Tensor, np.ndarray]
-) -> Union[torch.Tensor, np.ndarray]:
+def whitening(embeddings: torch.Tensor) -> torch.Tensor:
     """
     Whitening is a linear transformation that transforms a vector of random variables with a known
     covariance matrix into a new vector whose covariance is an identity matrix, and has been verified effective
@@ -57,16 +53,11 @@ def whitening(
     :param embeddings: 2D tensor
     :return: whitened embeddings
     """
-    is_numpy: bool = isinstance(embeddings, np.ndarray)
-    if is_numpy:
-        embeddings = torch.from_numpy(embeddings)
     mu = torch.mean(embeddings, dim=0, keepdim=True)
     cov = torch.mm((embeddings - mu).t(), embeddings - mu)
     u, s, vt = torch.svd(cov)
     W = torch.mm(u, torch.diag(1 / torch.sqrt(s)))
     res = torch.mm(embeddings - mu, W)
-    if is_numpy:
-        res = res.detach().cpu().numpy()
     return res
 
 
