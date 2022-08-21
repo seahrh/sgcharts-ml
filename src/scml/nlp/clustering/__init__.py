@@ -114,3 +114,11 @@ class TfIdfClustering:
             for j in cs[i]:
                 res[j] = i
         return res
+
+    def asyn_lpa_communities(self, seed=None) -> List[int]:
+        cs = nx.community.asyn_lpa_communities(self.G, weight="weight", seed=seed)
+        res = [-1] * len(self.docs)
+        for i, c in enumerate(cs):
+            for j in c:
+                res[j] = i
+        return res
