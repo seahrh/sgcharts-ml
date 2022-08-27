@@ -5,9 +5,6 @@ import random
 from typing import Dict, List, Union
 
 # noinspection PyUnresolvedReferences
-import numpy as np
-
-# noinspection PyUnresolvedReferences
 import pandas as pd
 import pytest
 
