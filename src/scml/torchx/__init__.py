@@ -1,5 +1,5 @@
 import warnings
-from typing import Optional, Sequence, Tuple
+from typing import Iterable, Optional, Sequence, Tuple
 
 try:
     import torch
@@ -63,17 +63,30 @@ def whitening(embeddings: torch.Tensor) -> torch.Tensor:
     return res
 
 
-def noisy_tune(model: nn.Module, noise_intensity: float) -> None:
-    """Reference paper: NoisyTune: A Little Noise Can Help You Finetune Pretrained Language Models Better (ACL 2022)
+def noisy_tune(
+    model: nn.Module, noise_intensity: float, prefixes: Optional[Iterable[str]] = None
+) -> None:
+    """NoisyTune: A Little Noise Can Help You Finetune Pretrained Language Models Better (ACL 2022)
     https://aclanthology.org/2022.acl-short.76.pdf
     """
     if noise_intensity < 0:
         raise ValueError("noise_intensity must be non-negative number")
     sd = model.state_dict()
     for name, param in model.named_parameters():
-        sd[name][:] += (
-            (torch.rand(param.size()) - 0.5) * noise_intensity * torch.std(param)
-        )
+        if not param.requires_grad:
+            continue
+        apply_noise: bool = False
+        if prefixes is None:
+            apply_noise = True
+        else:
+            for prefix in prefixes:
+                if name.startswith(prefix):
+                    apply_noise = True
+        if apply_noise:
+            sd[name] += (
+                (torch.rand(param.size()) - 0.5) * noise_intensity * torch.std(param)
+            )
+    model.load_state_dict(sd)
 
 
 class MultiSampleDropout(nn.Module):
