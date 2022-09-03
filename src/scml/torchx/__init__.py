@@ -71,6 +71,8 @@ def noisy_tune(
     """
     if noise_intensity < 0:
         raise ValueError("noise_intensity must be non-negative number")
+    # The parameters() only gives the module parameters i.e. weights and biases.
+    # On the other hand, state_dict returns a dictionary containing a whole state of the module.
     sd = model.state_dict()
     for name, param in model.named_parameters():
         if not param.requires_grad:

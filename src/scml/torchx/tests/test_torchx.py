@@ -15,7 +15,7 @@ def rtol() -> float:
 class SimpleMlp(nn.Module):
     def __init__(self, hidden_units: int = 2):
         super().__init__()
-        # seq.0.weight
+        # param names: seq.0.weight, seq.0.bias
         self.seq = nn.Sequential(
             nn.Linear(hidden_units, hidden_units),
             nn.Linear(hidden_units, hidden_units),
