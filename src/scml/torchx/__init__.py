@@ -10,6 +10,7 @@ except ImportError:
     warnings.warn("Install torch to use this feature", ImportWarning)
 
 __all__ = [
+    "parameter_size",
     "uncertainty_weighted_loss",
     "whitening",
     "noisy_tune",
@@ -19,6 +20,14 @@ __all__ = [
     "max_pooling",
     "mean_pooling",
 ]
+
+
+def parameter_size(model: nn.Module) -> int:
+    res = 0
+    for p in model.parameters():
+        if p.requires_grad:
+            res += p.numel()
+    return res
 
 
 def uncertainty_weighted_loss(
