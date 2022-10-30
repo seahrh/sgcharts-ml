@@ -3,15 +3,35 @@ import os
 import random
 import re
 import sys
+from typing import FrozenSet, Set, Union
 
 import numpy as np
 from numba import njit
 
 __all__ = [
+    "getboolean",
     "seed_everything",
     "var_name",
     "fillna",
 ]
+
+TRUTHY: FrozenSet[str] = frozenset({"1", "yes", "true", "on"})
+
+
+def getboolean(s: str, truthy: Union[Set[str], FrozenSet[str]] = TRUTHY) -> bool:
+    """
+    Inspired by configparser's implementation but there is one key difference:
+    This method does not throw exceptions, it simply returns False by default.
+
+    A convenience method which coerces the option in the specified section to a Boolean value.
+    Note that the accepted values for the option are '1', 'yes', 'true', and 'on',
+    which cause this method to return True.
+    These string values are checked in a case-insensitive manner. Any other value will return False.
+    :return:
+    """
+    if s.lower() in truthy:
+        return True
+    return False
 
 
 def get_logger(name: str = None):

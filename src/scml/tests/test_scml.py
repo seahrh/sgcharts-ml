@@ -1,4 +1,21 @@
-from scml import var_name
+from scml import *
+
+
+class TestGetBoolean:
+    def test_truthy(self):
+        assert getboolean("1")
+        assert getboolean("yes")
+        assert getboolean("true")
+        assert getboolean("TRUE")
+        assert getboolean("on")
+
+    def test_falsey(self):
+        assert not getboolean("")
+        assert not getboolean("0")
+        assert not getboolean("1 ")  # trailing whitespace
+        assert not getboolean("no")
+        assert not getboolean("false")
+        assert not getboolean("off")
 
 
 class TestVarName:

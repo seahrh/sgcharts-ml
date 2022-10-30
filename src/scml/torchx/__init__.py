@@ -1,5 +1,8 @@
 import warnings
-from typing import Iterable, Optional, Sequence, Tuple
+from configparser import SectionProxy
+from typing import Dict, Iterable, List, NamedTuple, Optional, Sequence, Set, Tuple
+
+import scml
 
 try:
     import torch
@@ -11,6 +14,9 @@ except ImportError:
 
 __all__ = [
     "parameter_size",
+    "LrSchedulerConf",
+    "schedulers",
+    "schedulers_by_config",
     "uncertainty_weighted_loss",
     "whitening",
     "noisy_tune",
@@ -28,6 +34,103 @@ def parameter_size(model: nn.Module) -> int:
         if p.requires_grad:
             res += p.numel()
     return res
+
+
+class LrSchedulerConf(NamedTuple):
+    """
+    lr_scheduler_config = {
+    # REQUIRED: The scheduler instance
+    "scheduler": lr_scheduler,
+    # The unit of the scheduler's step size, could also be 'step'.
+    # 'epoch' updates the scheduler on epoch end whereas 'step'
+    # updates it after a optimizer update.
+    "interval": "epoch",
+    # How many epochs/steps should pass between calls to
+    # `scheduler.step()`. 1 corresponds to updating the learning
+    # rate after every epoch/step.
+    "frequency": 1,
+    # Metric to to monitor for schedulers like `ReduceLROnPlateau`
+    "monitor": "val_loss",
+    # If set to `True`, will enforce that the value specified 'monitor'
+    # is available when the scheduler is updated, thus stopping
+    # training if not found. If set to `False`, it will only produce a warning
+    "strict": True,
+    # If using the `LearningRateMonitor` callback to monitor the
+    # learning rate progress, this keyword can be used to specify
+    # a custom logged name
+    "name": None,
+    }
+
+    See https://pytorch-lightning.readthedocs.io/en/latest/common/lightning_module.html?highlight=configure_optimizers#configure-optimizers
+    """
+
+    scheduler: object
+    interval: str = "epoch"
+    frequency: int = 1
+    monitor: str = "val_loss"
+    strict: bool = True
+    name: Optional[str] = None
+
+
+def schedulers(optimizer, params: Iterable[Dict[str, str]]) -> List[LrSchedulerConf]:
+    res: List[LrSchedulerConf] = []
+    for ps in params:
+        qn = ps["qualified_name"]
+        if qn == "torch.optim.lr_scheduler.ReduceLROnPlateau":
+            res.append(
+                LrSchedulerConf(
+                    scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(
+                        optimizer=optimizer,
+                        min_lr=float(ps["min_lr"]),
+                        patience=int(ps["patience"]),
+                        factor=float(ps["factor"]),
+                        verbose=scml.getboolean(ps["verbose"]),
+                    ),
+                    name=qn,
+                )
+            )
+            continue
+        if qn == "torch.optim.lr_scheduler.CosineAnnealingLR":
+            res.append(
+                LrSchedulerConf(
+                    scheduler=torch.optim.lr_scheduler.CosineAnnealingLR(
+                        optimizer=optimizer,
+                        T_max=int(ps["T_max"]),
+                    ),
+                    name=qn,
+                )
+            )
+            continue
+        if qn == "torch.optim.swa_utils.SWALR":
+            res.append(
+                LrSchedulerConf(
+                    scheduler=torch.optim.swa_utils.SWALR(
+                        optimizer=optimizer,
+                        swa_lr=float(ps["swa_lr"]),
+                        anneal_epochs=int(ps["anneal_epochs"]),
+                        anneal_strategy=ps["anneal_strategy"],
+                    ),
+                    name=qn,
+                )
+            )
+            continue
+        raise ValueError(f"Unsupported scheduler: {qn}")
+    return res
+
+
+def schedulers_by_config(
+    optimizer, sections: Iterable[SectionProxy], booleans: Set[str] = None
+) -> List[LrSchedulerConf]:
+    params: List[Dict] = []
+    if booleans is None:
+        booleans = {"verbose"}
+    for section in sections:
+        d = dict(section)
+        for k in d.keys():
+            if k in booleans:
+                d[k] = "1" if section.getboolean(k) else "0"
+        params.append(d)
+    return schedulers(optimizer=optimizer, params=params)
 
 
 def uncertainty_weighted_loss(
