@@ -343,3 +343,7 @@ __all__ += emoticons.__all__  # type: ignore  # module name is not defined
 from .charencoding import *
 
 __all__ += charencoding.__all__  # type: ignore  # module name is not defined
+
+from .word2vec import *
+
+__all__ += word2vec.__all__  # type: ignore  # module name is not defined
