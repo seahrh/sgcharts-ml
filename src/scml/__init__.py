@@ -3,7 +3,8 @@ import os
 import random
 import re
 import sys
-from typing import FrozenSet, Set, Union
+from bisect import bisect
+from typing import FrozenSet, Iterable, List, Set, Union
 
 import numpy as np
 from numba import njit
@@ -11,6 +12,7 @@ from numba import njit
 __all__ = [
     "getboolean",
     "seed_everything",
+    "weighted_choice",
     "var_name",
     "fillna",
 ]
@@ -60,6 +62,30 @@ def var_name(s: str) -> str:
     res = re.sub(r"[\s]+", "_", res)
     res = re.sub(r"[\W]", "", res)
     return res
+
+
+def weighted_choice(weights: Iterable[float]) -> int:
+    """
+    1. Arrange the weights into a cumulative distribution.
+    2. Use random.random() to pick a random float 0.0 <= x < total.
+    3. Binary search on the cumulative distribution
+
+    Time complexity O(N) to build the cumulative distribution.
+    Based on https://stackoverflow.com/a/4322940/519951
+
+    :param weights:
+    :return:
+    """
+    total: float = 0
+    cum_weights: List[float] = []
+    for w in weights:
+        total += w
+        cum_weights.append(total)
+    x = random.random() * total
+    # bisect_right
+    # The return value i is such that all e in a[:i] have e <= x,
+    # and all e in a[i:] have e > x.
+    return bisect(cum_weights, x)
 
 
 @njit

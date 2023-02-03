@@ -18,6 +18,18 @@ class TestGetBoolean:
         assert not getboolean("off")
 
 
+class TestWeightedChoice:
+    def test_empty_weights(self):
+        assert weighted_choice(weights=[]) == 0
+
+    def test_choice_counts(self):
+        counts = [0] * 4
+        for _ in range(1000):
+            i = weighted_choice(weights=[1, 2, 3, 4])
+            counts[i] += 1
+        assert counts[3] > counts[2] > counts[1] > counts[0]
+
+
 class TestVarName:
     def test_when_string_contains_uppercase_chars_then_return_lowercase(self):
         assert var_name("Abc") == "abc"
