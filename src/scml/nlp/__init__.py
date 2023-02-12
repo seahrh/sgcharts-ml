@@ -20,7 +20,6 @@ __all__ = [
     "strip_xml",
     "strip_url",
     "strip_ip_address",
-    "emoji_shortcode_to_text",
 ]
 
 
@@ -298,27 +297,6 @@ def strip_ip_address(s: str, replacement: str = "") -> str:
     return res
 
 
-EMOJI_SHORTCODE_PATTERN = re.compile(r":([\w\s\-]+):", re.IGNORECASE)
-
-
-def emoji_shortcode_to_text(
-    s: str,
-    prefix: str = "(",
-    suffix: str = ")",
-    separator: str = " ",
-    shortcode_separators: Tuple[str, ...] = ("\\s", "_", "-"),
-) -> str:
-    res = s
-    for m in EMOJI_SHORTCODE_PATTERN.finditer(s):
-        if len(m[1]) == 0:
-            continue
-        tokens = split(shortcode_separators, s=m[1])
-        res = (
-            res[: m.start()] + prefix + separator.join(tokens) + suffix + res[m.end() :]
-        )
-    return res
-
-
 from .contractions import *
 
 __all__ += contractions.__all__  # type: ignore  # module name is not defined
@@ -334,6 +312,10 @@ __all__ += slang.__all__  # type: ignore  # module name is not defined
 from .emoticons import *
 
 __all__ += emoticons.__all__  # type: ignore  # module name is not defined
+
+from .emoji import *
+
+__all__ += emoji.__all__  # type: ignore  # module name is not defined
 
 from .charencoding import *
 
