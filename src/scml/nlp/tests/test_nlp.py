@@ -1,6 +1,7 @@
 import string
 
 from scml.nlp import (
+    SYMBOL_STRING,
     RepeatingCharacter,
     RepeatingSubstring,
     collapse_whitespace,
@@ -16,6 +17,7 @@ from scml.nlp import (
     split,
     strip_ip_address,
     strip_punctuation,
+    strip_symbol,
     strip_url,
     strip_xml,
     to_str,
@@ -385,6 +387,16 @@ class TestStripPunctuation:
     def test_replacement(self):
         for p in string.punctuation:
             assert strip_punctuation(p) == ""
+
+
+class TestStripSymbol:
+    def test_no_replacement(self):
+        assert strip_symbol("") == ""
+        assert strip_symbol("a1") == "a1"
+
+    def test_replacement(self):
+        for c in SYMBOL_STRING:
+            assert strip_symbol(c) == ""
 
 
 class TestStripXml:

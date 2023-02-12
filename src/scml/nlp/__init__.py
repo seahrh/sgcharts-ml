@@ -2,6 +2,7 @@ __all__ = [
     "to_str",
     "to_bytes",
     "strip_punctuation",
+    "strip_symbol",
     "is_number",
     "count_digit",
     "count_alpha",
@@ -55,18 +56,12 @@ def strip_punctuation(s: str, replacement: str = "") -> str:
     return PUNCTUATION_PATTERN.sub(replacement, s)
 
 
-def _strip_punctuation_deprecated(s: str) -> str:
-    """This uses the 3-argument version of str.maketrans with arguments (x, y, z) where 'x' and 'y'
-    must be equal-length strings and characters in 'x' are replaced by characters in 'y'.
-    'z' is a string (string.punctuation here)
-    where each character in the string is mapped to None
-    translator = str.maketrans('', '', string.punctuation)
-    This is an alternative that creates a dictionary mapping
-    of every character from string.punctuation to None (this will also work)
-    Based on https://stackoverflow.com/a/34294398/519951
-    """
-    translator = str.maketrans(dict.fromkeys(string.punctuation))
-    return s.translate(translator)
+SYMBOL_STRING = "⌔⟐◇◆◈⬖⬗⬘⬙⬠⬡⎔◊⧫⬢⬣⋄▰▪◼▮◾▗▖■∎▃▄▅▆▇█▌▐▍▎▉▊▋❘❙❚▀▘▝▙▚▛▜▟▞░▒▓▂▁▬▔▫▯▭▱◽□◻▢⊞⊡⊟⊠▣▤▥▦⬚▧▨▩⬓◧⬒◨◩◪⬔⬕❏❐❑❒⧈◰◱◳◲◫⧇⧅⧄⍁⍂⎔⎕⏣⌓⏥⏢⊞⊟⊠⊡▲▼◀▶←↑→↓↔↕∞±×÷≠≥≤♀♂★☆♠♦♣♥♡■□●○◆◇✖✚✔♫✈⚑❮❯©®㊤㊦㊧㊨㊥㊣㊖㊕㍿αβπθ¥€【】︻︼⸨⸩❪❫⏠⏡⌌⌍⌎⌏⌐⌙⌢⌣⎴⎵⎶⎾⎿⏋⏌¬❨❩⸨⸩◖◗❪❫❮❯❬❭❰❱⊏⊐⊑⊒⟦⟧⟨⟩⟪⟫⦃⦄⦅⦆⦇⦈⦉⦊⦋⦌⦍⦎⦏⦐⦑⦒⦓⦔⦕⦖⦗⦘❬❭❮❯❰❱❴❵❲❳⦗⦘⁅⁆〈〉⏜⏝⏞⏟{}⸨⸩❨❩❪❫⸦⸧⸡⸠⸢⸣⸤⸥⎡⎤⎣⎦⎨⎬⌠⌡⎛⎠⎝⎞⁀⁔‿⁐⎰⎱◜◝◞◟◠◡⋒⋓⋐⋑╰╮╭╯⌞⌟⌜⌝⌊⌋⌉⌈⌋▲▼◀▶◢◣◥◤△▽◿◺◹◸▴▾◂▸▵▿◃▹◁▷◅▻◬⟁⧋⧊⊿∆∇◭◮⧩⧨⦉⦊►◄⓵⓶⓷⓸⓹⓺⓻⓼⓽⓾⓵⓶⓷⓸⓹⓺⓻⓼⓽⓾⓪①②③④⑤⑥⑦⑧⑨⑩➀➁➂➃➄➅➆➇➈➉⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳⓿❶❷❸❹❺❻❼❽❾❿➊➋➌➍➎➏➐➑➒➓⓫⓬⓭⓮⓯⓰⓱⓲⓳⓴⚬○⚪◌◍◎◯❍◉⦾⊙⦿⊜⊖⊘⊚⊛⊝●⚫⦁◐◑◒◓◔◕⦶⦸◵◴◶◷⊕⊗•●⦇⦈⊕⊖⊗⊘⊙⊚⊛⊜⊝■。！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞◎＠※◆●［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘'‛“”„‟…‧﹏."
+SYMBOL_PATTERN = re.compile(f"[{re.escape(SYMBOL_STRING)}]")
+
+
+def strip_symbol(s: str, replacement: str = "") -> str:
+    return SYMBOL_PATTERN.sub(replacement, s)
 
 
 def is_number(s: str) -> bool:
