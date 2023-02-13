@@ -4,7 +4,7 @@ import random
 import re
 import sys
 from bisect import bisect
-from typing import FrozenSet, Iterable, List, Set, Union
+from typing import FrozenSet, Iterable, List, Set, Tuple, Union
 
 import numpy as np
 from numba import njit
@@ -13,6 +13,7 @@ __all__ = [
     "getboolean",
     "seed_everything",
     "weighted_choice",
+    "contiguous_ranges",
     "var_name",
     "fillna",
 ]
@@ -86,6 +87,21 @@ def weighted_choice(weights: Iterable[float]) -> int:
     # The return value i is such that all e in a[:i] have e <= x,
     # and all e in a[i:] have e > x.
     return bisect(cum_weights, x)
+
+
+def contiguous_ranges(a: List[int]) -> List[Tuple[int, int]]:
+    if len(a) == 0:
+        raise ValueError("a must not be empty")
+    a = sorted(a)
+    los = [a[0]]
+    his = []
+    for i in range(len(a) - 1):
+        if a[i + 1] - a[i] > 1:
+            his.append(a[i])
+            los.append(a[i + 1])
+    if len(his) < len(los):
+        his.append(a[-1])
+    return list(zip(los, his))
 
 
 @njit

@@ -23,21 +23,6 @@ class EmojiEntry(NamedTuple):
     subgroup: str
 
 
-def ranges(a: List[int]) -> List[Tuple[int, int]]:
-    if len(a) == 0:
-        raise ValueError("a must not be empty")
-    a.sort()
-    los = [a[0]]
-    his = []
-    for i in range(len(a) - 1):
-        if a[i + 1] - a[i] > 1:
-            his.append(a[i])
-            los.append(a[i + 1])
-    if len(his) < len(los):
-        his.append(los[-1])
-    return list(zip(los, his))
-
-
 def to_unicode(base16: int) -> str:
     return r"\U" + hex(base16)[2:].zfill(8)
 
@@ -56,11 +41,7 @@ class Emoji:
         with importlib.resources.open_text(data, "emoji-test.txt") as lines:
             for line in lines:  # skip the explanation lines
                 line = line.strip()
-                if (
-                    "subtotal:" in line
-                ):  # these are lines showing statistics about each group, not needed
-                    continue
-                if line == "":
+                if len(line) == 0:
                     continue
                 if line.startswith(
                     "#"
@@ -121,7 +102,7 @@ class Emoji:
         single_codepoint: List[str] = []
         multi_codepoint: List[str] = []
         for cps in [entry.codepoints.split() for entry in self.entries]:
-            # turn to a hexadecimal number by left padding 8 zeros e.g. '\U0001F44D'
+            # get hexadecimal number by left padding 8 zeros e.g. '\U0001F44D'
             hexs = [r"\U" + cp.zfill(8) for cp in cps]
             ls = single_codepoint
             if len(hexs) > 1:
@@ -129,9 +110,10 @@ class Emoji:
             ls.append("".join(hexs))
         # sorting by length in decreasing order is extremely important as demonstrated above
         multi_codepoint.sort(key=len, reverse=True)
+        # drop the first 2 chars "\U"
         indices = [int(x[2:], base=16) for x in single_codepoint]
         single_codepoint = []
-        for _min, _max in ranges(indices):
+        for _min, _max in scml.contiguous_ranges(indices):
             cp = to_unicode(_min)
             if _min != _max:
                 cp += f"-{to_unicode(_max)}"

@@ -14,7 +14,6 @@ class TestStripEmoji:
         assert em.strip("") == ""
         assert em.strip("joy") == "joy"
 
-    @pytest.mark.skip(reason="not yet fixed")
     def test_replacement(self, get_emoji):
         em = get_emoji
         assert len(em.entries) >= 4159

@@ -42,3 +42,22 @@ class TestVarName:
 
     def test_when_string_is_already_legal_variable_name_then_do_nothing(self):
         assert var_name("a_b") == "a_b"
+
+
+class TestContiguousRanges:
+    def test_single_item(self):
+        assert contiguous_ranges([0]) == [(0, 0)]
+
+    def test_single_range(self):
+        assert contiguous_ranges([0, 1]) == [(0, 1)]
+        assert contiguous_ranges([0, 2, 3, 4, 6]) == [(0, 0), (2, 4), (6, 6)]
+
+    def test_multiple_ranges(self):
+        assert contiguous_ranges([0, 1, 3, 4, 5]) == [(0, 1), (3, 5)]
+        assert contiguous_ranges([0, 1, 3, 5, 6, 8, 10, 11]) == [
+            (0, 1),
+            (3, 3),
+            (5, 6),
+            (8, 8),
+            (10, 11),
+        ]
