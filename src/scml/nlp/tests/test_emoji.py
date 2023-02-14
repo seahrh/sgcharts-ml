@@ -8,6 +8,12 @@ def get_emoji():
     yield Emoji()
 
 
+class TestLoadEmoji:
+    def test_load_file(self, get_emoji):
+        em = get_emoji
+        assert len(em.entries) >= 4159
+
+
 class TestStripEmoji:
     def test_no_replacement(self, get_emoji):
         em = get_emoji
@@ -16,7 +22,6 @@ class TestStripEmoji:
 
     def test_replacement(self, get_emoji):
         em = get_emoji
-        assert len(em.entries) >= 4159
         for entry in em.entries.values():
             assert em.strip(entry.emoji) == "", f"{entry}"
 
