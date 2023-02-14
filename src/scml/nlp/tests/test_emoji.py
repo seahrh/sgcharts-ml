@@ -17,8 +17,27 @@ class TestStripEmoji:
     def test_replacement(self, get_emoji):
         em = get_emoji
         assert len(em.entries) >= 4159
-        for entry in em.entries:
+        for entry in em.entries.values():
             assert em.strip(entry.emoji) == "", f"{entry}"
+
+
+class TestEmojiToText:
+    def test_no_matches(self, get_emoji):
+        em = get_emoji
+        assert em.to_text("") == ""
+        assert em.to_text(":a=1:") == ":a=1:"
+
+    def test_single_match(self, get_emoji):
+        em = get_emoji
+        assert em.to_text("🍑") == "(peach)"
+        assert em.to_text("1🍑") == "1(peach)"
+        assert em.to_text("🍑2") == "(peach)2"
+        assert em.to_text("1🍑2") == "1(peach)2"
+
+    def test_multiple_matches(self, get_emoji):
+        em = get_emoji
+        assert em.to_text("1🍑2🦀3") == "1(peach)2(crab)3"
+        assert em.to_text("1 🍑 2 🦀 3") == "1 (peach) 2 (crab) 3"
 
 
 class TestStripEmojiShortcode:

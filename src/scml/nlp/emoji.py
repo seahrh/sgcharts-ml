@@ -1,6 +1,6 @@
 import importlib.resources
 import re
-from typing import List, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Tuple
 
 import scml
 from scml.nlp import split
@@ -98,16 +98,17 @@ class Emoji:
     def __init__(
         self,
     ):
-        self.entries = self._load()
+        self.entries: Dict[str, EmojiEntry] = {}
         single_codepoint: List[str] = []
         multi_codepoint: List[str] = []
-        for cps in [entry.codepoints.split() for entry in self.entries]:
+        for entry in self._load():
             # get hexadecimal number by left padding 8 zeros e.g. '\U0001F44D'
-            hexs = [r"\U" + cp.zfill(8) for cp in cps]
+            cps = [r"\U" + cp.zfill(8) for cp in entry.codepoints.split()]
             ls = single_codepoint
-            if len(hexs) > 1:
+            if len(cps) > 1:
                 ls = multi_codepoint
-            ls.append("".join(hexs))
+            ls.append("".join(cps))
+            self.entries[entry.emoji] = entry
         # sorting by length in decreasing order is extremely important as demonstrated above
         multi_codepoint.sort(key=len, reverse=True)
         # drop the first 2 chars "\U"
@@ -125,6 +126,28 @@ class Emoji:
 
     def strip(self, s: str, replacement: str = "") -> str:
         return self.emoji_pattern.sub(replacement, s)
+
+    def to_text(
+        self,
+        s: str,
+        prefix: str = "(",
+        suffix: str = ")",
+    ) -> str:
+        res = s
+        offset = 0
+        for m in self.emoji_pattern.finditer(s):
+            if len(m[0]) == 0:
+                continue
+            name = self.entries[m[0]].name
+            res = (
+                res[: m.start() + offset]
+                + prefix
+                + name
+                + suffix
+                + res[m.end() + offset :]
+            )
+            offset += len(prefix) + len(suffix) + len(name) - 1
+        return res
 
     @staticmethod
     def strip_shortcode(s: str, replacement: str = "") -> str:
