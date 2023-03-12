@@ -137,6 +137,8 @@ class TestCyclicalEncode:
 class TestGroupStatistics:
     def test_one_group_column(self):
         dtype = "float32"
+        aggregates = {"mean", "std", "min", "max"}
+        percentiles = [25, 50, 75]
         data = pd.DataFrame(
             {
                 "a": [1, 2, 7, 4, 13, 6],
@@ -145,7 +147,13 @@ class TestGroupStatistics:
             },
             dtype=dtype,
         )
-        a = group_statistics(data, column="a", group_columns=["b"])
+        a = group_statistics(
+            data,
+            column="a",
+            group_columns=["b"],
+            aggregates=aggregates,
+            percentiles=percentiles,
+        )
         assert set(a.index) == {"bar", "foo"}
         assert a.loc["foo"].to_dict() == {
             "a_p50": 7,
@@ -175,6 +183,8 @@ class TestGroupStatistics:
 
     def test_two_group_columns(self):
         dtype = "float32"
+        aggregates = {"mean", "std", "min", "max"}
+        percentiles = [25, 50, 75]
         data = pd.DataFrame(
             {
                 "a": [1, 2, 7, 4, 13, 6],
@@ -183,7 +193,13 @@ class TestGroupStatistics:
             },
             dtype=dtype,
         )
-        a = group_statistics(data, column="a", group_columns=["b", "c"])
+        a = group_statistics(
+            data,
+            column="a",
+            group_columns=["b", "c"],
+            aggregates=aggregates,
+            percentiles=percentiles,
+        )
         assert set(a.index) == {("foo", 1), ("bar", 2)}
         assert a.loc[("foo", 1)].to_dict() == {
             "a_p50": 7,
@@ -215,6 +231,8 @@ class TestGroupStatistics:
 class TestGroupFeatures:
     def test_one_group_column(self):
         dtype = "float32"
+        aggregates = {"mean", "std", "min", "max"}
+        percentiles = [25, 50, 75]
         data = pd.DataFrame(
             {
                 "a": [1, 2, 7, 4, 13, 6],
@@ -225,7 +243,13 @@ class TestGroupFeatures:
         )
         a = group_features(
             data,
-            statistics=group_statistics(data, column="a", group_columns=["b"]),
+            statistics=group_statistics(
+                data,
+                column="a",
+                group_columns=["b"],
+                aggregates=aggregates,
+                percentiles=percentiles,
+            ),
             column="a",
             group_columns=["b"],
             dtype=dtype,
@@ -286,6 +310,8 @@ class TestGroupFeatures:
 
     def test_two_group_columns(self):
         dtype = "float32"
+        aggregates = {"mean", "std", "min", "max"}
+        percentiles = [25, 50, 75]
         data = pd.DataFrame(
             {
                 "a": [1, 2, 7, 4, 13, 6],
@@ -296,7 +322,13 @@ class TestGroupFeatures:
         )
         a = group_features(
             data,
-            statistics=group_statistics(data, column="a", group_columns=["b", "c"]),
+            statistics=group_statistics(
+                data,
+                column="a",
+                group_columns=["b", "c"],
+                aggregates=aggregates,
+                percentiles=percentiles,
+            ),
             column="a",
             group_columns=["b", "c"],
             dtype=dtype,

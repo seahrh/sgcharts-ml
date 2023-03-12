@@ -5,7 +5,17 @@ __all__ = [
     "group_statistics",
     "group_features",
 ]
-from typing import Dict, Iterable, Tuple
+from typing import (
+    Dict,
+    FrozenSet,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 import pandas as pd
@@ -74,41 +84,46 @@ def cyclical_encode(
 def group_statistics(
     data: pd.DataFrame,
     column: str,
-    group_columns: Iterable[str],
+    group_columns: Sequence[str],
+    aggregates: Union[Set[str], FrozenSet[str]] = frozenset(
+        ["mean", "std", "min", "max"]
+    ),
+    percentiles: Optional[Sequence[int]] = None,
     dtype=np.float32,
 ) -> pd.DataFrame:
-    columns = [
-        f"{column}_p50",
-        f"{column}_mean",
-        f"{column}_min",
-        f"{column}_max",
-        f"{column}_std",
-        f"{column}_p25",
-        f"{column}_p75",
-    ]
+    c_map: Dict[str, str] = {}
+    for a in aggregates:
+        c_map[a] = f"{column}_{a}"
+    a_list = list(aggregates - {"std"})
+    if percentiles is not None:
+        for p in percentiles:
+            c_map[f"p{p}"] = f"{column}_p{p}"
     grouped = data.groupby(group_columns, sort=False)
-    res = grouped[column].agg(["median", "mean", "min", "max"])
-    res.rename(
-        columns={
-            "median": columns[0],
-            "mean": columns[1],
-            "min": columns[2],
-            "max": columns[3],
-        },
-        inplace=True,
-    )
-    # population standard deviation to prevent NaN
-    agg = grouped[column].std(ddof=0)
-    agg.rename(columns[4], inplace=True)
-    res = res.merge(agg, left_index=True, right_index=True)
-    agg = grouped[column].quantile(0.25)
-    agg.rename(columns[5], inplace=True)
-    res = res.merge(agg, left_index=True, right_index=True)
-    agg = grouped[column].quantile(0.75)
-    agg.rename(columns[6], inplace=True)
-    res = res.merge(agg, left_index=True, right_index=True)
-    for col in columns:
-        res[col] = res[col].astype(dtype)
+    res = grouped[column].agg(a_list)
+    if "std" in aggregates:
+        # population standard deviation to prevent NaN
+        sr = grouped[column].std(ddof=0)
+        sr.name = "std"
+        res = pd.concat([res, sr], axis=1)
+    if percentiles is not None and len(percentiles) != 0:
+        quantiles: List[float] = [p / 100 for p in percentiles]
+        sr = grouped[column].quantile(quantiles)
+        df = sr.reset_index()
+        cols = list(df.columns)
+        i = len(group_columns)
+        quantiles_ls: List[List[float]] = [[] for _ in range(len(percentiles))]
+        for t in df.itertuples():
+            p = int(getattr(t, cols[i]) * 100)
+            quantiles_ls[percentiles.index(p)].append(getattr(t, cols[i + 1]))
+        quantiles_sr = []
+        for i, ls in enumerate(quantiles_ls):
+            # align series index with res dataframe
+            quantiles_sr.append(
+                pd.Series(ls, index=res.index, name=f"p{percentiles[i]}")
+            )
+        res = pd.concat([res] + quantiles_sr, axis=1)
+    res = res.rename(columns=c_map, errors="raise")
+    res = res.astype(dtype)
     return res
 
 
