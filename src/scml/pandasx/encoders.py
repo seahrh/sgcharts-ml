@@ -85,30 +85,47 @@ def group_statistics(
     data: pd.DataFrame,
     column: str,
     group_columns: Sequence[str],
-    aggregates: Union[Set[str], FrozenSet[str]] = frozenset(
+    aggregates: Optional[Union[Set[str], FrozenSet[str]]] = frozenset(
         ["mean", "std", "min", "max"]
     ),
     percentiles: Optional[Sequence[int]] = None,
     dtype=np.float32,
 ) -> pd.DataFrame:
+    if len(group_columns) == 0:
+        raise ValueError("groupby must be at least 1 column")
+    if (aggregates is None or len(aggregates) == 0) and (
+        percentiles is None or len(percentiles) == 0
+    ):
+        raise ValueError(
+            "No statistics to compute. Both `aggregates` and `percentiles` are None or empty."
+        )
     c_map: Dict[str, str] = {}
-    for a in aggregates:
-        c_map[a] = f"{column}_{a}"
-    a_list = list(aggregates - {"std"})
-    if percentiles is not None:
+    res = None
+    grouped = data.groupby(group_columns, sort=True)
+    index = [k for k in grouped.groups.keys()]
+    if len(group_columns) > 1:
+        # noinspection PyTypeChecker
+        index = pd.MultiIndex.from_tuples(index, names=group_columns)
+    if aggregates is not None:
+        for a in aggregates:
+            c_map[a] = f"{column}_{a}"
+        a_list = list(aggregates - {"std"})
+        if len(a_list) != 0:
+            res = grouped[column].agg(a_list)
+        if "std" in aggregates:
+            # population standard deviation to prevent NaN
+            sr = grouped[column].std(ddof=0)
+            sr.name = "std"
+            if res is None:
+                res = sr.to_frame()
+            else:
+                res = pd.concat([res, sr], axis=1)
+    if percentiles is not None and len(percentiles) != 0:
         for p in percentiles:
             c_map[f"p{p}"] = f"{column}_p{p}"
-    grouped = data.groupby(group_columns, sort=False)
-    res = grouped[column].agg(a_list)
-    if "std" in aggregates:
-        # population standard deviation to prevent NaN
-        sr = grouped[column].std(ddof=0)
-        sr.name = "std"
-        res = pd.concat([res, sr], axis=1)
-    if percentiles is not None and len(percentiles) != 0:
         quantiles: List[float] = [p / 100 for p in percentiles]
-        sr = grouped[column].quantile(quantiles)
-        df = sr.reset_index()
+        df = grouped[column].quantile(quantiles).to_frame()
+        df = df.reset_index()
         cols = list(df.columns)
         i = len(group_columns)
         quantiles_ls: List[List[float]] = [[] for _ in range(len(percentiles))]
@@ -119,11 +136,19 @@ def group_statistics(
         for i, ls in enumerate(quantiles_ls):
             # align series index with res dataframe
             quantiles_sr.append(
-                pd.Series(ls, index=res.index, name=f"p{percentiles[i]}")
+                pd.Series(
+                    ls,
+                    index=index if res is None else res.index,
+                    name=f"p{percentiles[i]}",
+                )
             )
-        res = pd.concat([res] + quantiles_sr, axis=1)
-    res = res.rename(columns=c_map, errors="raise")
-    res = res.astype(dtype)
+        if res is None:
+            res = pd.concat([sr.to_frame() for sr in quantiles_sr], axis=1)
+        else:
+            res = pd.concat([res] + quantiles_sr, axis=1)
+    if res is not None:
+        res = res.rename(columns=c_map, errors="raise")
+        res = res.astype(dtype)
     return res
 
 

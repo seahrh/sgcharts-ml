@@ -227,6 +227,148 @@ class TestGroupStatistics:
         assert str(a["a_p25"].dtype) == dtype
         assert str(a["a_p75"].dtype) == dtype
 
+    def test_std_only(self):
+        dtype = "float32"
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            },
+            dtype=dtype,
+        )
+        a = group_statistics(
+            data,
+            column="a",
+            group_columns=["b"],
+            aggregates={"std"},
+            percentiles=None,
+        )
+        assert set(a.index) == {"bar", "foo"}
+        assert a.loc["foo"].to_dict() == {
+            "a_std": 4.898979663848877,
+        }
+        assert a.loc["bar"].to_dict() == {
+            "a_std": 1.632993221282959,
+        }
+        assert str(a["a_std"].dtype) == dtype
+
+    def test_mean_only(self):
+        dtype = "float32"
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            },
+            dtype=dtype,
+        )
+        a = group_statistics(
+            data,
+            column="a",
+            group_columns=["b"],
+            aggregates={"mean"},
+            percentiles=None,
+        )
+        assert set(a.index) == {"bar", "foo"}
+        assert a.loc["foo"].to_dict() == {
+            "a_mean": 7,
+        }
+        assert a.loc["bar"].to_dict() == {
+            "a_mean": 4,
+        }
+        assert str(a["a_mean"].dtype) == dtype
+
+    def test_single_percentile_only(self):
+        dtype = "float32"
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            },
+            dtype=dtype,
+        )
+        a = group_statistics(
+            data,
+            column="a",
+            group_columns=["b"],
+            aggregates=None,
+            percentiles=[50],
+        )
+        assert set(a.index) == {"bar", "foo"}
+        assert a.loc["foo"].to_dict() == {
+            "a_p50": 7,
+        }
+        assert a.loc["bar"].to_dict() == {
+            "a_p50": 4,
+        }
+        assert str(a["a_p50"].dtype) == dtype
+
+    def test_multiple_percentiles_only(self):
+        dtype = "float32"
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            },
+            dtype=dtype,
+        )
+        a = group_statistics(
+            data,
+            column="a",
+            group_columns=["b"],
+            aggregates=None,
+            percentiles=[25, 50, 75],
+        )
+        assert set(a.index) == {"bar", "foo"}
+        assert a.loc["foo"].to_dict() == {
+            "a_p50": 7,
+            "a_p25": 4,
+            "a_p75": 10,
+        }
+        assert a.loc["bar"].to_dict() == {
+            "a_p25": 3,
+            "a_p50": 4,
+            "a_p75": 5,
+        }
+        assert str(a["a_p25"].dtype) == dtype
+        assert str(a["a_p50"].dtype) == dtype
+        assert str(a["a_p75"].dtype) == dtype
+
+    def test_multiple_percentiles_only_for_two_group_columns(self):
+        dtype = "float32"
+        data = pd.DataFrame(
+            {
+                "a": [1, 2, 7, 4, 13, 6],
+                "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
+                "c": [1, 2, 1, 2, 1, 2],
+            },
+            dtype=dtype,
+        )
+        a = group_statistics(
+            data,
+            column="a",
+            group_columns=["b", "c"],
+            aggregates=None,
+            percentiles=[25, 50, 75],
+        )
+        assert set(a.index) == {("foo", 1), ("bar", 2)}
+        assert a.loc[("foo", 1)].to_dict() == {
+            "a_p50": 7,
+            "a_p25": 4,
+            "a_p75": 10,
+        }
+        assert a.loc[("bar", 2)].to_dict() == {
+            "a_p25": 3,
+            "a_p50": 4,
+            "a_p75": 5,
+        }
+        assert str(a["a_p50"].dtype) == dtype
+        assert str(a["a_p25"].dtype) == dtype
+        assert str(a["a_p75"].dtype) == dtype
+
 
 class TestGroupFeatures:
     def test_one_group_column(self):
