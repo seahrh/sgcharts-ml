@@ -266,7 +266,10 @@ class TestSplit:
             delimiters=["a"],
             s="a1a2a",
         ) == ["", "1", "2", ""]
-        assert split(delimiters=["a", "b"], s="ab1ba2ab",) == [
+        assert split(
+            delimiters=["a", "b"],
+            s="ab1ba2ab",
+        ) == [
             "",
             "",
             "1",

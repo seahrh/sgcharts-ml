@@ -26,7 +26,6 @@ class ArcMarginProduct(keras.layers.Layer):
     def __init__(
         self, n_classes, scale=30, margin=0.50, easy_margin=False, ls_eps=0.0, **kwargs
     ):
-
         super(ArcMarginProduct, self).__init__(**kwargs)
         self.n_classes = n_classes
         self.scale = scale
@@ -40,7 +39,6 @@ class ArcMarginProduct(keras.layers.Layer):
         self.W = None
 
     def get_config(self):
-
         config = super().get_config().copy()
         config.update(
             {

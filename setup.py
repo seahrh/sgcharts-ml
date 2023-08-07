@@ -4,7 +4,7 @@ __version__ = "0.6.0"
 setup(
     name="sgcharts-ml",
     version=__version__,
-    python_requires=">=3.7",
+    python_requires=">=3.8,<3.12",
     install_requires=[
         "numba>=0.52.0",
         "pandas>=1.0.0",
@@ -14,15 +14,15 @@ setup(
     ],
     extras_require={
         "lint": [
-            "black==22.3.0",
-            "isort==5.10.1",
-            "pre-commit==2.19.0",
-            "flake8==4.0.1",
-            "mypy==0.961",
+            "black==23.7.0",
+            "isort==5.12.0",
+            "pre-commit==3.3.3",
+            "flake8==6.1.0",
+            "mypy==1.4.1",
         ],
         "tests": [
-            "pytest==7.1.2",
-            "pytest-cov==3.0.0",
+            "pytest==7.4.0",
+            "pytest-cov==4.1.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
         "transformers": ["transformers>=4.20.1"],
