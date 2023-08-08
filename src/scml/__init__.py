@@ -4,7 +4,7 @@ import random
 import re
 import sys
 from bisect import bisect
-from typing import FrozenSet, Iterable, List, Set, Tuple, Union
+from typing import FrozenSet, Iterable, List, Optional, Set, Tuple, Union
 
 import numpy as np
 from numba import njit
@@ -37,7 +37,7 @@ def getboolean(s: str, truthy: Union[Set[str], FrozenSet[str]] = TRUTHY) -> bool
     return False
 
 
-def get_logger(name: str = None):
+def get_logger(name: Optional[str] = None):
     # suppress matplotlib logging
     logging.getLogger(name="matplotlib").setLevel(logging.WARNING)
     logger = logging.getLogger(name)

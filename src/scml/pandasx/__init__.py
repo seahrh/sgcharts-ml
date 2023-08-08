@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 
@@ -5,7 +7,10 @@ __all__ = ["quantize", "find_missing_values", "rescale_as_int", "value_counts"]
 
 
 def rescale_as_int(
-    s: pd.Series, min_value: float = None, max_value: float = None, dtype=np.int16
+    s: pd.Series,
+    min_value: Optional[float] = None,
+    max_value: Optional[float] = None,
+    dtype=np.int16,
 ) -> pd.Series:
     """Cannot be converted to njit because np.clip is unsupported."""
     valid_dtypes = {np.int8, np.int16, np.int32}

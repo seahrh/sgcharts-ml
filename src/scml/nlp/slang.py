@@ -1,7 +1,7 @@
 import csv
 import importlib.resources
 import re
-from typing import Iterable, Tuple
+from typing import Iterable, Optional, Tuple
 
 import scml
 
@@ -24,7 +24,7 @@ class SlangExpansion:
 
     def __init__(
         self,
-        rules: Iterable[Tuple[str, str]] = None,
+        rules: Optional[Iterable[Tuple[str, str]]] = None,
         prefix: str = "[",
         suffix: str = "]",
         separator: str = "; ",

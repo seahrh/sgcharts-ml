@@ -1,7 +1,7 @@
 __all__ = ["smote"]
 import logging
 import random
-from typing import Dict, Iterable, List, NamedTuple, Union
+from typing import Dict, Iterable, List, NamedTuple, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -20,9 +20,9 @@ def smote(
     size: int,
     k_neighbours: int = 5,
     distance_measure: str = "euclidean",
-    columns: Iterable[str] = None,
-    embedding_columns: Iterable[str] = None,
-    random_state: int = None,
+    columns: Optional[Iterable[str]] = None,
+    embedding_columns: Optional[Iterable[str]] = None,
+    random_state: Optional[int] = None,
 ) -> pd.DataFrame:
     if size < 1:
         raise ValueError("must generate at least 1 synthetic example")

@@ -23,7 +23,7 @@ from numba import njit
 
 
 class FrequencyEncoder:
-    def __init__(self, encoding_map: Dict[str, float] = None):
+    def __init__(self, encoding_map: Optional[Dict[str, float]] = None):
         self._map = encoding_map
 
     def encoding_map(self, s: pd.Series) -> Dict[str, float]:
@@ -38,7 +38,7 @@ class FrequencyEncoder:
 
 
 class TargetEncoder:
-    def __init__(self, encoding_map: Dict[str, float] = None):
+    def __init__(self, encoding_map: Optional[Dict[str, float]] = None):
         self._map = encoding_map
 
     def encoding_map(

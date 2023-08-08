@@ -25,7 +25,7 @@ __all__ = [
 
 import re
 import string
-from typing import AnyStr, Iterable, List, Set, Tuple
+from typing import AnyStr, Iterable, List, Optional, Set, Tuple
 
 
 def to_str(bytes_or_str: AnyStr, encoding="utf-8") -> str:
@@ -222,7 +222,7 @@ def decode_escaped_bytes(s: str, encoding="utf-8") -> str:
 
 
 def ngrams(
-    tokens: Iterable[str], n: int, skip: Set[str] = None
+    tokens: Iterable[str], n: int, skip: Optional[Set[str]] = None
 ) -> List[Tuple[str, ...]]:
     ts = []
     for t in tokens:

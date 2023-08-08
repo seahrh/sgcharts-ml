@@ -2,7 +2,7 @@ __all__ = ["PurgedGroupTimeSeriesSplit"]
 
 import logging
 import sys
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 
@@ -53,8 +53,8 @@ class PurgedGroupTimeSeriesSplit(_BaseKFold):
         self,
         n_splits=5,
         *,
-        max_train_group_size: int = None,
-        max_test_group_size: int = None,
+        max_train_group_size: Optional[int] = None,
+        max_test_group_size: Optional[int] = None,
         group_gap: int = 1,
     ):
         super().__init__(n_splits, shuffle=False, random_state=None)

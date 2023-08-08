@@ -119,7 +119,7 @@ def schedulers(optimizer, params: Iterable[Dict[str, str]]) -> List[LrSchedulerC
 
 
 def schedulers_by_config(
-    optimizer, sections: Iterable[SectionProxy], booleans: Set[str] = None
+    optimizer, sections: Iterable[SectionProxy], booleans: Optional[Set[str]] = None
 ) -> List[LrSchedulerConf]:
     params: List[Dict] = []
     if booleans is None:
