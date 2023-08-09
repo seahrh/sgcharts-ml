@@ -30,18 +30,18 @@ def smote(
         raise ValueError("k_neighbours must be at least 1")
     if len(df) < 2:
         raise ValueError("Input dataframe must have at least 2 records")
-    _columns = set(df.columns)
+    _columns: List = list(df.columns)
     if columns is not None:
-        _columns = set(columns)
+        _columns = list(columns)
     for col in _columns:
         dtype = str(df[col].dtype)
         if not dtype.startswith("int") and not dtype.startswith("float"):
             raise ValueError(
                 f"column must be integer or float. Found col={col}, dtype={dtype}"
             )
-    _embedding_columns = _columns
+    _embedding_columns: List = _columns
     if embedding_columns is not None:
-        _embedding_columns = set(embedding_columns)
+        _embedding_columns = list(embedding_columns)
     if random_state is not None:
         random.seed(random_state)
     log.debug(f"_columns={_columns}, _embedding_columns={_embedding_columns}")

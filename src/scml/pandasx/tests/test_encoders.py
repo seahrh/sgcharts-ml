@@ -145,7 +145,6 @@ class TestGroupStatistics:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_statistics(
             data,
@@ -191,7 +190,6 @@ class TestGroupStatistics:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_statistics(
             data,
@@ -235,7 +233,6 @@ class TestGroupStatistics:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_statistics(
             data,
@@ -261,7 +258,6 @@ class TestGroupStatistics:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_statistics(
             data,
@@ -287,7 +283,6 @@ class TestGroupStatistics:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_statistics(
             data,
@@ -313,7 +308,6 @@ class TestGroupStatistics:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_statistics(
             data,
@@ -345,7 +339,6 @@ class TestGroupStatistics:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_statistics(
             data,
@@ -381,7 +374,6 @@ class TestGroupFeatures:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_features(
             data,
@@ -460,7 +452,6 @@ class TestGroupFeatures:
                 "b": ["foo", "bar", "foo", "bar", "foo", "bar"],
                 "c": [1, 2, 1, 2, 1, 2],
             },
-            dtype=dtype,
         )
         a = group_features(
             data,
