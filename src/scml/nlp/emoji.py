@@ -1,5 +1,5 @@
-import importlib.resources
 import re
+from importlib.resources import files
 from typing import Dict, List, NamedTuple, Tuple
 
 import scml
@@ -38,7 +38,9 @@ class Emoji:
         subgroup = ""
         from . import data
 
-        with importlib.resources.open_text(data, "emoji-test.txt") as lines:
+        with files(data).joinpath("emoji-test.txt").open(
+            "r", encoding="utf-8"
+        ) as lines:
             for line in lines:  # skip the explanation lines
                 line = line.strip()
                 if len(line) == 0:

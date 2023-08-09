@@ -1,6 +1,6 @@
 import csv
-import importlib.resources
 import re
+from importlib.resources import files
 from typing import Iterable, Optional, Tuple
 
 import scml
@@ -16,7 +16,7 @@ class ContractionExpansion:
         res = []
         from . import data
 
-        with importlib.resources.open_text(data, "contractions.tsv") as f:
+        with files(data).joinpath("contractions.tsv").open("r", encoding="utf-8") as f:
             rows = csv.reader(f, delimiter="\t")
             for row in rows:
                 res.append((row[0].strip(), row[1].strip()))
