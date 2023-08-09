@@ -4,7 +4,7 @@ __version__ = "0.6.0"
 setup(
     name="sgcharts-ml",
     version=__version__,
-    python_requires=">=3.8,<3.12",
+    python_requires=">=3.9,<3.12",
     install_requires=[
         "numba>=0.52.0",
         "pandas>=1.0.0",
