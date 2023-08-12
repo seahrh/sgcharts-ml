@@ -3,6 +3,7 @@ __all__ = [
     "to_bytes",
     "strip_punctuation",
     "strip_symbol",
+    "strip_spans",
     "is_number",
     "count_digit",
     "count_alpha",
@@ -25,7 +26,7 @@ __all__ = [
 
 import re
 import string
-from typing import AnyStr, Iterable, List, Optional, Set, Tuple
+from typing import AnyStr, Iterable, List, Optional, Sequence, Set, Tuple
 
 
 def to_str(bytes_or_str: AnyStr, encoding="utf-8") -> str:
@@ -61,6 +62,35 @@ SYMBOL_PATTERN = re.compile(f"[{re.escape(SYMBOL_STRING)}]")
 
 def strip_symbol(s: str, replacement: str = "") -> str:
     return SYMBOL_PATTERN.sub(replacement, s)
+
+
+def strip_spans(
+    s: str,
+    positions: Sequence[Tuple[int, int]],
+    replacements: Optional[Sequence[str]] = None,
+) -> str:
+    if replacements is not None and len(replacements) != len(positions):
+        raise ValueError("Length of replacements and positions must be equal")
+    keep: List[bool] = [True] * len(s)
+    for p in positions:
+        i = 0
+        # starting index must not be negative
+        while 0 <= p[0] + i < p[1]:
+            keep[p[0] + i] = False
+            i += 1
+    res: str = ""
+    i, j = 0, 0
+    while i < len(s):
+        steps = 1
+        if keep[i]:
+            res += s[i]
+        elif replacements is not None:
+            if 0 <= positions[j][0] < positions[j][1]:  # valid span
+                res += replacements[j]
+                steps = positions[j][1] - positions[j][0]
+            j += 1
+        i += steps
+    return res
 
 
 def is_number(s: str) -> bool:

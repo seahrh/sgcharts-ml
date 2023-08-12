@@ -16,6 +16,7 @@ from scml.nlp import (
     split,
     strip_ip_address,
     strip_punctuation,
+    strip_spans,
     strip_symbol,
     strip_url,
     strip_xml,
@@ -399,6 +400,58 @@ class TestStripSymbol:
     def test_replacement(self):
         for c in SYMBOL_STRING:
             assert strip_symbol(c) == ""
+
+
+class TestStripSpans:
+    def test_strip_spans_without_replacement(self):
+        assert (
+            strip_spans(
+                s="0123456789",
+                positions=[
+                    (4, 6),
+                ],
+                replacements=None,
+            )
+            == "01236789"
+        )
+        assert (
+            strip_spans(
+                s="0123456789",
+                positions=[(0, 1), (4, 6), (9, 10)],
+                replacements=None,
+            )
+            == "123678"
+        )
+
+    def test_strip_spans_with_replacement(self):
+        assert (
+            strip_spans(
+                s="0123456789",
+                positions=[
+                    (4, 6),
+                ],
+                replacements=["__A__"],
+            )
+            == "0123__A__6789"
+        )
+        assert (
+            strip_spans(
+                s="0123456789",
+                positions=[(0, 1), (4, 6), (9, 10)],
+                replacements=["__A__", "__B__", "__C__"],
+            )
+            == "__A__123__B__678__C__"
+        )
+
+    def test_ignore_invalid_spans(self):
+        assert (
+            strip_spans(
+                s="0123456789",
+                positions=[(-1, -1), (-1, 1), (1, -1), (4, 4), (10, 10)],
+                replacements=None,
+            )
+            == "0123456789"
+        )
 
 
 class TestStripXml:
