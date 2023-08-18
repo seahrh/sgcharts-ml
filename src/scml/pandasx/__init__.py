@@ -1,9 +1,22 @@
+import io
 from typing import Optional
 
 import numpy as np
 import pandas as pd
 
-__all__ = ["quantize", "find_missing_values", "rescale_as_int", "value_counts"]
+__all__ = [
+    "info_string",
+    "quantize",
+    "find_missing_values",
+    "rescale_as_int",
+    "value_counts",
+]
+
+
+def info_string(df: pd.DataFrame) -> str:
+    buf = io.StringIO()
+    df.info(buf=buf)
+    return buf.getvalue()
 
 
 def rescale_as_int(
