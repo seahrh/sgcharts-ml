@@ -11,10 +11,15 @@ from numba import njit
 
 __all__ = [
     "getboolean",
+    "get_logger",
     "seed_everything",
+    "to_int_list",
+    "to_int_pair",
+    "to_float_list",
+    "to_float_pair",
+    "var_name",
     "weighted_choice",
     "contiguous_ranges",
-    "var_name",
     "fillna",
 ]
 
@@ -56,6 +61,24 @@ def seed_everything(seed: int = 31) -> None:
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     np.random.seed(seed)
+
+
+def to_int_list(s: str) -> List[int]:
+    return [int(v) for v in s.split()]
+
+
+def to_float_list(s: str) -> List[float]:
+    return [float(v) for v in s.split()]
+
+
+def to_int_pair(s: str) -> Tuple[int, int]:
+    vs = [int(v) for v in s.split()]
+    return vs[0], vs[1]
+
+
+def to_float_pair(s: str) -> Tuple[float, float]:
+    vs = [float(v) for v in s.split()]
+    return vs[0], vs[1]
 
 
 def var_name(s: str) -> str:
