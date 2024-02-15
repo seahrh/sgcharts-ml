@@ -8,8 +8,8 @@ class TestFindMissingValues:
     def test_no_missing_values(self):
         df = pd.DataFrame(
             {
-                "integers": [1, 2, 3, np.inf],
-                "floats": [0.1, 0.2, 0.3, np.inf],
+                "integers": [1, 2, 3, 4],
+                "floats": [0.1, 0.2, 0.3, 0.4],
                 "strings": ["", " ", "c", "d"],
                 "timestamps": [
                     pd.Timestamp("2017-01-01"),
@@ -32,7 +32,7 @@ class TestFindMissingValues:
         df = pd.DataFrame(
             {
                 "integers": [1, None, np.NaN, np.inf],
-                "floats": [0.1, None, np.NaN, np.inf],
+                "floats": [0.1, None, np.NaN, -np.inf],
                 "strings": ["", " ", "c", None],
                 "timestamps": [
                     pd.Timestamp("2017-01-01"),
@@ -43,20 +43,19 @@ class TestFindMissingValues:
             }
         )
         a = find_missing_values(df, blank_strings_as_null=False).to_dict()
-        assert a["Total"] == {"integers": 2, "floats": 2, "strings": 1, "timestamps": 2}
+        assert a["Total"] == {"integers": 3, "floats": 3, "strings": 1, "timestamps": 2}
         assert a["Percent"] == {
-            "integers": 0.5,
-            "floats": 0.5,
+            "integers": 0.75,
+            "floats": 0.75,
             "strings": 0.25,
             "timestamps": 0.5,
         }
 
-    def test_treat_empty_strings_and_inf_as_na(self):
-        pd.options.mode.use_inf_as_na = True
+    def test_treat_empty_strings_as_na(self):
         df = pd.DataFrame(
             {
                 "integers": [1, None, np.NaN, np.inf],
-                "floats": [0.1, None, np.NaN, np.inf],
+                "floats": [0.1, None, np.NaN, -np.inf],
                 "strings": ["", " ", "c", None],
                 "timestamps": [
                     pd.Timestamp("2017-01-01"),
@@ -74,4 +73,3 @@ class TestFindMissingValues:
             "strings": 0.75,
             "timestamps": 0.5,
         }
-        pd.options.mode.use_inf_as_na = False

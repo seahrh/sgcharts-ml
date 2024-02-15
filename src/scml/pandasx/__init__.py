@@ -79,6 +79,8 @@ def quantize(df: pd.DataFrame, verbose: bool = True) -> None:
 def find_missing_values(
     df: pd.DataFrame, blank_strings_as_null: bool = True
 ) -> pd.DataFrame:
+    """Infinity values are treated as null (missing value)."""
+    df = df.replace([np.inf, -np.inf], np.nan)
     if blank_strings_as_null:
         df = df.replace(r"^\s*$", np.nan, regex=True)
     total = df.isna().sum()
