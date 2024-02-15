@@ -4,9 +4,9 @@ __version__ = "0.6.0"
 setup(
     name="sgcharts-ml",
     version=__version__,
-    python_requires=">=3.9,<3.12",
+    python_requires=">=3.9,<3.13",
     install_requires=[
-        "numba>=0.52.0",
+        "numba>=0.59.0",  # official support for python 3.12 https://github.com/numba/numba/issues/9197
         "pandas>=1.0.0",
         "scikit-learn>=1.0.2",
         "networkx>=2.6.3",
@@ -14,14 +14,14 @@ setup(
     ],
     extras_require={
         "lint": [
-            "black==23.7.0",
+            "black==24.2.0",
             "isort==5.13.2",
-            "pre-commit==3.3.3",
-            "flake8==6.1.0",
+            "pre-commit==3.6.1",
+            "flake8==7.0.0",
             "mypy==1.8.0",
         ],
         "tests": [
-            "pytest==7.4.0",
+            "pytest==8.0.0",
             "pytest-cov==4.1.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
