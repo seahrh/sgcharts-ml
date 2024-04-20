@@ -2,6 +2,7 @@ import string
 
 from scml.nlp import (
     SYMBOL_STRING,
+    MatchResult,
     RepeatingCharacter,
     RepeatingSubstring,
     collapse_whitespace,
@@ -10,8 +11,10 @@ from scml.nlp import (
     count_punctuation,
     count_space,
     count_upper,
+    find_email,
     has_1a1d,
     ngrams,
+    replace_email,
     sentences,
     split,
     strip_ip_address,
@@ -617,3 +620,71 @@ class TestStripIpAddress:
         assert strip_ip_address("2001:db8:3:4::192.0.2.33") == ""
         assert strip_ip_address("64:ff9b::192.0.2.33") == ""
         assert strip_ip_address("g 64:ff9b::192.0.2.33 g") == "g  g"
+
+
+class TestFindEmail:
+
+    def test_empty_string(self):
+        assert find_email("") == []
+
+    def test_no_matches(self):
+        assert find_email("foo1 bar2 co") == []
+
+    def test_whole_string_match(self):
+        assert find_email("foo1@bar2.co") == [
+            MatchResult(match="foo1@bar2.co", start=0, end=12)
+        ]
+
+    def test_single_match_start(self):
+        assert find_email("foo1@bar2.co bar") == [
+            MatchResult(match="foo1@bar2.co", start=0, end=12)
+        ]
+
+    def test_single_match_mid(self):
+        assert find_email("foo foo1@bar2.co bar") == [
+            MatchResult(match="foo1@bar2.co", start=4, end=16)
+        ]
+
+    def test_single_match_end(self):
+        assert find_email("foo foo1@bar2.co") == [
+            MatchResult(match="foo1@bar2.co", start=4, end=16)
+        ]
+
+    def test_multi_match_start(self):
+        assert find_email("foo1@bar2.co foo bar3@foo4.co bar") == [
+            MatchResult(match="foo1@bar2.co", start=0, end=12),
+            MatchResult(match="bar3@foo4.co", start=17, end=29),
+        ]
+
+    def test_multi_match_mid(self):
+        assert find_email("bar foo1@bar2.co foo bar3@foo4.co bar") == [
+            MatchResult(match="foo1@bar2.co", start=4, end=16),
+            MatchResult(match="bar3@foo4.co", start=21, end=33),
+        ]
+
+    def test_multi_match_end(self):
+        assert find_email("bar foo1@bar2.co foo bar3@foo4.co") == [
+            MatchResult(match="foo1@bar2.co", start=4, end=16),
+            MatchResult(match="bar3@foo4.co", start=21, end=33),
+        ]
+
+    def test_non_overlapping_match(self):
+        assert find_email("foo1@bar2.foo3@bar4.co") == [
+            MatchResult(match="foo1@bar2.foo3", start=0, end=14),
+        ]
+
+
+class TestReplaceEmail:
+    def test_empty_string(self):
+        assert replace_email(s="", replacement="") == ""
+
+    def test_no_matches(self):
+        assert replace_email(s="foo1 bar2 co", replacement="") == "foo1 bar2 co"
+
+    def test_whole_string_replaced(self):
+        assert replace_email(s="foo1@bar2.co", replacement="") == ""
+
+    def test_replacement(self):
+        assert (
+            replace_email(s="foo foo1@bar2.co bar", replacement="xxx") == "foo xxx bar"
+        )
