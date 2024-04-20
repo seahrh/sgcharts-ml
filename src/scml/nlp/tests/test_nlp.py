@@ -12,16 +12,17 @@ from scml.nlp import (
     count_space,
     count_upper,
     find_email,
+    find_url,
     has_1a1d,
     ngrams,
     replace_email,
+    replace_url,
     sentences,
     split,
     strip_ip_address,
     strip_punctuation,
     strip_spans,
     strip_symbol,
-    strip_url,
     strip_xml,
     to_str,
 )
@@ -470,75 +471,129 @@ class TestStripXml:
         assert strip_xml("<br />") == ""
 
 
-class TestStripUrl:
+class TestFindUrl:
+
+    def test_empty_string(self):
+        assert find_url("") == []
+
+    def test_no_matches(self):
+        assert find_url("foo1 bar2 co") == []
+        assert find_url("http://foo1,bar2.co") == []
+
+    def test_whole_string_match(self):
+        assert find_url("http://foo1.bar2") == [
+            MatchResult(match="http://foo1.bar2", start=0, end=16)
+        ]
+
+    def test_single_match_start(self):
+        assert find_url("http://foo1.bar2 bar") == [
+            MatchResult(match="http://foo1.bar2", start=0, end=16)
+        ]
+
+    def test_single_match_mid(self):
+        assert find_url("foo http://foo1.bar2 bar") == [
+            MatchResult(match="http://foo1.bar2", start=4, end=20)
+        ]
+
+    def test_single_match_end(self):
+        assert find_url("foo http://foo1.bar2") == [
+            MatchResult(match="http://foo1.bar2", start=4, end=20)
+        ]
+
+    def test_multi_match_start(self):
+        assert find_url("http://foo1.bar2 foo http://bar3.foo4 bar") == [
+            MatchResult(match="http://foo1.bar2", start=0, end=16),
+            MatchResult(match="http://bar3.foo4", start=21, end=37),
+        ]
+
+    def test_multi_match_mid(self):
+        assert find_url("foo http://foo1.bar2 foo http://bar3.foo4 bar") == [
+            MatchResult(match="http://foo1.bar2", start=4, end=20),
+            MatchResult(match="http://bar3.foo4", start=25, end=41),
+        ]
+
+    def test_multi_match_end(self):
+        assert find_url("foo http://foo1.bar2 foo http://bar3.foo4") == [
+            MatchResult(match="http://foo1.bar2", start=4, end=20),
+            MatchResult(match="http://bar3.foo4", start=25, end=41),
+        ]
+
+    def test_non_overlapping_match(self):
+        # TODO pattern can't split the conjoined urls properly
+        assert find_url("http://foo1.bar2.cohttp://foo3.bar4.co") == [
+            MatchResult(match="http://foo1.bar2.cohttp://foo3.bar4.co", start=0, end=38)
+        ]
+
+
+class TestReplaceUrl:
     def test_no_replacement(self):
-        assert strip_url("") == ""
-        assert strip_url("a") == "a"
-        assert strip_url(".com") == ".com"
-        assert strip_url("a.com") == "a.com"
-        assert strip_url("www.a") == "www.a"
-        assert strip_url("sub1.a.com") == "sub1.a.com"
-        assert strip_url("www.a#.com") == "www.a#.com"
-        assert strip_url("www.a-.com") == "www.a-.com"
-        assert strip_url("www.-a.com") == "www.-a.com"
-        assert strip_url("http://www.a") == "http://www.a"
-        assert strip_url("http://a") == "http://a"
-        assert strip_url("s3://a.com") == "s3://a.com"
-        assert strip_url("a.com/dir1") == "a.com/dir1"
-        assert strip_url("a.com/file.html") == "a.com/file.html"
+        assert replace_url("") == ""
+        assert replace_url("a") == "a"
+        assert replace_url(".com") == ".com"
+        assert replace_url("a.com") == "a.com"
+        assert replace_url("www.a") == "www.a"
+        assert replace_url("sub1.a.com") == "sub1.a.com"
+        assert replace_url("www.a#.com") == "www.a#.com"
+        assert replace_url("www.a-.com") == "www.a-.com"
+        assert replace_url("www.-a.com") == "www.-a.com"
+        assert replace_url("http://www.a") == "http://www.a"
+        assert replace_url("http://a") == "http://a"
+        assert replace_url("s3://a.com") == "s3://a.com"
+        assert replace_url("a.com/dir1") == "a.com/dir1"
+        assert replace_url("a.com/file.html") == "a.com/file.html"
 
     def test_scheme_and_domain_name(self):
-        assert strip_url("http://a.com") == ""
-        assert strip_url("https://a.com") == ""
-        assert strip_url("https://mp3.com") == ""
-        assert strip_url("1 https://mp3.com 2") == "1  2"
+        assert replace_url("http://a.com") == ""
+        assert replace_url("https://a.com") == ""
+        assert replace_url("https://mp3.com") == ""
+        assert replace_url("1 https://mp3.com 2") == "1  2"
 
     def test_subdomain(self):
-        assert strip_url("www.a.com") == ""
-        assert strip_url("www.mp3.com") == ""
-        assert strip_url("1 www.mp3.com 2") == "1  2"
-        assert strip_url("http://www.a.com") == ""
-        assert strip_url("https://www.a.com") == ""
-        assert strip_url("https://www.mp3.com") == ""
-        assert strip_url("1 https://www.mp3.com 2") == "1  2"
-        assert strip_url("http://sub1.a.com") == ""
-        assert strip_url("https://sub1.a.com") == ""
-        assert strip_url("https://sub1.mp3.com") == ""
-        assert strip_url("1 https://sub1.mp3.com 2") == "1  2"
-        assert strip_url("http://sub2.sub1.a.com") == ""
-        assert strip_url("https://sub2.sub1.a.com") == ""
-        assert strip_url("https://sub2.sub1.mp3.com") == ""
-        assert strip_url("1 https://sub2.sub1.mp3.com 2") == "1  2"
-        assert strip_url("http://sub3.sub2.sub1.a.com") == ""
-        assert strip_url("https://sub3.sub2.sub1.a.com") == ""
-        assert strip_url("https://sub3.sub2.sub1.mp3.com") == ""
-        assert strip_url("1 https://sub3.sub2.sub1.mp3.com 2") == "1  2"
+        assert replace_url("www.a.com") == ""
+        assert replace_url("www.mp3.com") == ""
+        assert replace_url("1 www.mp3.com 2") == "1  2"
+        assert replace_url("http://www.a.com") == ""
+        assert replace_url("https://www.a.com") == ""
+        assert replace_url("https://www.mp3.com") == ""
+        assert replace_url("1 https://www.mp3.com 2") == "1  2"
+        assert replace_url("http://sub1.a.com") == ""
+        assert replace_url("https://sub1.a.com") == ""
+        assert replace_url("https://sub1.mp3.com") == ""
+        assert replace_url("1 https://sub1.mp3.com 2") == "1  2"
+        assert replace_url("http://sub2.sub1.a.com") == ""
+        assert replace_url("https://sub2.sub1.a.com") == ""
+        assert replace_url("https://sub2.sub1.mp3.com") == ""
+        assert replace_url("1 https://sub2.sub1.mp3.com 2") == "1  2"
+        assert replace_url("http://sub3.sub2.sub1.a.com") == ""
+        assert replace_url("https://sub3.sub2.sub1.a.com") == ""
+        assert replace_url("https://sub3.sub2.sub1.mp3.com") == ""
+        assert replace_url("1 https://sub3.sub2.sub1.mp3.com 2") == "1  2"
 
     def test_subdirectories(self):
-        assert strip_url("http://a.com/dir1") == ""
-        assert strip_url("https://a.com/dir1") == ""
-        assert strip_url("https://mp3.com/dir1") == ""
-        assert strip_url("1 https://mp3.com/dir1 2") == "1  2"
-        assert strip_url("http://a.com/dir1/dir2") == ""
-        assert strip_url("https://a.com/dir1/dir2") == ""
-        assert strip_url("https://mp3.com/dir1/dir2") == ""
-        assert strip_url("1 https://mp3.com/dir1/dir2 2") == "1  2"
-        assert strip_url("http://a.com/dir1/dir2/dir3") == ""
-        assert strip_url("https://a.com/dir1/dir2/dir3") == ""
-        assert strip_url("https://mp3.com/dir1/dir2/dir3") == ""
-        assert strip_url("1 https://mp3.com/dir1/dir2/dir3 2") == "1  2"
+        assert replace_url("http://a.com/dir1") == ""
+        assert replace_url("https://a.com/dir1") == ""
+        assert replace_url("https://mp3.com/dir1") == ""
+        assert replace_url("1 https://mp3.com/dir1 2") == "1  2"
+        assert replace_url("http://a.com/dir1/dir2") == ""
+        assert replace_url("https://a.com/dir1/dir2") == ""
+        assert replace_url("https://mp3.com/dir1/dir2") == ""
+        assert replace_url("1 https://mp3.com/dir1/dir2 2") == "1  2"
+        assert replace_url("http://a.com/dir1/dir2/dir3") == ""
+        assert replace_url("https://a.com/dir1/dir2/dir3") == ""
+        assert replace_url("https://mp3.com/dir1/dir2/dir3") == ""
+        assert replace_url("1 https://mp3.com/dir1/dir2/dir3 2") == "1  2"
 
     def test_file_extension(self):
-        assert strip_url("http://a.com/file.html") == ""
-        assert strip_url("http://a.com/file.xml") == ""
-        assert strip_url("http://a.com/file.pdf") == ""
-        assert strip_url("http://a.com/file.json") == ""
-        assert strip_url("1 http://a.com/file.html 2") == "1  2"
-        assert strip_url("http://a.com/dir1/file.html") == ""
-        assert strip_url("http://a.com/dir1/file.xml") == ""
-        assert strip_url("http://a.com/dir1/file.pdf") == ""
-        assert strip_url("http://a.com/dir1/file.json") == ""
-        assert strip_url("1 http://a.com/dir1/file.html 2") == "1  2"
+        assert replace_url("http://a.com/file.html") == ""
+        assert replace_url("http://a.com/file.xml") == ""
+        assert replace_url("http://a.com/file.pdf") == ""
+        assert replace_url("http://a.com/file.json") == ""
+        assert replace_url("1 http://a.com/file.html 2") == "1  2"
+        assert replace_url("http://a.com/dir1/file.html") == ""
+        assert replace_url("http://a.com/dir1/file.xml") == ""
+        assert replace_url("http://a.com/dir1/file.pdf") == ""
+        assert replace_url("http://a.com/dir1/file.json") == ""
+        assert replace_url("1 http://a.com/dir1/file.html 2") == "1  2"
 
 
 class TestStripIpAddress:
