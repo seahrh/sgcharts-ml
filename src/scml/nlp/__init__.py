@@ -23,6 +23,8 @@ __all__ = [
     "sentences",
     "has_1a1d",
     "strip_xml",
+    "find_phone_number",
+    "replace_phone_number",
     "find_url",
     "replace_url",
     "strip_ip_address",
@@ -322,8 +324,25 @@ def strip_xml(s: str, replacement: str = "") -> str:
     return XML_PATTERN.sub(replacement, s)
 
 
+# Phone numbers that are at least 7 digits long
+# Based on https://stackoverflow.com/a/16702965/519951
+PHONE_NUMBER_PATTERN = re.compile(
+    r"(?:\+?(\d{1,3}))?[-. (]*(\d{0,3})[-. )]*(\d{3,4})[-. ]*(\d{4})(?: *x(\d+))?",
+    re.IGNORECASE,
+)
+
+
+def find_phone_number(s: str) -> List[MatchResult]:
+    return find_non_overlapping(pattern=PHONE_NUMBER_PATTERN, s=s)
+
+
+def replace_phone_number(s: str, replacement: str = "") -> str:
+    return PHONE_NUMBER_PATTERN.sub(replacement, s)
+
+
 URL_PATTERN = re.compile(
-    r"(https?://(?:www\.|(?!www))[a-zA-Z0-9]{3,}\.[^\s]{2,}|www\.[a-zA-Z0-9]{3,}\.[^\s]{2,}|https?://(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+    r"(https?://(?:www\.|(?!www))[a-zA-Z0-9]{3,}\.[^\s]{2,}|www\.[a-zA-Z0-9]{3,}\.[^\s]{2,}|https?://(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})",
+    re.IGNORECASE,
 )
 
 

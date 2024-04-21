@@ -12,10 +12,12 @@ from scml.nlp import (
     count_space,
     count_upper,
     find_email,
+    find_phone_number,
     find_url,
     has_1a1d,
     ngrams,
     replace_email,
+    replace_phone_number,
     replace_url,
     sentences,
     split,
@@ -742,4 +744,130 @@ class TestReplaceEmail:
     def test_replacement(self):
         assert (
             replace_email(s="foo foo1@bar2.co bar", replacement="xxx") == "foo xxx bar"
+        )
+
+
+class TestFindPhoneNumber:
+
+    def test_empty_string(self):
+        assert find_phone_number("") == []
+
+    def test_no_matches(self):
+        assert find_phone_number("1") == []
+        assert find_phone_number("654321") == []
+
+    def test_whole_string_match(self):
+        assert find_phone_number("18005551234") == [
+            MatchResult(match="18005551234", start=0, end=11)
+        ]
+        assert find_phone_number("1 800 555 1234") == [
+            MatchResult(match="1 800 555 1234", start=0, end=14)
+        ]
+        assert find_phone_number("+1 800 555-1234") == [
+            MatchResult(match="+1 800 555-1234", start=0, end=15)
+        ]
+        assert find_phone_number("+86 800 555 1234") == [
+            MatchResult(match="+86 800 555 1234", start=0, end=16)
+        ]
+        assert find_phone_number("1-800-555-1234") == [
+            MatchResult(match="1-800-555-1234", start=0, end=14)
+        ]
+        assert find_phone_number("1 (800) 555-1234") == [
+            MatchResult(match="1 (800) 555-1234", start=0, end=16)
+        ]
+        assert find_phone_number("(800)555-1234") == [
+            MatchResult(match="(800)555-1234", start=0, end=13)
+        ]
+        assert find_phone_number("(800) 555-1234") == [
+            MatchResult(match="(800) 555-1234", start=0, end=14)
+        ]
+        assert find_phone_number("(800)5551234") == [
+            MatchResult(match="(800)5551234", start=0, end=12)
+        ]
+        assert find_phone_number("800-555-1234") == [
+            MatchResult(match="800-555-1234", start=0, end=12)
+        ]
+        assert find_phone_number("800.555.1234") == [
+            MatchResult(match="800.555.1234", start=0, end=12)
+        ]
+        assert find_phone_number("800 555 1234x5678") == [
+            MatchResult(match="800 555 1234x5678", start=0, end=17)
+        ]
+        assert find_phone_number("8005551234 x5678") == [
+            MatchResult(match="8005551234 x5678", start=0, end=16)
+        ]
+        assert find_phone_number("1    800    555-1234") == [
+            MatchResult(match="1    800    555-1234", start=0, end=20)
+        ]
+        assert find_phone_number("1----800----555-1234") == [
+            MatchResult(match="1----800----555-1234", start=0, end=20)
+        ]
+
+    def test_single_match_start(self):
+        assert find_phone_number("18005551234bar") == [
+            MatchResult(match="18005551234", start=0, end=11)
+        ]
+        assert find_phone_number("87654321bar") == [
+            MatchResult(match="87654321", start=0, end=8)
+        ]
+
+    def test_single_match_mid(self):
+        assert find_phone_number("foo18005551234bar") == [
+            MatchResult(match="18005551234", start=3, end=14)
+        ]
+        assert find_phone_number("foo87654321bar") == [
+            MatchResult(match="87654321", start=3, end=11)
+        ]
+
+    def test_single_match_end(self):
+        assert find_phone_number("foo18005551234") == [
+            MatchResult(match="18005551234", start=3, end=14)
+        ]
+        assert find_phone_number("foo87654321") == [
+            MatchResult(match="87654321", start=3, end=11)
+        ]
+
+    def test_multi_match_start(self):
+        assert find_phone_number("87654321 foo +86 800 555 1234 bar") == [
+            MatchResult(match="87654321", start=0, end=8),
+            MatchResult(match="+86 800 555 1234", start=13, end=29),
+        ]
+
+    def test_multi_match_mid(self):
+        assert find_phone_number("bar87654321 foo +86 800 555 1234 bar") == [
+            MatchResult(match="87654321", start=3, end=11),
+            MatchResult(match="+86 800 555 1234", start=16, end=32),
+        ]
+
+    def test_multi_match_end(self):
+        assert find_phone_number("bar87654321 foo +86 800 555 1234") == [
+            MatchResult(match="87654321", start=3, end=11),
+            MatchResult(match="+86 800 555 1234", start=16, end=32),
+        ]
+
+    def test_non_overlapping_match(self):
+        assert find_phone_number("1-800-555-1234+86 800 555 1234") == [
+            MatchResult(match="1-800-555-1234", start=0, end=14),
+            MatchResult(match="+86 800 555 1234", start=14, end=30),
+        ]
+
+
+class TestReplacePhoneNumber:
+    def test_empty_string(self):
+        assert replace_phone_number(s="", replacement="") == ""
+
+    def test_no_matches(self):
+        assert replace_phone_number(s="1", replacement="") == "1"
+        assert replace_phone_number(s="654321", replacement="") == "654321"
+
+    def test_whole_string_replaced(self):
+        assert replace_phone_number(s="+86 800 555 1234", replacement="") == ""
+        assert replace_phone_number(s="1-800-555-1234", replacement="") == ""
+
+    def test_replacement(self):
+        assert (
+            replace_phone_number(
+                s="foo1-800-555-1234bar+86 800 555 1234foo", replacement="x"
+            )
+            == "fooxbarxfoo"
         )
