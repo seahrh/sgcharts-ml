@@ -4,7 +4,6 @@ from sklearn.metrics import pairwise_distances
 
 from scml.pandasx import (
     FrequencyEncoder,
-    TargetEncoder,
     cyclical_encode,
     group_features,
     group_statistics,
@@ -29,65 +28,6 @@ class TestFrequencyEncoder:
         default = 0
         dtype = np.float32
         a = FrequencyEncoder(encoding_map={"a": 0.75, "b": 0.25}).encode(
-            pd.Series(["a", "b", "c"]), default=default, dtype=dtype
-        )
-        assert list(a) == [0.75, 0.25, default]
-        assert a.dtype == dtype
-
-
-class TestTargetEncoder:
-    def test_one_group_one_target(self):
-        assert TargetEncoder().encoding_map(
-            target=pd.Series([1, 1, 1, 1, 1]),
-            categorical=pd.Series(["a", "a", "a", "a", "a"]),
-            method="mean",
-        ) == {"a": 1}
-        assert TargetEncoder().encoding_map(
-            target=pd.Series([1, 1, 1, 1, 1]),
-            categorical=pd.Series(["a", "a", "a", "a", "a"]),
-            method="median",
-        ) == {"a": 1}
-
-    def test_one_group_many_targets(self):
-        assert TargetEncoder().encoding_map(
-            target=pd.Series([0, 0, 0, 1, 1]),
-            categorical=pd.Series(["a", "a", "a", "a", "a"]),
-            method="mean",
-        ) == {"a": 0.4}
-        assert TargetEncoder().encoding_map(
-            target=pd.Series([0, 0, 0, 1, 1]),
-            categorical=pd.Series(["a", "a", "a", "a", "a"]),
-            method="median",
-        ) == {"a": 0}
-
-    def test_many_groups_one_target(self):
-        assert TargetEncoder().encoding_map(
-            target=pd.Series([1, 1, 1, 1, 1]),
-            categorical=pd.Series(["a", "a", "a", "b", "b"]),
-            method="mean",
-        ) == {"a": 1, "b": 1}
-        assert TargetEncoder().encoding_map(
-            target=pd.Series([1, 1, 1, 1, 1]),
-            categorical=pd.Series(["a", "a", "a", "b", "b"]),
-            method="median",
-        ) == {"a": 1, "b": 1}
-
-    def test_many_groups_many_targets(self):
-        assert TargetEncoder().encoding_map(
-            target=pd.Series([0, 0, 0, 1, 1, 0, 1]),
-            categorical=pd.Series(["a", "a", "a", "a", "a", "b", "b"]),
-            method="mean",
-        ) == {"a": 0.4, "b": 0.5}
-        assert TargetEncoder().encoding_map(
-            target=pd.Series([0, 0, 0, 1, 1, 0, 1]),
-            categorical=pd.Series(["a", "a", "a", "a", "a", "b", "b"]),
-            method="median",
-        ) == {"a": 0, "b": 0.5}
-
-    def test_encode(self):
-        default = 0
-        dtype = np.float32
-        a = TargetEncoder(encoding_map={"a": 0.75, "b": 0.25}).encode(
             pd.Series(["a", "b", "c"]), default=default, dtype=dtype
         )
         assert list(a) == [0.75, 0.25, default]
