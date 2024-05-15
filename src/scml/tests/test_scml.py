@@ -1,4 +1,21 @@
+import json
+
+import numpy as np
+
 from scml import *
+
+
+class TestNumpyEncoder:
+
+    def test_serialize_int_and_float_arrays(self):
+        a = np.array([[1, 2, 3], [4, 5, 6]])
+        b = np.array([[1.1, 2.2, 3.3], [4.4, 5.5, 6.6]])
+        assert (
+            json.dumps(
+                {"f1": b, "f2": [2, (2, 3, 4), a], "f3": [1, 2]}, cls=NumpyEncoder
+            )
+            == '{"f1": [[1.1, 2.2, 3.3], [4.4, 5.5, 6.6]], "f2": [2, [2, 3, 4], [[1, 2, 3], [4, 5, 6]]], "f3": [1, 2]}'
+        )
 
 
 class TestGetBoolean:
