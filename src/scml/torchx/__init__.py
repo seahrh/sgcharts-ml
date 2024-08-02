@@ -354,3 +354,8 @@ def mean_pooling(inputs: torch.Tensor, attention_mask: torch.Tensor) -> torch.Te
     sum_mask = torch.clamp(sum_mask, min=1e-9)
     # Result has shape (batch size, hidden size)
     return sum_embeddings / sum_mask
+
+
+from .loss import *
+
+__all__ += loss.__all__  # type: ignore  # module name is not defined
