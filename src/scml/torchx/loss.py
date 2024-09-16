@@ -36,6 +36,7 @@ class FocalLossForMultiClassClassification(nn.Module):
         gamma: float = 2,
         reduction: str = "mean",
     ):
+        super().__init__()
         self.weight = weight
         self.gamma = gamma
         self.reduction = reduction

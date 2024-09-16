@@ -6,6 +6,7 @@ setup(
     version=__version__,
     python_requires=">=3.9,<3.13",
     install_requires=[
+        "numpy>=1.22.0,<2.0.0",
         "numba>=0.59.0",  # official support for python 3.12 https://github.com/numba/numba/issues/9197
         "pandas>=1.0.0",
         "scikit-learn>=1.0.2",
