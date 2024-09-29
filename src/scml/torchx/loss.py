@@ -1,10 +1,32 @@
-from typing import Optional
+from typing import Optional, Sequence
 
 import torch
 import torch.nn.functional as F
 from torch import Tensor
 
-__all__ = ["focal_loss_for_multiclass_classification"]
+__all__ = ["focal_loss_for_multiclass_classification", "uncertainty_weighted_loss"]
+
+
+def uncertainty_weighted_loss(
+    losses: Sequence[torch.Tensor], log_variances: Sequence[torch.Tensor]
+) -> torch.Tensor:
+    """Based on Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics (Kendall 2018).
+    Log variance represents the uncertainty. The higher the uncertainty, the smaller the weight.
+    To prevent the model from simply suppressing all weights to zero, add the uncertainty to final loss.
+
+    https://github.com/yaringal/multi-task-learning-example
+    """
+    if len(losses) == 0:
+        raise ValueError("losses must not be empty")
+    if len(losses) != len(log_variances):
+        raise ValueError("Length of losses must equal log_variances")
+    sm = torch.zeros((1,), dtype=torch.float32, device=log_variances[0].device)
+    for i in range(len(losses)):
+        # square to prevent negative sum
+        lv = torch.pow(log_variances[i], 2)
+        precision = torch.exp(-lv)
+        sm += precision * losses[i] + lv
+    return sm
 
 
 def focal_loss_for_multiclass_classification(

@@ -4,9 +4,72 @@ import pytest
 import torch
 import torch.nn.functional as F
 
-from scml.torchx import focal_loss_for_multiclass_classification
+from scml.torchx.loss import *
 
 log = logging.getLogger(__name__)
+
+
+class TestUncertaintyWeightedLoss:
+    @pytest.mark.parametrize("device", ["cpu"])
+    @pytest.mark.parametrize("dtype", [torch.float32, torch.half])
+    def test_all_inputs_receive_gradient(self, device, dtype):
+        if device == "cpu" and dtype is torch.half:
+            pytest.skip("Currently torch.half is not fully supported on cpu")
+        l1 = torch.tensor([1], dtype=dtype, device=device, requires_grad=True)
+        l2 = torch.tensor([100], dtype=dtype, device=device, requires_grad=True)
+        v1 = torch.tensor([1], dtype=dtype, device=device, requires_grad=True)
+        v2 = torch.tensor([1], dtype=dtype, device=device, requires_grad=True)
+        loss = uncertainty_weighted_loss(losses=[l1, l2], log_variances=[v1, v2])
+        assert loss.item() > 0
+        assert loss.requires_grad
+        loss.backward()
+        assert l1.grad.item() != 0
+        assert l2.grad.item() != 0
+        assert v1.grad.item() != 0
+        assert v2.grad.item() != 0
+
+    @pytest.mark.parametrize("device", ["cpu"])
+    @pytest.mark.parametrize("dtype", [torch.float32, torch.half])
+    def test_some_inputs_receive_gradient(self, device, dtype):
+        if device == "cpu" and dtype is torch.half:
+            pytest.skip("Currently torch.half is not fully supported on cpu")
+        l1 = torch.tensor([1], dtype=dtype, device=device, requires_grad=True)
+        l2 = torch.tensor([100], dtype=dtype, device=device, requires_grad=False)
+        v1 = torch.tensor([1], dtype=dtype, device=device, requires_grad=True)
+        v2 = torch.tensor([1], dtype=dtype, device=device, requires_grad=False)
+        loss = uncertainty_weighted_loss(losses=[l1, l2], log_variances=[v1, v2])
+        assert loss.requires_grad
+        assert loss.item() > 0
+        loss.backward()
+        assert l1.grad.item() != 0
+        assert l2.grad is None
+        assert v1.grad.item() != 0
+        assert v2.grad is None
+        l1 = torch.tensor([1], dtype=dtype, device=device, requires_grad=False)
+        l2 = torch.tensor([100], dtype=dtype, device=device, requires_grad=False)
+        v1 = torch.tensor([1], dtype=dtype, device=device, requires_grad=True)
+        v2 = torch.tensor([1], dtype=dtype, device=device, requires_grad=True)
+        loss = uncertainty_weighted_loss(losses=[l1, l2], log_variances=[v1, v2])
+        assert loss.requires_grad
+        assert loss.item() > 0
+        loss.backward()
+        assert l1.grad is None
+        assert l2.grad is None
+        assert v1.grad.item() != 0
+        assert v2.grad.item() != 0
+
+    @pytest.mark.parametrize("device", ["cpu"])
+    @pytest.mark.parametrize("dtype", [torch.float32, torch.half])
+    def test_no_inputs_receive_gradient(self, device, dtype):
+        if device == "cpu" and dtype is torch.half:
+            pytest.skip("Currently torch.half is not fully supported on cpu")
+        l1 = torch.tensor([1], dtype=dtype, device=device, requires_grad=False)
+        l2 = torch.tensor([100], dtype=dtype, device=device, requires_grad=False)
+        v1 = torch.tensor([1], dtype=dtype, device=device, requires_grad=False)
+        v2 = torch.tensor([1], dtype=dtype, device=device, requires_grad=False)
+        loss = uncertainty_weighted_loss(losses=[l1, l2], log_variances=[v1, v2])
+        # a.backward() throws exception because a does not require gradient
+        assert not loss.requires_grad
 
 
 class TestFocalLossForMultiClassClassification:
@@ -81,8 +144,7 @@ class TestFocalLossForMultiClassClassification:
 p_t={p_t.shape}, focal_loss={focal_loss.shape}, ce_loss={ce_loss.shape}
 correct_ratio={expected_ratio.shape}, loss_ratio={actual_ratio.shape}"""
         )
-        tol = 1e-3 if dtype is torch.half else 1e-5
-        torch.testing.assert_close(expected_ratio, actual_ratio, atol=tol, rtol=tol)
+        torch.testing.assert_close(expected_ratio, actual_ratio)
 
     @pytest.mark.parametrize("reduction", ["mean", "sum"])
     @pytest.mark.parametrize("device", ["cpu"])

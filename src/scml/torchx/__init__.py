@@ -1,6 +1,6 @@
 import warnings
 from configparser import SectionProxy
-from typing import Dict, Iterable, List, NamedTuple, Optional, Sequence, Set, Tuple
+from typing import Dict, Iterable, List, NamedTuple, Optional, Set, Tuple
 
 import scml
 
@@ -17,7 +17,6 @@ __all__ = [
     "LrSchedulerConf",
     "schedulers",
     "schedulers_by_config",
-    "uncertainty_weighted_loss",
     "whitening",
     "noisy_tune",
     "MultiSampleDropout",
@@ -131,28 +130,6 @@ def schedulers_by_config(
                 d[k] = "1" if section.getboolean(k) else "0"
         params.append(d)
     return schedulers(optimizer=optimizer, params=params)
-
-
-def uncertainty_weighted_loss(
-    losses: Sequence[torch.Tensor], log_variances: Sequence[torch.Tensor]
-) -> torch.Tensor:
-    """Based on Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics (Kendall 2018).
-    Log variance represents the uncertainty. The higher the uncertainty, the smaller the weight.
-    To prevent the model from simply suppressing all weights to zero, add the uncertainty to final loss.
-
-    https://github.com/yaringal/multi-task-learning-example
-    """
-    if len(losses) == 0:
-        raise ValueError("losses must not be empty")
-    if len(losses) != len(log_variances):
-        raise ValueError("Length of losses must equal log_variances")
-    sm = torch.zeros((1,), dtype=torch.float32, device=log_variances[0].device)
-    for i in range(len(losses)):
-        # square to prevent negative sum
-        lv = torch.pow(log_variances[i], 2)
-        precision = torch.exp(-lv)
-        sm += precision * losses[i] + lv
-    return sm
 
 
 def whitening(embeddings: torch.Tensor) -> torch.Tensor:
