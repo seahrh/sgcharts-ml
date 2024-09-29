@@ -108,7 +108,7 @@ def schedulers(optimizer, params: Iterable[Dict[str, str]]) -> List[LrSchedulerC
                         optimizer=optimizer,
                         swa_lr=float(ps["swa_lr"]),
                         anneal_epochs=int(ps["anneal_epochs"]),
-                        anneal_strategy=ps["anneal_strategy"],
+                        anneal_strategy=ps["anneal_strategy"],  # type: ignore[arg-type]
                     ),
                     name=qn,
                 )
