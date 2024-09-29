@@ -11,9 +11,7 @@ def focal_loss_for_multiclass_classification(
     input: Tensor,
     target: Tensor,
     weight: Optional[Tensor] = None,
-    size_average: Optional[bool] = None,
     ignore_index: int = -100,
-    reduce: Optional[bool] = None,
     reduction: str = "mean",
     gamma: float = 2,
 ) -> Tensor:
@@ -63,10 +61,12 @@ def focal_loss_for_multiclass_classification(
         >>> output.backward()
     """
     log_p = F.log_softmax(input, dim=-1)
-    p = torch.exp(log_p)
+    # p_t is the model's estimated probability of the ground truth class
+    p_t = torch.exp(log_p)
     return F.nll_loss(
-        input=((1 - p) ** gamma) * log_p,
+        input=((1 - p_t) ** gamma) * log_p,
         target=target,
         weight=weight,
         reduction=reduction,
+        ignore_index=ignore_index,
     )
