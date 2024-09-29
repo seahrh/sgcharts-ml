@@ -10,18 +10,15 @@ __all__ = ["focal_loss_for_multiclass_classification"]
 def focal_loss_for_multiclass_classification(
     input: Tensor,
     target: Tensor,
+    gamma: float = 2.0,
     weight: Optional[Tensor] = None,
     ignore_index: int = -100,
     reduction: str = "mean",
-    gamma: float = 2,
 ) -> Tensor:
     r"""Compute the focal loss for multi-class classification.
     For binary classification, please use https://pytorch.org/vision/main/generated/torchvision.ops.sigmoid_focal_loss.html
 
-    Note that this case is equivalent to applying :class:`~torch.nn.LogSoftmax`
-    on an input, followed by :class:`~torch.nn.NLLLoss`.
-
-    See :class:`~torch.nn.CrossEntropyLoss` for details.
+    Based on the paper: Lin, T. (2017). Focal Loss for Dense Object Detection. arXiv preprint arXiv:1708.02002.
 
     Args:
         input: :math:`(N, C)` where `C = number of classes` or :math:`(N, C, H, W)`
@@ -30,6 +27,13 @@ def focal_loss_for_multiclass_classification(
         target: :math:`(N)` where each value is :math:`0 \leq \text{targets}[i] \leq C-1`,
             or :math:`(N, d_1, d_2, ..., d_K)` where :math:`K \geq 1` for
             K-dimensional loss.
+        gamma (int, optional): When an example is misclassified and p_t is small,
+            the modulating factor is near 1 and the loss is unaffected. As pt → 1,
+            the factor goes to 0 and the loss for well-classified examples is down-weighted.
+            The focusing parameter γ smoothly adjusts the rate at which easy examples are down-weighted.
+            When γ = 0, FL is equivalent to CE, and as γ is increased,
+            the effect of the modulating factor is likewise increased
+            (we found γ = 2 to work best in our experiments)
         weight (Tensor, optional): a manual rescaling weight given to each
             class. If given, has to be a Tensor of size `C`
         size_average (bool, optional): Deprecated (see :attr:`reduction`). By default,
@@ -60,6 +64,9 @@ def focal_loss_for_multiclass_classification(
         >>> output = focal_loss_for_multiclass_classification(F.log_softmax(input, dim=1), target)
         >>> output.backward()
     """
+    # Cross entropy loss is equivalent to applying :class:`~torch.nn.LogSoftmax`
+    # on an input, followed by :class:`~torch.nn.NLLLoss`.
+    # See :class:`~torch.nn.CrossEntropyLoss` for details.
     log_p = F.log_softmax(input, dim=-1)
     # p_t is the model's estimated probability of the ground truth class
     p_t = torch.exp(log_p)
