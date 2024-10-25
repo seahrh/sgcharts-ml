@@ -1,5 +1,10 @@
 import math
 
+import numpy as np
+import pytest
+from numpy.testing import assert_allclose
+from sklearn.metrics.pairwise import cosine_similarity
+
 from scml.distances import *
 
 
@@ -97,3 +102,17 @@ class TestDice:
         assert dice(a, b) == 0
         assert dice_sim(b, a) == 1
         assert dice(b, a) == 0
+
+
+class TestSharpenedCosineSimilarity:
+    @pytest.mark.parametrize("power", [1, 3, 10])
+    def test_sharpened_cosine_similarity(self, power):
+        rng = np.random.RandomState(0)
+        X = rng.random_sample((5, 4))
+        Y = rng.random_sample((3, 4))
+        for X_, Y_ in ((X, None), (X, Y)):
+            actual = sharpened_cosine_similarity(a=X_, b=Y_, p=power)
+            expected = cosine_similarity(X_, Y_)
+            sign = np.sign(expected)
+            expected = sign * (np.abs(expected) ** power)
+            assert_allclose(actual, expected)
