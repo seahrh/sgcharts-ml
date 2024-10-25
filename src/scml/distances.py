@@ -49,4 +49,5 @@ def sharpened_cosine_similarity(
         raise ValueError("power p must be greater than or equal 1.")
     cs: np.ndarray = cosine_similarity(a, b)
     sign = np.sign(cs)
-    return sign * (np.abs(cs) ** p)
+    scs: np.ndarray = sign * (np.abs(cs) ** p)
+    return scs
