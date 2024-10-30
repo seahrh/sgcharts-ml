@@ -482,6 +482,10 @@ class TestFindXml:
             MatchResult(match="<br>", start=0, end=4),
             MatchResult(match="</p>", start=4, end=8),
         ]
+        assert find_xml("</p><br>") == [
+            MatchResult(match="</p>", start=0, end=4),
+            MatchResult(match="<br>", start=4, end=8),
+        ]
 
 
 class TestReplaceXml:
@@ -545,9 +549,15 @@ class TestFindUrl:
         ]
 
     def test_non_overlapping_match(self):
-        # TODO pattern can't split the conjoined urls properly
-        assert find_url("http://foo1.bar2.cohttp://foo3.bar4.co") == [
-            MatchResult(match="http://foo1.bar2.cohttp://foo3.bar4.co", start=0, end=38)
+        # note conjoined urls with no delimiter cannot be separated
+        # the 2 urls must be separated by whitespace
+        assert find_url("http://foo1.bar2 http://bar3.foo4") == [
+            MatchResult(match="http://foo1.bar2", start=0, end=16),
+            MatchResult(match="http://bar3.foo4", start=17, end=33),
+        ]
+        assert find_url("http://bar3.foo4 http://foo1.bar2") == [
+            MatchResult(match="http://bar3.foo4", start=0, end=16),
+            MatchResult(match="http://foo1.bar2", start=17, end=33),
         ]
 
 
@@ -834,6 +844,9 @@ class TestFindEmail:
         assert find_email("foo1@bar2.foo3@bar4.co") == [
             MatchResult(match="foo1@bar2.foo3", start=0, end=14),
         ]
+        assert find_email("foo3@bar4.co.foo1@bar2") == [
+            MatchResult(match="foo3@bar4.co.foo1", start=0, end=17),
+        ]
 
 
 class TestReplaceEmail:
@@ -954,6 +967,10 @@ class TestFindPhoneNumber:
         assert find_phone_number("1-800-555-1234+86 800 555 1234") == [
             MatchResult(match="1-800-555-1234", start=0, end=14),
             MatchResult(match="+86 800 555 1234", start=14, end=30),
+        ]
+        assert find_phone_number("+86 800 555 12341-800-555-1234") == [
+            MatchResult(match="+86 800 555 1234", start=0, end=16),
+            MatchResult(match="1-800-555-1234", start=16, end=30),
         ]
 
 
