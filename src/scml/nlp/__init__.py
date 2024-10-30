@@ -5,9 +5,9 @@ __all__ = [
     "find_non_overlapping",
     "find_email",
     "replace_email",
-    "strip_punctuation",
-    "strip_symbol",
-    "strip_spans",
+    "replace_punctuation",
+    "replace_symbol",
+    "replace_spans",
     "is_number",
     "count_digit",
     "count_alpha",
@@ -22,12 +22,14 @@ __all__ = [
     "ngrams",
     "sentences",
     "has_1a1d",
-    "strip_xml",
+    "find_xml",
+    "replace_xml",
     "find_phone_number",
     "replace_phone_number",
     "find_url",
     "replace_url",
-    "strip_ip_address",
+    "find_ip_address",
+    "replace_ip_address",
 ]
 
 
@@ -89,7 +91,7 @@ def replace_email(s: str, replacement: str = "") -> str:
 PUNCTUATION_PATTERN = re.compile(f"[{re.escape(string.punctuation)}]")
 
 
-def strip_punctuation(s: str, replacement: str = "") -> str:
+def replace_punctuation(s: str, replacement: str = "") -> str:
     return PUNCTUATION_PATTERN.sub(replacement, s)
 
 
@@ -97,11 +99,11 @@ SYMBOL_STRING = "⌔⟐◇◆◈⬖⬗⬘⬙⬠⬡⎔◊⧫⬢⬣⋄▰▪◼▮
 SYMBOL_PATTERN = re.compile(f"[{re.escape(SYMBOL_STRING)}]")
 
 
-def strip_symbol(s: str, replacement: str = "") -> str:
+def replace_symbol(s: str, replacement: str = "") -> str:
     return SYMBOL_PATTERN.sub(replacement, s)
 
 
-def strip_spans(
+def replace_spans(
     s: str,
     positions: Sequence[Tuple[int, int]],
     replacements: Optional[Sequence[str]] = None,
@@ -316,11 +318,15 @@ def has_1a1d(s: str, include: str = "") -> bool:
     return True
 
 
-# first char in the angular bracket cannot be digit or whitespace
-XML_PATTERN = re.compile(r"<[^\d\s][^>]*>", re.IGNORECASE)
+# first char enclosed inside the angular brackets cannot be digit or whitespace
+XML_PATTERN = re.compile(r"(<[^\d\s][^>]*>)", re.IGNORECASE)
 
 
-def strip_xml(s: str, replacement: str = "") -> str:
+def find_xml(s: str) -> List[MatchResult]:
+    return find_non_overlapping(pattern=XML_PATTERN, s=s)
+
+
+def replace_xml(s: str, replacement: str = "") -> str:
     return XML_PATTERN.sub(replacement, s)
 
 
@@ -355,7 +361,7 @@ def replace_url(s: str, replacement: str = "") -> str:
 
 
 IPV4_SEGMENT = r"(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])"
-IPV4_ADDRESS = f"\\b({IPV4_SEGMENT}\\.){{3}}{IPV4_SEGMENT}\\b"
+IPV4_ADDRESS = f"(\\b({IPV4_SEGMENT}\\.){{3}}{IPV4_SEGMENT}\\b)"
 IPV4_ADDRESS_PATTERN = re.compile(IPV4_ADDRESS)
 IPV6_SEGMENT = r"[0-9a-fA-F]{1,4}"
 p1 = f"({IPV6_SEGMENT}:){{7}}{IPV6_SEGMENT}"  # 1:2:3:4:5:6:7:8
@@ -378,7 +384,15 @@ IPV6_ADDRESS = f"({p12}|{p11}|{p10}|{p9}|{p8}|{p7}|{p6}|{p5}|{p4}|{p3}|{p2}|{p1}
 IPV6_ADDRESS_PATTERN = re.compile(IPV6_ADDRESS)
 
 
-def strip_ip_address(s: str, replacement: str = "") -> str:
+def find_ip_address(s: str) -> List[MatchResult]:
+    res = find_non_overlapping(
+        pattern=IPV6_ADDRESS_PATTERN, s=s
+    ) + find_non_overlapping(pattern=IPV4_ADDRESS_PATTERN, s=s)
+    res.sort(key=lambda x: x.start)
+    return res
+
+
+def replace_ip_address(s: str, replacement: str = "") -> str:
     res = s
     res = IPV6_ADDRESS_PATTERN.sub(replacement, res)
     res = IPV4_ADDRESS_PATTERN.sub(replacement, res)

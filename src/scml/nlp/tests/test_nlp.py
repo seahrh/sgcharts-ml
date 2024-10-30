@@ -1,33 +1,7 @@
 import string
 
-from scml.nlp import (
-    SYMBOL_STRING,
-    MatchResult,
-    RepeatingCharacter,
-    RepeatingSubstring,
-    collapse_whitespace,
-    count_alpha,
-    count_digit,
-    count_punctuation,
-    count_space,
-    count_upper,
-    find_email,
-    find_phone_number,
-    find_url,
-    has_1a1d,
-    ngrams,
-    replace_email,
-    replace_phone_number,
-    replace_url,
-    sentences,
-    split,
-    strip_ip_address,
-    strip_punctuation,
-    strip_spans,
-    strip_symbol,
-    strip_xml,
-    to_str,
-)
+from scml.nlp import *
+from scml.nlp import SYMBOL_STRING
 
 
 class TestToStr:
@@ -388,30 +362,30 @@ class TestHasAtLeastOneDigitAndOneLetter:
         assert not has_1a1d('15"', include='"')
 
 
-class TestStripPunctuation:
+class TestReplacePunctuation:
     def test_no_replacement(self):
-        assert strip_punctuation("") == ""
-        assert strip_punctuation("a1") == "a1"
+        assert replace_punctuation("") == ""
+        assert replace_punctuation("a1") == "a1"
 
     def test_replacement(self):
         for p in string.punctuation:
-            assert strip_punctuation(p) == ""
+            assert replace_punctuation(p) == ""
 
 
-class TestStripSymbol:
+class TestReplaceSymbol:
     def test_no_replacement(self):
-        assert strip_symbol("") == ""
-        assert strip_symbol("a1") == "a1"
+        assert replace_symbol("") == ""
+        assert replace_symbol("a1") == "a1"
 
     def test_replacement(self):
         for c in SYMBOL_STRING:
-            assert strip_symbol(c) == ""
+            assert replace_symbol(c) == ""
 
 
-class TestStripSpans:
+class TestReplaceSpans:
     def test_strip_spans_without_replacement(self):
         assert (
-            strip_spans(
+            replace_spans(
                 s="0123456789",
                 positions=[
                     (4, 6),
@@ -421,7 +395,7 @@ class TestStripSpans:
             == "01236789"
         )
         assert (
-            strip_spans(
+            replace_spans(
                 s="0123456789",
                 positions=[(0, 1), (4, 6), (9, 10)],
                 replacements=None,
@@ -431,7 +405,7 @@ class TestStripSpans:
 
     def test_strip_spans_with_replacement(self):
         assert (
-            strip_spans(
+            replace_spans(
                 s="0123456789",
                 positions=[
                     (4, 6),
@@ -441,7 +415,7 @@ class TestStripSpans:
             == "0123__A__6789"
         )
         assert (
-            strip_spans(
+            replace_spans(
                 s="0123456789",
                 positions=[(0, 1), (4, 6), (9, 10)],
                 replacements=["__A__", "__B__", "__C__"],
@@ -451,7 +425,7 @@ class TestStripSpans:
 
     def test_ignore_invalid_spans(self):
         assert (
-            strip_spans(
+            replace_spans(
                 s="0123456789",
                 positions=[(-1, -1), (-1, 1), (1, -1), (4, 4), (10, 10)],
                 replacements=None,
@@ -460,17 +434,67 @@ class TestStripSpans:
         )
 
 
-class TestStripXml:
+class TestFindXml:
+
+    def test_empty_string(self):
+        assert find_xml("") == []
+
+    def test_no_matches(self):
+        assert find_xml("foo1 bar2 co") == []
+        assert find_xml("http://foo1,bar2.co") == []
+
+    def test_whole_string_match(self):
+        assert find_xml("<br>") == [MatchResult(match="<br>", start=0, end=4)]
+        assert find_xml("</p>") == [MatchResult(match="</p>", start=0, end=4)]
+
+    def test_single_match_start(self):
+        assert find_xml("<br> bar") == [MatchResult(match="<br>", start=0, end=4)]
+        assert find_xml("</p> bar") == [MatchResult(match="</p>", start=0, end=4)]
+
+    def test_single_match_mid(self):
+        assert find_xml("foo <br> bar") == [MatchResult(match="<br>", start=4, end=8)]
+        assert find_xml("foo </p> bar") == [MatchResult(match="</p>", start=4, end=8)]
+
+    def test_single_match_end(self):
+        assert find_xml("foo <br>") == [MatchResult(match="<br>", start=4, end=8)]
+        assert find_xml("foo </p>") == [MatchResult(match="</p>", start=4, end=8)]
+
+    def test_multi_match_start(self):
+        assert find_xml("<br> foo </p> bar") == [
+            MatchResult(match="<br>", start=0, end=4),
+            MatchResult(match="</p>", start=9, end=13),
+        ]
+
+    def test_multi_match_mid(self):
+        assert find_xml("foo <br> foo </p> bar") == [
+            MatchResult(match="<br>", start=4, end=8),
+            MatchResult(match="</p>", start=13, end=17),
+        ]
+
+    def test_multi_match_end(self):
+        assert find_xml("foo <br> bar </p>") == [
+            MatchResult(match="<br>", start=4, end=8),
+            MatchResult(match="</p>", start=13, end=17),
+        ]
+
+    def test_non_overlapping_match(self):
+        assert find_xml("<br></p>") == [
+            MatchResult(match="<br>", start=0, end=4),
+            MatchResult(match="</p>", start=4, end=8),
+        ]
+
+
+class TestReplaceXml:
     def test_no_replacement(self):
-        assert strip_xml("") == ""
-        assert strip_xml("a") == "a"
-        assert strip_xml("1 < 2 and 2 > 1") == "1 < 2 and 2 > 1"
-        assert strip_xml("1<2 and 2>1") == "1<2 and 2>1"
+        assert replace_xml("") == ""
+        assert replace_xml("a") == "a"
+        assert replace_xml("1 < 2 and 2 > 1") == "1 < 2 and 2 > 1"
+        assert replace_xml("1<2 and 2>1") == "1<2 and 2>1"
 
     def test_replacement(self):
-        assert strip_xml("<strong>a</strong>") == "a"
-        assert strip_xml("<p>a</p><p>b</p>") == "ab"
-        assert strip_xml("<br />") == ""
+        assert replace_xml("<strong>a</strong>") == "a"
+        assert replace_xml("<p>a</p><p>b</p>") == "ab"
+        assert replace_xml("<br />") == ""
 
 
 class TestFindUrl:
@@ -598,85 +622,166 @@ class TestReplaceUrl:
         assert replace_url("1 http://a.com/dir1/file.html 2") == "1  2"
 
 
-class TestStripIpAddress:
+class TestFindIpAddress:
+
+    def test_empty_string(self):
+        assert find_ip_address("") == []
+
+    def test_no_matches(self):
+        assert find_ip_address("1234abcd") == []
+
+    def test_whole_string_match(self):
+        assert find_ip_address("1.2.3.4") == [
+            MatchResult(match="1.2.3.4", start=0, end=7)
+        ]
+        assert find_ip_address("1:2:3:4:a:b:c:d") == [
+            MatchResult(match="1:2:3:4:a:b:c:d", start=0, end=15)
+        ]
+
+    def test_single_match_start(self):
+        assert find_ip_address("1.2.3.4 bar") == [
+            MatchResult(match="1.2.3.4", start=0, end=7)
+        ]
+        assert find_ip_address("1:2:3:4:a:b:c:d bar") == [
+            MatchResult(match="1:2:3:4:a:b:c:d", start=0, end=15)
+        ]
+
+    def test_single_match_mid(self):
+        assert find_ip_address("foo 1.2.3.4 bar") == [
+            MatchResult(match="1.2.3.4", start=4, end=11)
+        ]
+        assert find_ip_address("foo 1:2:3:4:a:b:c:d bar") == [
+            MatchResult(match="1:2:3:4:a:b:c:d", start=4, end=19)
+        ]
+
+    def test_single_match_end(self):
+        assert find_ip_address("foo 1.2.3.4") == [
+            MatchResult(match="1.2.3.4", start=4, end=11)
+        ]
+        assert find_ip_address("foo 1:2:3:4:a:b:c:d") == [
+            MatchResult(match="1:2:3:4:a:b:c:d", start=4, end=19)
+        ]
+
+    def test_multi_match_start(self):
+        assert find_ip_address("1.2.3.4 foo 1.2.3.4 bar") == [
+            MatchResult(match="1.2.3.4", start=0, end=7),
+            MatchResult(match="1.2.3.4", start=12, end=19),
+        ]
+        assert find_ip_address("1:2:3:4:a:b:c:d foo 1:2:3:4:a:b:c:d bar") == [
+            MatchResult(match="1:2:3:4:a:b:c:d", start=0, end=15),
+            MatchResult(match="1:2:3:4:a:b:c:d", start=20, end=35),
+        ]
+
+    def test_multi_match_mid(self):
+        assert find_ip_address("bar 1.2.3.4 foo 1.2.3.4 bar") == [
+            MatchResult(match="1.2.3.4", start=4, end=11),
+            MatchResult(match="1.2.3.4", start=16, end=23),
+        ]
+        assert find_ip_address("bar 1:2:3:4:a:b:c:d foo 1:2:3:4:a:b:c:d bar") == [
+            MatchResult(match="1:2:3:4:a:b:c:d", start=4, end=19),
+            MatchResult(match="1:2:3:4:a:b:c:d", start=24, end=39),
+        ]
+
+    def test_multi_match_end(self):
+        assert find_ip_address("bar 1.2.3.4 foo 1.2.3.4") == [
+            MatchResult(match="1.2.3.4", start=4, end=11),
+            MatchResult(match="1.2.3.4", start=16, end=23),
+        ]
+        assert find_ip_address("bar 1:2:3:4:a:b:c:d foo 1:2:3:4:a:b:c:d") == [
+            MatchResult(match="1:2:3:4:a:b:c:d", start=4, end=19),
+            MatchResult(match="1:2:3:4:a:b:c:d", start=24, end=39),
+        ]
+
+    def test_non_overlapping_match(self):
+        assert find_ip_address("1.2.3.4,1:2:3:4:a:b:c:d") == [
+            MatchResult(match="1.2.3.4", start=0, end=7),
+            MatchResult(match="1:2:3:4:a:b:c:d", start=8, end=23),
+        ]
+        assert find_ip_address("1:2:3:4:a:b:c:d,1.2.3.4") == [
+            MatchResult(match="1:2:3:4:a:b:c:d", start=0, end=15),
+            MatchResult(match="1.2.3.4", start=16, end=23),
+        ]
+
+
+class TestReplaceIpAddress:
     def test_no_replacement(self):
-        assert strip_ip_address("") == ""
-        assert strip_ip_address("1.2") == "1.2"
-        assert strip_ip_address("1.2.3.") == "1.2.3."
-        assert strip_ip_address("256.1.2.3") == "256.1.2.3"
-        assert strip_ip_address("g:h:i:j:k:l:m:n") == "g:h:i:j:k:l:m:n"
+        assert replace_ip_address("") == ""
+        assert replace_ip_address("1.2") == "1.2"
+        assert replace_ip_address("1.2.3.") == "1.2.3."
+        assert replace_ip_address("256.1.2.3") == "256.1.2.3"
+        assert replace_ip_address("g:h:i:j:k:l:m:n") == "g:h:i:j:k:l:m:n"
 
     def test_ipv4_address(self):
-        assert strip_ip_address("255.1.2.3") == ""
-        assert strip_ip_address("1.2.3.4") == ""
-        assert strip_ip_address(".1.2.3.4.") == ".."
-        assert strip_ip_address("a 1.2.3.4 b") == "a  b"
+        assert replace_ip_address("255.1.2.3") == ""
+        assert replace_ip_address("1.2.3.4") == ""
+        assert replace_ip_address(".1.2.3.4.") == ".."
+        assert replace_ip_address("a 1.2.3.4 b") == "a  b"
 
     def test_ipv6_address_case_1(self):
-        assert strip_ip_address("1:2:3:4:5:6:7:8") == ""
-        assert strip_ip_address("g1:2:3:4:5:6:7:8g") == "gg"
+        assert replace_ip_address("1:2:3:4:5:6:7:8") == ""
+        assert replace_ip_address("g1:2:3:4:5:6:7:8g") == "gg"
 
     def test_ipv6_address_case_2(self):
-        assert strip_ip_address("1::") == ""
-        assert strip_ip_address("1:2:3:4:5:6:7::") == ""
-        assert strip_ip_address("g1:2:3:4:5:6:7::g") == "gg"
+        assert replace_ip_address("1::") == ""
+        assert replace_ip_address("1:2:3:4:5:6:7::") == ""
+        assert replace_ip_address("g1:2:3:4:5:6:7::g") == "gg"
 
     def test_ipv6_address_case_3(self):
-        assert strip_ip_address("1::8") == ""
-        assert strip_ip_address("1:2:3:4:5:6::8") == ""
-        assert strip_ip_address("g1:2:3:4:5:6::8g") == "gg"
+        assert replace_ip_address("1::8") == ""
+        assert replace_ip_address("1:2:3:4:5:6::8") == ""
+        assert replace_ip_address("g1:2:3:4:5:6::8g") == "gg"
 
     def test_ipv6_address_case_4(self):
-        assert strip_ip_address("1::7:8") == ""
-        assert strip_ip_address("1:2:3:4:5::7:8") == ""
-        assert strip_ip_address("1:2:3:4:5::8") == ""
-        assert strip_ip_address("g1:2:3:4:5::8g") == "gg"
+        assert replace_ip_address("1::7:8") == ""
+        assert replace_ip_address("1:2:3:4:5::7:8") == ""
+        assert replace_ip_address("1:2:3:4:5::8") == ""
+        assert replace_ip_address("g1:2:3:4:5::8g") == "gg"
 
     def test_ipv6_address_case_5(self):
-        assert strip_ip_address("1::6:7:8") == ""
-        assert strip_ip_address("1:2:3:4::6:7:8") == ""
-        assert strip_ip_address("1:2:3:4::8") == ""
-        assert strip_ip_address("g1:2:3:4::8g") == "gg"
+        assert replace_ip_address("1::6:7:8") == ""
+        assert replace_ip_address("1:2:3:4::6:7:8") == ""
+        assert replace_ip_address("1:2:3:4::8") == ""
+        assert replace_ip_address("g1:2:3:4::8g") == "gg"
 
     def test_ipv6_address_case_6(self):
-        assert strip_ip_address("1::5:6:7:8") == ""
-        assert strip_ip_address("1:2:3::5:6:7:8") == ""
-        assert strip_ip_address("1:2:3::8") == ""
-        assert strip_ip_address("g1:2:3::8g") == "gg"
+        assert replace_ip_address("1::5:6:7:8") == ""
+        assert replace_ip_address("1:2:3::5:6:7:8") == ""
+        assert replace_ip_address("1:2:3::8") == ""
+        assert replace_ip_address("g1:2:3::8g") == "gg"
 
     def test_ipv6_address_case_7(self):
-        assert strip_ip_address("1::4:5:6:7:8") == ""
-        assert strip_ip_address("1:2::4:5:6:7:8") == ""
-        assert strip_ip_address("1:2::8") == ""
-        assert strip_ip_address("g1:2::8g") == "gg"
+        assert replace_ip_address("1::4:5:6:7:8") == ""
+        assert replace_ip_address("1:2::4:5:6:7:8") == ""
+        assert replace_ip_address("1:2::8") == ""
+        assert replace_ip_address("g1:2::8g") == "gg"
 
     def test_ipv6_address_case_8(self):
-        assert strip_ip_address("1::3:4:5:6:7:8") == ""
-        assert strip_ip_address("g1::3:4:5:6:7:8g") == "gg"
+        assert replace_ip_address("1::3:4:5:6:7:8") == ""
+        assert replace_ip_address("g1::3:4:5:6:7:8g") == "gg"
 
     def test_ipv6_address_case_9(self):
-        assert strip_ip_address("::2:3:4:5:6:7:8") == ""
-        assert strip_ip_address("::8") == ""
-        assert strip_ip_address("::") == ""
-        assert strip_ip_address("g::8g") == "gg"
+        assert replace_ip_address("::2:3:4:5:6:7:8") == ""
+        assert replace_ip_address("::8") == ""
+        assert replace_ip_address("::") == ""
+        assert replace_ip_address("g::8g") == "gg"
 
     def test_ipv6_address_case_10(self):
         # link-local IPv6 addresses with zone index
-        assert strip_ip_address("fe80::7:8%eth0") == ""
-        assert strip_ip_address("fe80::7:8%1") == ""
-        assert strip_ip_address("gfe80::7:8%1g") == "g"
+        assert replace_ip_address("fe80::7:8%eth0") == ""
+        assert replace_ip_address("fe80::7:8%1") == ""
+        assert replace_ip_address("gfe80::7:8%1g") == "g"
 
     def test_ipv6_address_case_11(self):
         # IPv4-mapped IPv6 addresses and IPv4-translated addresses
-        assert strip_ip_address("::255.255.255.255") == ""
-        assert strip_ip_address("::ffff:255.255.255.255") == ""
-        assert strip_ip_address("g ::ffff:0:255.255.255.255 g") == "g  g"
+        assert replace_ip_address("::255.255.255.255") == ""
+        assert replace_ip_address("::ffff:255.255.255.255") == ""
+        assert replace_ip_address("g ::ffff:0:255.255.255.255 g") == "g  g"
 
     def test_ipv6_address_case_12(self):
         # IPv4-Embedded IPv6 Address
-        assert strip_ip_address("2001:db8:3:4::192.0.2.33") == ""
-        assert strip_ip_address("64:ff9b::192.0.2.33") == ""
-        assert strip_ip_address("g 64:ff9b::192.0.2.33 g") == "g  g"
+        assert replace_ip_address("2001:db8:3:4::192.0.2.33") == ""
+        assert replace_ip_address("64:ff9b::192.0.2.33") == ""
+        assert replace_ip_address("g 64:ff9b::192.0.2.33 g") == "g  g"
 
 
 class TestFindEmail:
