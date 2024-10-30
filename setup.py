@@ -15,15 +15,15 @@ setup(
     ],
     extras_require={
         "lint": [
-            "black==24.2.0",
+            "black==24.10.0",
             "isort==5.13.2",
-            "pre-commit==3.6.1",
-            "flake8==7.0.0",
-            "mypy==1.11.2",
+            "pre-commit==4.0.1",
+            "flake8==7.1.1",
+            "mypy==1.13.0",
         ],
         "tests": [
-            "pytest==8.0.0",
-            "pytest-cov==4.1.0",
+            "pytest==8.3.3",
+            "pytest-cov==6.0.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
         "transformers": ["transformers>=4.20.1"],
