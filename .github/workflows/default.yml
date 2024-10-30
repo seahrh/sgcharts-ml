@@ -22,14 +22,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           pip install .[lint,tests]
-      - name: Style checks
+      - name: isort
         run: |
           isort --check-only -v .
+      - name: black
+        run: |
           black --check .
-          flake8
-      - name: Typing checks
+      - name: mypy
         run: |
           mypy
+      - name: flake8
+        run: |
+          flake8
       - name: Tests
         run: |
           pytest -vv --cov=src
