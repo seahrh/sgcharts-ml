@@ -71,3 +71,21 @@ class TestToAscii:
 class TestCp1252ToUtf8:
     def test_no_error(self):
         assert cp1252_to_utf8("foo ÃÅf bar") == "foo ÃÅf bar"
+
+
+class TestDecodeEscapedBytes:
+    def test_decode_escaped_bytes(self):
+        assert (
+            decode_escaped_bytes("Nescafe \\xc3\\x89clair Latte 220ml")
+            == "Nescafe Éclair Latte 220ml"
+        )
+        assert (
+            decode_escaped_bytes("RATU \\xe2\\x9d\\xa4 MAYCREATE MOISTURIZING SPRAY")
+            == "RATU ❤ MAYCREATE MOISTURIZING SPRAY"
+        )
+        assert (
+            decode_escaped_bytes(
+                "\xf0\x9f\x87\xb2\xf0\x9f\x87\xa8MG\xf0\x9f\x87\xb2\xf0\x9f\x87\xa8 Fashion"
+            )
+            == "🇲🇨MG🇲🇨 Fashion"
+        )

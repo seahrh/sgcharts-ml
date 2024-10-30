@@ -18,7 +18,6 @@ __all__ = [
     "RepeatingCharacter",
     "RepeatingSubstring",
     "split",
-    "decode_escaped_bytes",
     "ngrams",
     "sentences",
     "has_1a1d",
@@ -278,16 +277,6 @@ SENTENCE_BOUNDARY_PATTERN = re.compile(r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=[.?!])
 
 def sentences(s: str, maxsplit: int = 0) -> List[str]:
     return SENTENCE_BOUNDARY_PATTERN.split(s, maxsplit)
-
-
-def decode_escaped_bytes(s: str, encoding="utf-8") -> str:
-    """Convert escaped bytes in the \\xhh format to unicode characters."""
-    return (
-        s.encode("latin1")  # To bytes, required by 'unicode-escape'
-        .decode("unicode-escape")  # Perform the actual octal-escaping decode
-        .encode("latin1")  # 1:1 mapping back to bytes
-        .decode(encoding)
-    )
 
 
 def ngrams(

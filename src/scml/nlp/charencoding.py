@@ -4,7 +4,7 @@ from unicodedata import normalize
 
 from scml.nlp import MosesPunctNormalizer, to_str
 
-__all__ = ["to_ascii", "cp1252_to_utf8"]
+__all__ = ["to_ascii", "cp1252_to_utf8", "decode_escaped_bytes"]
 
 
 def to_ascii(s: AnyStr) -> str:
@@ -49,3 +49,13 @@ def cp1252_to_utf8(s: str) -> str:
         .decode("utf-8", errors="replace_decoding_with_cp1252")
     )
     return res
+
+
+def decode_escaped_bytes(s: str, encoding="utf-8") -> str:
+    """Convert escaped bytes in the \\xhh format to unicode characters."""
+    return (
+        s.encode("latin1")  # To bytes, required by 'unicode-escape'
+        .decode("unicode-escape")  # Perform the actual octal-escaping decode
+        .encode("latin1")  # 1:1 mapping back to bytes
+        .decode(encoding)
+    )
