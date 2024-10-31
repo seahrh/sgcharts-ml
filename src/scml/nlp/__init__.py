@@ -13,7 +13,6 @@ __all__ = [
     "split",
     "ngrams",
     "sentences",
-    "has_1a1d",
 ]
 
 
@@ -201,21 +200,6 @@ def ngrams(
     # do not enter loop if n > len(tokens)
     res = [tuple(ts[i : i + n]) for i in range(len(ts) - n + 1)]
     return res
-
-
-def has_1a1d(s: str, include: str = "") -> bool:
-    """Returns True if the string has at least one letter and one digit.
-    Useful for detecting product or model codes.
-    """
-    es = re.escape(include)
-    # Positive lookahead: at least one digit AND at least one letter
-    # Allow only chars inside the whitelist
-    ps = r"(?=.*\d)(?=.*[A-Za-z])^[A-Za-z\d" + es + r"]+$"
-    p = re.compile(ps)
-    m = p.match(s)
-    if m is None:
-        return False
-    return True
 
 
 # To avoid circular imports, the order of module imports matters!
