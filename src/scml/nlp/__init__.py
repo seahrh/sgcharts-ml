@@ -232,6 +232,10 @@ from .findreplace import *
 
 __all__ += findreplace.__all__  # type: ignore  # module name is not defined
 
+from .languages import *
+
+__all__ += languages.__all__  # type: ignore  # module name is not defined
+
 from .word2vec import *
 
 __all__ += word2vec.__all__  # type: ignore  # module name is not defined
