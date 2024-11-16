@@ -16,7 +16,7 @@ def _logit(p):
 
 def _softmax(x: np.ndarray) -> np.ndarray:
     e_x = np.exp(x - np.max(x))
-    return e_x / e_x.sum(axis=0)
+    return e_x / e_x.sum(axis=0)  # type: ignore[no-any-return]
 
 
 class TestUncertaintyWeightedLoss:

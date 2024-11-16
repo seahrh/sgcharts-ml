@@ -139,7 +139,7 @@ def self_adjusting_dice_loss(
     probs_with_factor = ((1 - probs) ** alpha) * probs
     # Dice coefficient
     dsc = (2 * probs_with_factor + gamma) / (probs_with_factor + 1 + gamma)
-    loss = 1 - dsc
+    loss: Tensor = 1 - dsc
     if reduction == "mean":
         return loss.mean()
     elif reduction == "sum":
