@@ -4,7 +4,11 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor
 
-__all__ = ["focal_loss_for_multiclass_classification", "uncertainty_weighted_loss"]
+__all__ = [
+    "focal_loss_for_multiclass_classification",
+    "uncertainty_weighted_loss",
+    "self_adjusting_dice_loss",
+]
 
 
 def uncertainty_weighted_loss(
@@ -99,3 +103,45 @@ def focal_loss_for_multiclass_classification(
         reduction=reduction,
         ignore_index=ignore_index,
     )
+
+
+def self_adjusting_dice_loss(
+    input: Tensor,
+    target: Tensor,
+    alpha: float = 2.0,
+    gamma: float = 1.0,
+    reduction: str = "mean",
+) -> Tensor:
+    """
+    Creates a criterion that optimizes a multi-class Self-adjusting Dice Loss.
+    Paper: Li, Xiaoya, et al. "Dice loss for data-imbalanced NLP tasks." (ACL 2020)
+    Based on https://github.com/fursovia/self-adj-dice/
+
+    Args:
+        alpha (float): a factor to push down the weight of easy examples
+            The "Focal loss" paper sets alpha to a default value of 2.
+        gamma (float): a factor added to both the nominator and the denominator for smoothing purposes.
+            This allows negative examples to contribute to the training.
+            The paper sets gamma to a default value of 1.
+        reduction (string): Specifies the reduction to apply to the output:
+            ``'none'`` | ``'mean'`` | ``'sum'``. ``'none'``: no reduction will be applied,
+            ``'mean'``: the sum of the output will be divided by the number of
+            elements in the output, ``'sum'``: the output will be summed.
+
+    Shape:
+        - input: `(N, C)` where `N` is the batch size and `C` is the number of classes.
+        - target: `(N)` where each value is in [0, C - 1]
+    """
+    probs = torch.softmax(input, dim=1)
+    # Unsqueeze reshapes `target` to (N, 1)
+    # Gather gets the probability of the ground truth class
+    probs = torch.gather(probs, dim=1, index=target.unsqueeze(1))
+    probs_with_factor = ((1 - probs) ** alpha) * probs
+    # Dice coefficient
+    dsc = (2 * probs_with_factor + gamma) / (probs_with_factor + 1 + gamma)
+    loss = 1 - dsc
+    if reduction == "mean":
+        return loss.mean()
+    elif reduction == "sum":
+        return loss.sum()
+    return loss

@@ -1,5 +1,6 @@
 import logging
 
+import numpy as np
 import pytest
 import torch
 import torch.nn.functional as F
@@ -7,6 +8,15 @@ import torch.nn.functional as F
 from scml.torchx.loss import *
 
 log = logging.getLogger(__name__)
+
+
+def _logit(p):
+    return torch.log(p / (1 - p))
+
+
+def _softmax(x: np.ndarray) -> np.ndarray:
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum(axis=0)
 
 
 class TestUncertaintyWeightedLoss:
@@ -75,11 +85,8 @@ class TestUncertaintyWeightedLoss:
 class TestFocalLossForMultiClassClassification:
 
     @staticmethod
-    def _logit(p):
-        return torch.log(p / (1 - p))
-
-    def _generate_diverse_input_target_pair(self, **kwargs):
-        inputs = self._logit(
+    def _generate_diverse_input_target_pair(**kwargs):
+        inputs = _logit(
             torch.tensor(
                 [
                     [0.1, 0.2, 0.3],
@@ -185,3 +192,54 @@ correct_ratio={expected_ratio.shape}, loss_ratio={actual_ratio.shape}"""
             focal_loss_for_multiclass_classification(
                 input=inputs, target=targets, reduction=reduction
             )
+
+
+class TestSelfAdjustingDiceLoss:
+
+    @staticmethod
+    def loss_numpy(
+        input: np.ndarray,
+        target: np.ndarray,
+        reduction: str,
+        alpha: float,
+        gamma: float,
+    ) -> float:
+        loss: float = 0.0
+        for curr_logits, curr_target in zip(input, target):
+            curr_probs = _softmax(curr_logits)
+            curr_prob = curr_probs[int(curr_target)]
+            prob_with_factor = ((1 - curr_prob) ** alpha) * curr_prob
+            curr_loss = 1 - (2 * prob_with_factor + gamma) / (
+                prob_with_factor + 1 + gamma
+            )
+            loss += curr_loss
+        if reduction == "mean":
+            return loss / int(input.shape[0])
+        return loss
+
+    @pytest.mark.parametrize("alpha", [1.0, 2.0, 10.0])
+    @pytest.mark.parametrize("gamma", [1.0, 2.0, 10.0])
+    @pytest.mark.parametrize("reduction", ["mean", "sum"])
+    def test_numpy_vs_torch(self, alpha, gamma, reduction):
+        N = 128
+        C = 64
+        input_np = np.random.rand(N, C)
+        target_np = np.random.randint(0, C, size=(N,))
+        input = torch.from_numpy(input_np)
+        target = torch.from_numpy(target_np)
+        assert np.allclose(
+            self.loss_numpy(
+                input=input_np,
+                target=target_np,
+                reduction=reduction,
+                alpha=alpha,
+                gamma=gamma,
+            ),
+            self_adjusting_dice_loss(
+                input=input,
+                target=target,
+                alpha=alpha,
+                gamma=gamma,
+                reduction=reduction,
+            ),
+        )
