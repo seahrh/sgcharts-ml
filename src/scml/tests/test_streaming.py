@@ -1,4 +1,6 @@
-from scml import IterativeMean, RollingWindow
+import numpy as np
+
+from scml import RollingWindow, RunningMean
 
 
 class TestRollingWindow:
@@ -21,19 +23,34 @@ class TestRollingWindow:
         assert rw.mean() == 2.5
 
 
-class TestIterativeMean:
+class TestRunningMean:
+
+    def test_all_inputs_are_the_same(self):
+        rm = RunningMean()
+        assert rm.get() == 0
+        for _ in range(100):
+            rm.add(1)
+            assert rm.get() == 1
+
     def test_case_1(self):
-        im = IterativeMean()
-        assert im.get() == 0
-        im.add(3)
-        assert im.get() == 3
-        im.add(0)
-        assert im.get() == 1.5
-        im.add(-3)
-        assert im.get() == 0
-        im.add(4)
-        assert im.get() == 1
-        im.add(6)
-        assert im.get() == 2
-        im.add(2)
-        assert im.get() == 2
+        rm = RunningMean()
+        assert rm.get() == 0
+        rm.add(3)
+        assert rm.get() == 3
+        rm.add(0)
+        assert rm.get() == 1.5
+        rm.add(-3)
+        assert rm.get() == 0
+        rm.add(4)
+        assert rm.get() == 1
+        rm.add(6)
+        assert rm.get() == 2
+        rm.add(2)
+        assert rm.get() == 2
+
+    def test_floats(self):
+        rm = RunningMean()
+        ar = np.random.uniform(low=-1000, high=1000, size=(1000,))
+        for i in range(ar.shape[0]):
+            rm.add(ar[i].item())
+            assert np.allclose(rm.get(), np.mean(ar[: i + 1]))
