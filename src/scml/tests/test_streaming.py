@@ -4,9 +4,9 @@ from scml import RollingWindow, RunningMean
 
 
 class TestRollingWindow:
-    def test_mean(self):
-        rw = RollingWindow(capacity=4)
-        assert rw.mean() is None
+    def test_case_1(self):
+        rw = RollingWindow(capacity=4, initial_value=0)
+        assert rw.mean() == 0
         rw.append(3)
         assert rw.mean() == 3
         rw.append(0)
@@ -21,6 +21,16 @@ class TestRollingWindow:
         # 2nd item is popped
         rw.append(2)
         assert rw.mean() == 2.5
+
+    def test_mean(self):
+        k = 10
+        rw = RollingWindow(capacity=k, initial_value=0)
+        assert rw.mean() == 0
+        ar = np.random.uniform(low=-1000, high=1000, size=(1000,))
+        for j in range(ar.shape[0]):
+            rw.append(ar[j].item())
+            i = max(0, j - k + 1)
+            assert np.allclose(rw.mean(), np.mean(ar[i : j + 1]))
 
 
 class TestRunningMean:
@@ -48,7 +58,7 @@ class TestRunningMean:
         rm.add(2)
         assert rm.get() == 2
 
-    def test_floats(self):
+    def test_mean(self):
         rm = RunningMean()
         ar = np.random.uniform(low=-1000, high=1000, size=(1000,))
         for i in range(ar.shape[0]):
