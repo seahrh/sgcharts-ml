@@ -1,14 +1,19 @@
 __all__ = ["RollingWindow", "RunningMean"]
 
 from collections import deque
-from typing import Deque
+from typing import Deque, Iterable, Optional
 
 
 class RollingWindow:
-    def __init__(self, capacity: int, initial_value: float = 0):
+    def __init__(
+        self,
+        capacity: int,
+        initial_value: float = 0,
+        buf: Optional[Iterable[float]] = None,
+    ):
         self.capacity: int = capacity
         self.sum: float = initial_value
-        self.buf: Deque[float] = deque()
+        self.buf: Deque[float] = deque() if buf is None else deque(buf)
 
     def append(self, x: float) -> None:
         if len(self.buf) == self.capacity:
@@ -16,9 +21,9 @@ class RollingWindow:
         self.buf.append(x)
         self.sum += x
 
-    def mean(self) -> float:
+    def mean(self) -> Optional[float]:
         if len(self.buf) == 0:
-            return self.sum
+            return None
         return self.sum / len(self.buf)
 
     def __len__(self):
