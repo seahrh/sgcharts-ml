@@ -1,9 +1,9 @@
-__all__ = ["Timer"]
+__all__ = ["Timer", "days_ago", "last_month"]
 
 import math
 import time
-from datetime import timedelta
-from typing import Optional
+from datetime import datetime, timedelta, timezone
+from typing import Optional, Tuple
 
 
 class Timer:
@@ -34,3 +34,17 @@ class Timer:
 
     def __exit__(self, *args) -> None:
         self.stop()
+
+
+def days_ago(days: int, reference: Optional[datetime] = None) -> datetime:
+    if reference is None:
+        reference = datetime.now(timezone.utc)
+    return reference - timedelta(days=days)
+
+
+def last_month(reference: Optional[datetime] = None) -> Tuple[datetime, datetime]:
+    if reference is None:
+        reference = datetime.now(timezone.utc)
+    last_day_of_month = reference.replace(day=1) - timedelta(days=1)
+    first_day_of_month = last_day_of_month.replace(day=1)
+    return first_day_of_month, last_day_of_month
