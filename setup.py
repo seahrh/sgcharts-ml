@@ -10,7 +10,7 @@ setup(
         "numba>=0.59.0",  # official support for python 3.12 https://github.com/numba/numba/issues/9197
         "pandas>=1.0.0",
         "scikit-learn>=1.3.0",
-        "networkx>=3.3",
+        "networkx>=3.2.1",  # last version supporting python 3.9
         "torch>=2.7.0",
     ],
     extras_require={
