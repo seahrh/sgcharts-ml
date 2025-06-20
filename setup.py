@@ -11,7 +11,7 @@ setup(
         "pandas>=1.0.0",
         "scikit-learn>=1.3.0",
         "networkx>=2.6.3",
-        "torch>=1.11.0",
+        "torch>=2.7.1",
     ],
     extras_require={
         "lint": [
