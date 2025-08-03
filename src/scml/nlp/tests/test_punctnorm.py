@@ -36,7 +36,7 @@ class TestNormalizer:
         moses_norm_num = MosesPunctNormalizer("en", norm_numbers=True)
         moses_no_norm_num = MosesPunctNormalizer("en", norm_numbers=False)
 
-        text = "12{}123".format("\u00A0")
+        text = "12{}123".format("\u00a0")
         expected = "12.123"
         assert moses_norm_num.normalize(text) == expected
 

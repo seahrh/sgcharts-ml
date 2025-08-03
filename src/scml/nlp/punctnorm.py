@@ -49,24 +49,24 @@ class MosesPunctNormalizer:
     ]
 
     FRENCH_QUOTES = [  # lines 52 - 57
-        ("\u00A0«\u00A0", r'"'),
-        ("«\u00A0", r'"'),
+        ("\u00a0«\u00a0", r'"'),
+        ("«\u00a0", r'"'),
         ("«", r'"'),
-        ("\u00A0»\u00A0", r'"'),
-        ("\u00A0»", r'"'),
+        ("\u00a0»\u00a0", r'"'),
+        ("\u00a0»", r'"'),
         ("»", r'"'),
     ]
 
     HANDLE_PSEUDO_SPACES = [  # lines 59 - 67
-        ("\u00A0%", r"%"),
-        ("nº\u00A0", "nº "),
-        ("\u00A0:", r":"),
-        ("\u00A0ºC", " ºC"),
-        ("\u00A0cm", r" cm"),
-        ("\u00A0\\?", "?"),
-        ("\u00A0\\!", "!"),
-        ("\u00A0;", r";"),
-        (",\u00A0", r", "),
+        ("\u00a0%", r"%"),
+        ("nº\u00a0", "nº "),
+        ("\u00a0:", r":"),
+        ("\u00a0ºC", " ºC"),
+        ("\u00a0cm", r" cm"),
+        ("\u00a0\\?", "?"),
+        ("\u00a0\\!", "!"),
+        ("\u00a0;", r";"),
+        (",\u00a0", r", "),
         (r" +", r" "),
     ]
 
@@ -78,11 +78,11 @@ class MosesPunctNormalizer:
     ]
 
     DE_ES_CZ_CS_FR = [
-        ("(\\d)\u00A0(\\d)", r"\g<1>,\g<2>"),
+        ("(\\d)\u00a0(\\d)", r"\g<1>,\g<2>"),
     ]
 
     OTHER = [
-        ("(\\d)\u00A0(\\d)", r"\g<1>.\g<2>"),
+        ("(\\d)\u00a0(\\d)", r"\g<1>.\g<2>"),
     ]
 
     # Regex substitutions from replace-unicode-punctuation.perl
