@@ -637,287 +637,298 @@ class TestReplacePhoneNumber:
         )
 
 
-class TestFindSku:
+class TestFindAlphanumericId:
 
     def test_empty_string(self):
-        assert find_sku(s="") == []
+        assert find_alphanumeric_id(s="") == []
 
     def test_no_matches(self):
         include = ".-"
-        assert find_sku("f 1") == []
-        assert find_sku("foo 123") == []
-        assert find_sku("foo-123") == []
-        assert find_sku("foo:123", include=include) == []
+        assert find_alphanumeric_id("f 1") == []
+        assert find_alphanumeric_id("foo 123") == []
+        assert find_alphanumeric_id("foo-123") == []
+        assert find_alphanumeric_id("foo:123", include=include) == []
 
     def test_whole_string_match(self):
         include = ".-"
-        assert find_sku("foo123") == [MatchResult(match="foo123", start=0, end=6)]
-        assert find_sku(".foo123", include=include) == [
+        assert find_alphanumeric_id("foo123") == [
+            MatchResult(match="foo123", start=0, end=6)
+        ]
+        assert find_alphanumeric_id(".foo123", include=include) == [
             MatchResult(match=".foo123", start=0, end=7)
         ]
-        assert find_sku("foo.123", include=include) == [
+        assert find_alphanumeric_id("foo.123", include=include) == [
             MatchResult(match="foo.123", start=0, end=7)
         ]
-        assert find_sku("foo123.", include=include) == [
+        assert find_alphanumeric_id("foo123.", include=include) == [
             MatchResult(match="foo123.", start=0, end=7)
         ]
-        assert find_sku("-foo123", include=include) == [
+        assert find_alphanumeric_id("-foo123", include=include) == [
             MatchResult(match="-foo123", start=0, end=7)
         ]
-        assert find_sku("foo-123", include=include) == [
+        assert find_alphanumeric_id("foo-123", include=include) == [
             MatchResult(match="foo-123", start=0, end=7)
         ]
-        assert find_sku("foo123-", include=include) == [
+        assert find_alphanumeric_id("foo123-", include=include) == [
             MatchResult(match="foo123-", start=0, end=7)
         ]
 
     def test_single_match_start(self):
         include = ".-"
-        assert find_sku("foo123 bar 456") == [
+        assert find_alphanumeric_id("foo123 bar 456") == [
             MatchResult(match="foo123", start=0, end=6)
         ]
-        assert find_sku(".foo123 bar 456", include=include) == [
+        assert find_alphanumeric_id(".foo123 bar 456", include=include) == [
             MatchResult(match=".foo123", start=0, end=7)
         ]
-        assert find_sku("foo.123 bar 456", include=include) == [
+        assert find_alphanumeric_id("foo.123 bar 456", include=include) == [
             MatchResult(match="foo.123", start=0, end=7)
         ]
-        assert find_sku("foo123. bar 456", include=include) == [
+        assert find_alphanumeric_id("foo123. bar 456", include=include) == [
             MatchResult(match="foo123.", start=0, end=7)
         ]
-        assert find_sku("-foo123 bar 456", include=include) == [
+        assert find_alphanumeric_id("-foo123 bar 456", include=include) == [
             MatchResult(match="-foo123", start=0, end=7)
         ]
-        assert find_sku("foo-123 bar 456", include=include) == [
+        assert find_alphanumeric_id("foo-123 bar 456", include=include) == [
             MatchResult(match="foo-123", start=0, end=7)
         ]
-        assert find_sku("foo123- bar 456", include=include) == [
+        assert find_alphanumeric_id("foo123- bar 456", include=include) == [
             MatchResult(match="foo123-", start=0, end=7)
         ]
 
     def test_single_match_mid(self):
         include = ".-"
-        assert find_sku("bar foo123 456") == [
+        assert find_alphanumeric_id("bar foo123 456") == [
             MatchResult(match="foo123", start=4, end=10)
         ]
-        assert find_sku("bar .foo123 456", include=include) == [
+        assert find_alphanumeric_id("bar .foo123 456", include=include) == [
             MatchResult(match=".foo123", start=4, end=11)
         ]
-        assert find_sku("bar foo.123 456", include=include) == [
+        assert find_alphanumeric_id("bar foo.123 456", include=include) == [
             MatchResult(match="foo.123", start=4, end=11)
         ]
-        assert find_sku("bar foo123. 456", include=include) == [
+        assert find_alphanumeric_id("bar foo123. 456", include=include) == [
             MatchResult(match="foo123.", start=4, end=11)
         ]
-        assert find_sku("bar -foo123 456", include=include) == [
+        assert find_alphanumeric_id("bar -foo123 456", include=include) == [
             MatchResult(match="-foo123", start=4, end=11)
         ]
-        assert find_sku("bar foo-123 456", include=include) == [
+        assert find_alphanumeric_id("bar foo-123 456", include=include) == [
             MatchResult(match="foo-123", start=4, end=11)
         ]
-        assert find_sku("bar foo123- 456", include=include) == [
+        assert find_alphanumeric_id("bar foo123- 456", include=include) == [
             MatchResult(match="foo123-", start=4, end=11)
         ]
 
     def test_single_match_end(self):
         include = ".-"
-        assert find_sku("bar 456 foo123") == [
+        assert find_alphanumeric_id("bar 456 foo123") == [
             MatchResult(match="foo123", start=8, end=14)
         ]
-        assert find_sku("bar 456 .foo123", include=include) == [
+        assert find_alphanumeric_id("bar 456 .foo123", include=include) == [
             MatchResult(match=".foo123", start=8, end=15)
         ]
-        assert find_sku("bar 456 foo.123", include=include) == [
+        assert find_alphanumeric_id("bar 456 foo.123", include=include) == [
             MatchResult(match="foo.123", start=8, end=15)
         ]
-        assert find_sku("bar 456 foo123.", include=include) == [
+        assert find_alphanumeric_id("bar 456 foo123.", include=include) == [
             MatchResult(match="foo123.", start=8, end=15)
         ]
-        assert find_sku("bar 456 -foo123", include=include) == [
+        assert find_alphanumeric_id("bar 456 -foo123", include=include) == [
             MatchResult(match="-foo123", start=8, end=15)
         ]
-        assert find_sku("bar 456 foo-123", include=include) == [
+        assert find_alphanumeric_id("bar 456 foo-123", include=include) == [
             MatchResult(match="foo-123", start=8, end=15)
         ]
-        assert find_sku("bar 456 foo123-", include=include) == [
+        assert find_alphanumeric_id("bar 456 foo123-", include=include) == [
             MatchResult(match="foo123-", start=8, end=15)
         ]
 
     def test_multi_match_start(self):
         include = ".-"
-        assert find_sku("foo123 foo123 bar 456") == [
+        assert find_alphanumeric_id("foo123 foo123 bar 456") == [
             MatchResult(match="foo123", start=0, end=6),
             MatchResult(match="foo123", start=7, end=13),
         ]
-        assert find_sku(".foo123 .foo123 bar 456", include=include) == [
+        assert find_alphanumeric_id(".foo123 .foo123 bar 456", include=include) == [
             MatchResult(match=".foo123", start=0, end=7),
             MatchResult(match=".foo123", start=8, end=15),
         ]
-        assert find_sku("foo.123 foo.123 bar 456", include=include) == [
+        assert find_alphanumeric_id("foo.123 foo.123 bar 456", include=include) == [
             MatchResult(match="foo.123", start=0, end=7),
             MatchResult(match="foo.123", start=8, end=15),
         ]
-        assert find_sku("foo123. foo123. bar 456", include=include) == [
+        assert find_alphanumeric_id("foo123. foo123. bar 456", include=include) == [
             MatchResult(match="foo123.", start=0, end=7),
             MatchResult(match="foo123.", start=8, end=15),
         ]
-        assert find_sku("-foo123 -foo123 bar 456", include=include) == [
+        assert find_alphanumeric_id("-foo123 -foo123 bar 456", include=include) == [
             MatchResult(match="-foo123", start=0, end=7),
             MatchResult(match="-foo123", start=8, end=15),
         ]
-        assert find_sku("foo-123 foo-123 bar 456", include=include) == [
+        assert find_alphanumeric_id("foo-123 foo-123 bar 456", include=include) == [
             MatchResult(match="foo-123", start=0, end=7),
             MatchResult(match="foo-123", start=8, end=15),
         ]
-        assert find_sku("foo123- foo123- bar 456", include=include) == [
+        assert find_alphanumeric_id("foo123- foo123- bar 456", include=include) == [
             MatchResult(match="foo123-", start=0, end=7),
             MatchResult(match="foo123-", start=8, end=15),
         ]
 
     def test_multi_match_mid(self):
         include = ".-"
-        assert find_sku("bar foo123 foo123 456") == [
+        assert find_alphanumeric_id("bar foo123 foo123 456") == [
             MatchResult(match="foo123", start=4, end=10),
             MatchResult(match="foo123", start=11, end=17),
         ]
-        assert find_sku("bar .foo123 .foo123 456", include=include) == [
+        assert find_alphanumeric_id("bar .foo123 .foo123 456", include=include) == [
             MatchResult(match=".foo123", start=4, end=11),
             MatchResult(match=".foo123", start=12, end=19),
         ]
-        assert find_sku("bar foo.123 foo.123 456", include=include) == [
+        assert find_alphanumeric_id("bar foo.123 foo.123 456", include=include) == [
             MatchResult(match="foo.123", start=4, end=11),
             MatchResult(match="foo.123", start=12, end=19),
         ]
-        assert find_sku("bar foo123. foo123. 456", include=include) == [
+        assert find_alphanumeric_id("bar foo123. foo123. 456", include=include) == [
             MatchResult(match="foo123.", start=4, end=11),
             MatchResult(match="foo123.", start=12, end=19),
         ]
-        assert find_sku("bar -foo123 -foo123 456", include=include) == [
+        assert find_alphanumeric_id("bar -foo123 -foo123 456", include=include) == [
             MatchResult(match="-foo123", start=4, end=11),
             MatchResult(match="-foo123", start=12, end=19),
         ]
-        assert find_sku("bar foo-123 foo-123 456", include=include) == [
+        assert find_alphanumeric_id("bar foo-123 foo-123 456", include=include) == [
             MatchResult(match="foo-123", start=4, end=11),
             MatchResult(match="foo-123", start=12, end=19),
         ]
-        assert find_sku("bar foo123- foo123- 456", include=include) == [
+        assert find_alphanumeric_id("bar foo123- foo123- 456", include=include) == [
             MatchResult(match="foo123-", start=4, end=11),
             MatchResult(match="foo123-", start=12, end=19),
         ]
 
     def test_multi_match_end(self):
         include = ".-"
-        assert find_sku("bar 456 foo123 foo123") == [
+        assert find_alphanumeric_id("bar 456 foo123 foo123") == [
             MatchResult(match="foo123", start=8, end=14),
             MatchResult(match="foo123", start=15, end=21),
         ]
-        assert find_sku("bar 456 .foo123 .foo123", include=include) == [
+        assert find_alphanumeric_id("bar 456 .foo123 .foo123", include=include) == [
             MatchResult(match=".foo123", start=8, end=15),
             MatchResult(match=".foo123", start=16, end=23),
         ]
-        assert find_sku("bar 456 foo.123 foo.123", include=include) == [
+        assert find_alphanumeric_id("bar 456 foo.123 foo.123", include=include) == [
             MatchResult(match="foo.123", start=8, end=15),
             MatchResult(match="foo.123", start=16, end=23),
         ]
-        assert find_sku("bar 456 foo123. foo123.", include=include) == [
+        assert find_alphanumeric_id("bar 456 foo123. foo123.", include=include) == [
             MatchResult(match="foo123.", start=8, end=15),
             MatchResult(match="foo123.", start=16, end=23),
         ]
-        assert find_sku("bar 456 -foo123 -foo123", include=include) == [
+        assert find_alphanumeric_id("bar 456 -foo123 -foo123", include=include) == [
             MatchResult(match="-foo123", start=8, end=15),
             MatchResult(match="-foo123", start=16, end=23),
         ]
-        assert find_sku("bar 456 foo-123 foo-123", include=include) == [
+        assert find_alphanumeric_id("bar 456 foo-123 foo-123", include=include) == [
             MatchResult(match="foo-123", start=8, end=15),
             MatchResult(match="foo-123", start=16, end=23),
         ]
-        assert find_sku("bar 456 foo123- foo123-", include=include) == [
+        assert find_alphanumeric_id("bar 456 foo123- foo123-", include=include) == [
             MatchResult(match="foo123-", start=8, end=15),
             MatchResult(match="foo123-", start=16, end=23),
         ]
 
     def test_non_overlapping_match(self):
         include = ".-"
-        assert find_sku("foo123-bar456") == [
+        assert find_alphanumeric_id("foo123-bar456") == [
             MatchResult(match="foo123", start=0, end=6),
             MatchResult(match="bar456", start=7, end=13),
         ]
-        assert find_sku("foo123,bar.456,car-789", include=include) == [
+        assert find_alphanumeric_id("foo123,bar.456,car-789", include=include) == [
             MatchResult(match="foo123", start=0, end=6),
             MatchResult(match="bar.456", start=7, end=14),
             MatchResult(match="car-789", start=15, end=22),
         ]
 
 
-class TestReplaceSku:
+class TestReplaceAlphanumericId:
     def test_empty_string(self):
-        assert replace_sku(s="", replacement="") == ""
+        assert replace_alphanumeric_id(s="", replacement="") == ""
 
     def test_no_matches(self):
         include = ".-"
-        assert replace_sku("f 1", replacement="") == "f 1"
-        assert replace_sku("foo 123", replacement="") == "foo 123"
-        assert replace_sku("foo-123", replacement="") == "foo-123"
-        assert replace_sku("foo:123", replacement="", include=include) == "foo:123"
+        assert replace_alphanumeric_id("f 1", replacement="") == "f 1"
+        assert replace_alphanumeric_id("foo 123", replacement="") == "foo 123"
+        assert replace_alphanumeric_id("foo-123", replacement="") == "foo-123"
+        assert (
+            replace_alphanumeric_id("foo:123", replacement="", include=include)
+            == "foo:123"
+        )
 
     def test_whole_string_replaced(self):
         include = ".-"
-        assert replace_sku("foo123", replacement="redacted") == "redacted"
-        assert replace_sku(".foo123", replacement="", include=include) == ""
-        assert replace_sku("foo.123", replacement="", include=include) == ""
-        assert replace_sku("foo123.", replacement="", include=include) == ""
-        assert replace_sku("-foo123", replacement="", include=include) == ""
-        assert replace_sku("foo-123", replacement="", include=include) == ""
-        assert replace_sku("foo123-", replacement="", include=include) == ""
+        assert replace_alphanumeric_id("foo123", replacement="redacted") == "redacted"
+        assert replace_alphanumeric_id(".foo123", replacement="", include=include) == ""
+        assert replace_alphanumeric_id("foo.123", replacement="", include=include) == ""
+        assert replace_alphanumeric_id("foo123.", replacement="", include=include) == ""
+        assert replace_alphanumeric_id("-foo123", replacement="", include=include) == ""
+        assert replace_alphanumeric_id("foo-123", replacement="", include=include) == ""
+        assert replace_alphanumeric_id("foo123-", replacement="", include=include) == ""
 
     def test_multiple_replacements(self):
         include = ".-"
         assert (
-            replace_sku(
+            replace_alphanumeric_id(
                 "foo123 foo123 bar foo123 foo123 456 foo123 foo123",
-                replacement="redacted",
+                replacement="__r__",
             )
-            == "redacted redacted bar redacted redacted 456 redacted redacted"
+            == "__r__ __r__ bar __r__ __r__ 456 __r__ __r__"
         )
         assert (
-            replace_sku(
-                ".foo123 .foo123 bar .foo123 .foo123 456 .foo123 .foo123",
+            replace_alphanumeric_id(
+                "a1-1a 2b.b2 .foo123 .foo123 bar .foo123 .foo123 456 .foo123 .foo123",
                 include=include,
+                replacement="__r__",
             )
-            == "  bar   456  "
+            == "__r__ __r__ __r__ __r__ bar __r__ __r__ 456 __r__ __r__"
         )
         assert (
-            replace_sku(
+            replace_alphanumeric_id(
                 "foo.123 foo.123 bar foo.123 foo.123 456 foo.123 foo.123",
                 include=include,
+                replacement="__r__",
             )
-            == "  bar   456  "
+            == "__r__ __r__ bar __r__ __r__ 456 __r__ __r__"
         )
         assert (
-            replace_sku(
+            replace_alphanumeric_id(
                 "foo123. foo123. bar foo123. foo123. 456 foo123. foo123.",
                 include=include,
+                replacement="__r__",
             )
-            == "  bar   456  "
+            == "__r__ __r__ bar __r__ __r__ 456 __r__ __r__"
         )
         assert (
-            replace_sku(
-                "-foo123 -foo123 bar -foo123 -foo123 456 -foo123 -foo123",
+            replace_alphanumeric_id(
+                "a1-1a 2b-b2 -foo123 -foo123 bar -foo123 -foo123 456 -foo123 -foo123",
                 include=include,
+                replacement="__r__",
             )
-            == "  bar   456  "
+            == "__r__ __r__ __r__ __r__ bar __r__ __r__ 456 __r__ __r__"
         )
         assert (
-            replace_sku(
+            replace_alphanumeric_id(
                 "foo-123 foo-123 bar foo-123 foo-123 456 foo-123 foo-123",
                 include=include,
+                replacement="__r__",
             )
-            == "  bar   456  "
+            == "__r__ __r__ bar __r__ __r__ 456 __r__ __r__"
         )
         assert (
-            replace_sku(
+            replace_alphanumeric_id(
                 "foo123- foo123- bar foo123- foo123- 456 foo123- foo123-",
                 include=include,
+                replacement="__r__",
             )
-            == "  bar   456  "
+            == "__r__ __r__ bar __r__ __r__ 456 __r__ __r__"
         )

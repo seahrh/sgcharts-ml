@@ -14,8 +14,8 @@ __all__ = [
     "replace_url",
     "find_ip_address",
     "replace_ip_address",
-    "find_sku",
-    "replace_sku",
+    "find_alphanumeric_id",
+    "replace_alphanumeric_id",
 ]
 
 
@@ -179,16 +179,18 @@ def replace_ip_address(s: str, replacement: str = "") -> str:
     return res
 
 
-# a stock-keeping unit (SKU) is defined as having:
+# Alphanumeric identifier is defined as having:
 # at least 1 letter AND 1 digit, plus optionally a character whitelist.
 # first positive lookahead "(?=[a-z]*\d)": any sequence of letters then a digit
 # second positive lookahead "(?=\d*[a-z])": any sequence of digits then a letter
 # capturing group "([a-z\d]{2,})": the sku must contain at least 2 whitelisted chars.
-SKU_PATTERN = re.compile(r"(?=[a-z]*\d)(?=\d*[a-z])([a-z\d]{2,})", re.IGNORECASE)
+ALPHANUMERIC_ID_PATTERN = re.compile(
+    r"(?=[a-z]*\d)(?=\d*[a-z])([a-z\d]{2,})", re.IGNORECASE
+)
 
 
-def _sku_pattern(include: str = "") -> re.Pattern:
-    res = SKU_PATTERN
+def _alphanumeric_id_pattern(include: str = "") -> re.Pattern:
+    res = ALPHANUMERIC_ID_PATTERN
     if len(include) != 0:
         white = re.escape(include)
         res = re.compile(
@@ -204,13 +206,13 @@ def _sku_pattern(include: str = "") -> re.Pattern:
     return res
 
 
-def find_sku(s: str, include: str = "") -> List[MatchResult]:
-    return find_non_overlapping(pattern=_sku_pattern(include=include), s=s)
+def find_alphanumeric_id(s: str, include: str = "") -> List[MatchResult]:
+    return find_non_overlapping(pattern=_alphanumeric_id_pattern(include=include), s=s)
 
 
-def replace_sku(
+def replace_alphanumeric_id(
     s: str,
     replacement: str = "",
     include: str = "",
 ) -> str:
-    return _sku_pattern(include=include).sub(replacement, s)
+    return _alphanumeric_id_pattern(include=include).sub(replacement, s)

@@ -2,8 +2,6 @@ import warnings
 from configparser import SectionProxy
 from typing import Dict, Iterable, List, NamedTuple, Optional, Set
 
-import scml
-
 try:
     import torch
     from torch import nn
@@ -79,7 +77,6 @@ def schedulers(optimizer, params: Iterable[Dict[str, str]]) -> List[LrSchedulerC
                         min_lr=float(ps["min_lr"]),
                         patience=int(ps["patience"]),
                         factor=float(ps["factor"]),
-                        verbose=scml.getboolean(ps["verbose"]),
                     ),
                     name=qn,
                 )
