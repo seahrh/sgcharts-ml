@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import random
@@ -11,7 +10,6 @@ import numpy as np
 from numba import njit
 
 __all__ = [
-    "NumpyEncoder",
     "getboolean",
     "get_logger",
     "seed_everything",
@@ -24,23 +22,6 @@ __all__ = [
     "contiguous_ranges",
     "fillna",
 ]
-
-
-class NumpyEncoder(json.JSONEncoder):
-    """
-    Serialize numpy arrays to python lists in JSON.
-
-    ser = json.dumps(json_obj, cls=NumpyEncoder)
-
-    des = np.asarray(json.loads(ser))
-
-    Based on https://stackoverflow.com/a/47626762/519951
-    """
-
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
 
 
 TRUTHY: FrozenSet[str] = frozenset({"1", "yes", "true", "on"})
@@ -158,6 +139,10 @@ def fillna(
     flags = np.where(mask, np.full(arr.shape, 1), np.full(arr.shape, 0)).astype(dtype)
     return np.hstack((res, flags))
 
+
+from .serdes import *
+
+__all__ += serdes.__all__  # type: ignore  # module name is not defined
 
 from .ml_stratifiers import *
 
