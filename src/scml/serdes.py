@@ -2,7 +2,7 @@ from json import JSONEncoder
 
 import numpy as np
 
-__all__ = ["NumpyEncoder", "NamedTupleEncoder"]
+__all__ = ["NumpyEncoder"]
 
 
 class NumpyEncoder(JSONEncoder):
@@ -20,17 +20,3 @@ class NumpyEncoder(JSONEncoder):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return JSONEncoder.default(self, obj)
-
-
-class NamedTupleEncoder(JSONEncoder):
-    """
-    Based on https://stackoverflow.com/questions/5906831/serializing-a-python-namedtuple-to-json
-    """
-
-    def _iterencode(self, obj, markers=None):
-        if isinstance(obj, tuple) and hasattr(obj, "_asdict"):
-            gen = self._iterencode_dict(obj._asdict(), markers)
-        else:
-            gen = JSONEncoder._iterencode(self, obj, markers)
-        for chunk in gen:
-            yield chunk
