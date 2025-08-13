@@ -2,7 +2,7 @@ from json import JSONEncoder
 
 import numpy as np
 
-__all__ = ["NumpyEncoder"]
+__all__ = ["NumpyEncoder", "SetEncoder"]
 
 
 class NumpyEncoder(JSONEncoder):
@@ -19,4 +19,16 @@ class NumpyEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
+        return JSONEncoder.default(self, obj)
+
+
+class SetEncoder(JSONEncoder):
+    """Encodes python set as json array.
+
+    Based on https://stackoverflow.com/questions/8230315/how-to-json-serialize-sets
+    """
+
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
         return JSONEncoder.default(self, obj)

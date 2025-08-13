@@ -27,3 +27,28 @@ class TestNumpyEncoder:
             ser
             == '{"f1": [[1.1, 2.2, 3.3], [4.4, 5.5, 6.6]], "f2": [2, [2, 3, 4], [[1, 2, 3], [4, 5, 6]]], "f3": [1, 2]}'
         )
+
+
+class TestSetEncoder:
+    @pytest.mark.parametrize(
+        "obj,ser_1,ser_2",
+        [
+            pytest.param(set(), "[]", "[]", id="empty set"),
+            pytest.param({"1", "a"}, '["1", "a"]', '["a", "1"]', id="non-empty set"),
+            pytest.param(
+                {"field": {"1", "a"}},
+                '{"field": ["1", "a"]}',
+                '{"field": ["a", "1"]}',
+                id="dict contains set",
+            ),
+            pytest.param(
+                {"outer_field": {"inner_field": {"1", "a"}}},
+                '{"outer_field": {"inner_field": ["1", "a"]}}',
+                '{"outer_field": {"inner_field": ["a", "1"]}}',
+                id="nested dict contains set",
+            ),
+        ],
+    )
+    def test_serialize(self, obj, ser_1, ser_2):
+        ser = json.dumps(obj=obj, cls=SetEncoder)
+        assert ser == ser_1 or ser == ser_2
