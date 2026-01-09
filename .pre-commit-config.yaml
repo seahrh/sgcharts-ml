@@ -20,7 +20,11 @@ repos:
     rev: v1.19.1
     hooks:
       - id: mypy
+        pass_filenames: false # Allows mypy to do whole program analysis (https://github.com/python/mypy/issues/13916)
+        always_run: true # If true, this hook will run even if there are no matching files.
   - repo: https://github.com/pycqa/flake8
     rev: 7.3.0
     hooks:
       - id: flake8
+        pass_filenames: false # Ensures configuration files are respected
+        always_run: true # If true, this hook will run even if there are no matching files.
