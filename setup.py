@@ -22,8 +22,8 @@ setup(
             "mypy==1.19.1",
         ],
         "tests": [
-            "pytest==8.3.3",
-            "pytest-cov==6.0.0",
+            "pytest==9.0.2",
+            "pytest-cov==7.0.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
         "nlp": ["transformers>=4.20.1", "spacy>=3.4.2,<3.8"],
