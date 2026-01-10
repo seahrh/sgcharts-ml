@@ -7,7 +7,6 @@ __all__ = [
 from typing import (
     Dict,
     FrozenSet,
-    Iterable,
     List,
     Optional,
     Sequence,
@@ -33,7 +32,7 @@ class FrequencyEncoder:
     def encode(self, s: pd.Series, dtype=np.float32, default: float = 0) -> pd.Series:
         if self._map is None:
             self.encoding_map(s)
-        return s.map(self._map).astype(dtype).fillna(default)
+        return s.map(self._map).astype(dtype).fillna(default)  # type: ignore[arg-type]
 
 
 @njit
@@ -52,7 +51,7 @@ def cyclical_encode(
 def group_statistics(
     data: pd.DataFrame,
     column: str,
-    group_columns: Sequence[str],
+    group_columns: List[str],
     aggregates: Optional[Union[Set[str], FrozenSet[str]]] = frozenset(
         ["mean", "std", "min", "max"]
     ),
@@ -68,9 +67,9 @@ def group_statistics(
             "No statistics to compute. Both `aggregates` and `percentiles` are None or empty."
         )
     c_map: Dict[str, str] = {}
-    res = None
-    grouped = data.groupby(group_columns, sort=True)
-    index = [k for k in grouped.groups.keys()]
+    res: Optional[pd.DataFrame] = None
+    grouped = data.groupby(by=group_columns, sort=True)
+    index: Union[List, pd.MultiIndex] = [k for k in grouped.groups.keys()]
     if len(group_columns) > 1:
         # noinspection PyTypeChecker
         index = pd.MultiIndex.from_tuples(index, names=group_columns)
@@ -79,7 +78,7 @@ def group_statistics(
             c_map[a] = f"{column}_{a}"
         a_list = list(aggregates - {"std"})
         if len(a_list) != 0:
-            res = grouped[column].agg(a_list)
+            res = grouped[column].agg(a_list)  # type: ignore[arg-type]
         if "std" in aggregates:
             # population standard deviation to prevent NaN
             sr = grouped[column].std(ddof=0)
@@ -91,7 +90,7 @@ def group_statistics(
     if percentiles is not None and len(percentiles) != 0:
         for p in percentiles:
             c_map[f"p{p}"] = f"{column}_p{p}"
-        quantiles: List[float] = [p / 100 for p in percentiles]
+        quantiles: np.ndarray = np.array([p / 100 for p in percentiles])
         df = grouped[column].quantile(quantiles).to_frame()
         df = df.reset_index()
         cols = list(df.columns)
@@ -113,10 +112,11 @@ def group_statistics(
         if res is None:
             res = pd.concat([sr.to_frame() for sr in quantiles_sr], axis=1)
         else:
-            res = pd.concat([res] + quantiles_sr, axis=1)
-    if res is not None:
-        res = res.rename(columns=c_map, errors="raise")
-        res = res.astype(dtype)
+            res = pd.concat([res] + quantiles_sr, axis=1)  # type: ignore[call-overload]
+    if res is None:
+        raise ValueError("result dataframe must not be None at this point")
+    res = res.rename(columns=c_map, errors="raise")
+    res = res.astype(dtype)
     return res
 
 
@@ -124,7 +124,7 @@ def group_features(
     df: pd.DataFrame,
     statistics: pd.DataFrame,
     column: str,
-    group_columns: Iterable[str],
+    group_columns: List[str],
     dtype=np.float32,
 ) -> pd.DataFrame:
     res = df.merge(statistics, how="left", left_on=group_columns, right_index=True)

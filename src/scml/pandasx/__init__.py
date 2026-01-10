@@ -36,8 +36,9 @@ def rescale_as_int(
     if min_value == 0 and max_value == 0:
         raise ValueError("Both min_value and max_value must not be zero")
     limit = max(abs(min_value), abs(max_value))
-    res = np.clip(s / limit, 0, 1) * np.iinfo(dtype).max
-    return res.astype(dtype)
+    res: pd.Series = np.clip(s / limit, 0, 1) * np.iinfo(dtype).max
+    res = res.astype(dtype)
+    return res
 
 
 def quantize(df: pd.DataFrame, verbose: bool = True) -> None:

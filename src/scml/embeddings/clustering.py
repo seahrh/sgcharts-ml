@@ -50,7 +50,8 @@ class GraphClustering:
                 adj[i][j] = cos_sim
                 adj[j][i] = cos_sim
         # undirected weighted graph
-        return nx.from_numpy_array(adj, parallel_edges=False, edge_attr=self.edge_attr)
+        res: nx.Graph = nx.from_numpy_array(A=adj, parallel_edges=False, edge_attr=self.edge_attr)  # type: ignore[call-overload]
+        return res
 
     def __call__(
         self, embeddings: np.ndarray, score_cutoff: float, *args, **kwargs
