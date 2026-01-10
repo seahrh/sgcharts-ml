@@ -26,7 +26,7 @@ setup(
             "pytest-cov==7.0.0",
         ],
         "notebook": ["jupyterlab>=1.2.10", "tqdm>=4.45.0"],
-        "nlp": ["transformers>=4.20.1", "spacy>=3.4.2,<3.8"],
+        "nlp": ["transformers>=4.20.1", "spacy>=3.8.11"],
     },
     packages=find_packages("src", exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_dir={"": "src"},

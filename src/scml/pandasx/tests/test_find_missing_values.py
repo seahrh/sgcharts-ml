@@ -31,8 +31,8 @@ class TestFindMissingValues:
     def test_missing_values_are_present(self):
         df = pd.DataFrame(
             {
-                "integers": [1, None, np.NaN, np.inf],
-                "floats": [0.1, None, np.NaN, -np.inf],
+                "integers": [1, None, np.nan, np.inf],
+                "floats": [0.1, None, np.nan, -np.inf],
                 "strings": ["", " ", "c", None],
                 "timestamps": [
                     pd.Timestamp("2017-01-01"),
@@ -54,8 +54,8 @@ class TestFindMissingValues:
     def test_treat_empty_strings_as_na(self):
         df = pd.DataFrame(
             {
-                "integers": [1, None, np.NaN, np.inf],
-                "floats": [0.1, None, np.NaN, -np.inf],
+                "integers": [1, None, np.nan, np.inf],
+                "floats": [0.1, None, np.nan, -np.inf],
                 "strings": ["", " ", "c", None],
                 "timestamps": [
                     pd.Timestamp("2017-01-01"),
