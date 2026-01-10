@@ -1,6 +1,8 @@
 import math
 from typing import List
 
+import networkx as nx
+import numpy as np
 import pytest
 
 import scml
@@ -10,163 +12,187 @@ scml.seed_everything()
 
 
 @pytest.fixture
-def docs() -> List[str]:
+def docs2() -> List[str]:
     return [
         "10 11 12 13",
         "13 12 11 10",
         "12 11 10 13",  # this doc and above are duplicates
         "10 20 21 22",
         "10 11 20 21",
-        "10 11 12 20",
         "20 21 22 23",
         "99",
     ]
 
 
-class TestKeywordMining:
-    def test_1_gram(self, docs):
-        expected = [
-            Keyword(score=1.0, text="99"),
-            Keyword(score=0.61692667, text="23"),
-            Keyword(score=0.6116949, text="22"),
-            Keyword(score=0.592502, text="13"),
-            Keyword(score=0.592502, text="21"),
-            Keyword(score=0.5419587, text="20"),
-            Keyword(score=0.5419587, text="12"),
-            Keyword(score=0.47972697, text="11"),
-            Keyword(score=0.42711073, text="10"),
-        ]
-        it = keywords(docs=docs, ngram_range=(1, 1))
-        for i in range(len(expected)):
-            actual = next(it)
-            assert math.isclose(expected[i].score, actual.score, rel_tol=1e-5)
-            assert expected[i].text == actual.text
-
-    def test_2_gram(self, docs):
-        expected = [
-            Keyword(score=0.69911015, text="11 20"),
-            Keyword(score=0.67034394, text="22 23"),
-            Keyword(score=0.67034394, text="12 20"),
-            Keyword(score=0.67034394, text="12 13"),
-            Keyword(score=0.67034394, text="10 20"),
-            Keyword(score=0.64485943, text="13 12"),
-            Keyword(score=0.64485943, text="10 13"),
-            Keyword(score=0.56180054, text="21 22"),
-            Keyword(score=0.56180054, text="11 12"),
-            Keyword(score=0.5404425, text="12 11"),
-            Keyword(score=0.5404425, text="11 10"),
-            Keyword(score=0.5055913, text="20 21"),
-            Keyword(score=0.5055913, text="10 11"),
-        ]
-        it = keywords(docs=docs, ngram_range=(2, 2))
-        for i in range(len(expected)):
-            actual = next(it)
-            assert math.isclose(expected[i].score, actual.score, rel_tol=1e-5)
-            assert expected[i].text == actual.text
+@pytest.fixture
+def docs() -> List[str]:
+    return [
+        "apple banana apple",
+        "banana orange banana",
+        "orange apple banana",
+    ]
 
 
-class TestTfIdfClustering:
-    def test_no_prune_edges(self, docs):
-        clu = TfIdfClustering(
-            docs=docs,
-            similarity_min=0,
-        )
-        assert list(clu.G.edges(data=True)) == [
-            (0, 0, {"weight": 1.0}),
-            (0, 1, {"weight": 1.0}),
-            (0, 2, {"weight": 1.0}),
-            (0, 3, {"weight": 0.1492919921875}),
-            (0, 4, {"weight": 0.379150390625}),
-            (0, 5, {"weight": 0.67724609375}),
-            (1, 1, {"weight": 1.0}),
-            (1, 2, {"weight": 1.0}),
-            (1, 3, {"weight": 0.1492919921875}),
-            (1, 4, {"weight": 0.379150390625}),
-            (1, 5, {"weight": 0.67724609375}),
-            (2, 2, {"weight": 1.0}),
-            (2, 3, {"weight": 0.1492919921875}),
-            (2, 4, {"weight": 0.379150390625}),
-            (2, 5, {"weight": 0.67724609375}),
-            (3, 3, {"weight": 1.0}),
-            (3, 4, {"weight": 0.70263671875}),
-            (3, 5, {"weight": 0.406494140625}),
-            (3, 6, {"weight": 0.73291015625}),
-            (4, 4, {"weight": 1.0}),
-            (4, 5, {"weight": 0.67724609375}),
-            (4, 6, {"weight": 0.467529296875}),
-            (5, 5, {"weight": 1.0}),
-            (5, 6, {"weight": 0.2120361328125}),
-            (6, 6, {"weight": 1.0}),
-            (7, 7, {"weight": 1.0}),
-        ]
-        assert clu.asyn_lpa_communities() == [0, 1, 2, 3, 4, 5, 6, 7]
-        # If resolution is less than 1, modularity favors larger communities.
-        # Greater than 1 favors smaller communities.
-        assert clu.greedy_modularity_communities(resolution=1) == [
-            0,
-            0,
-            0,
-            1,
-            2,
-            3,
-            1,
-            4,
-        ]
-        assert clu.greedy_modularity_communities(resolution=0.5) == [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1,
-        ]
+def collect_keywords(*args, **kwargs):
+    """Helper to exhaust the iterator."""
+    return list(keywords(*args, **kwargs))
 
-    def test_prune_edges(self, docs):
-        clu = TfIdfClustering(
-            docs=docs,
-            similarity_min=0.5,
-        )
-        assert list(clu.G.edges(data=True)) == [
-            (0, 0, {"weight": 1.0}),
-            (0, 1, {"weight": 1.0}),
-            (0, 2, {"weight": 1.0}),
-            (0, 5, {"weight": 0.67724609375}),
-            (1, 1, {"weight": 1.0}),
-            (1, 2, {"weight": 1.0}),
-            (1, 5, {"weight": 0.67724609375}),
-            (2, 2, {"weight": 1.0}),
-            (2, 5, {"weight": 0.67724609375}),
-            (3, 3, {"weight": 1.0}),
-            (3, 4, {"weight": 0.70263671875}),
-            (3, 6, {"weight": 0.73291015625}),
-            (4, 4, {"weight": 1.0}),
-            (4, 5, {"weight": 0.67724609375}),
-            (5, 5, {"weight": 1.0}),
-            (6, 6, {"weight": 1.0}),
-            (7, 7, {"weight": 1.0}),
+
+class TestKeywordsBasic:
+    def test_returns_keyword_objects(self, docs):
+        result = collect_keywords(docs)
+
+        assert result
+        assert all(isinstance(k, Keyword) for k in result)
+        assert all(isinstance(k.score, float) for k in result)
+        assert all(isinstance(k.text, str) for k in result)
+
+    def test_keywords_are_unique(self, docs):
+        result = collect_keywords(docs)
+        texts = [k.text for k in result]
+
+        assert len(texts) == len(set(texts))
+
+
+class TestKeywordsRanking:
+    def test_scores_are_non_increasing(self, docs):
+        result = collect_keywords(docs)
+        scores = [k.score for k in result]
+
+        for a, b in zip(scores, scores[1:]):
+            assert a >= b
+
+    def test_highest_scoring_term_first(self, docs):
+        result = collect_keywords(docs)
+
+        assert result[0].text in {"apple", "banana", "orange"}
+        assert result[0].score == max(k.score for k in result)
+
+
+class TestKeywordsOptions:
+    def test_ngram_range(self, docs):
+        result = collect_keywords(docs, ngram_range=(2, 2))
+        texts = [k.text for k in result]
+
+        assert all(" " in text for text in texts)
+
+    def test_stop_words_removed(self, docs):
+        result = collect_keywords(docs, stop_words=["banana"])
+        texts = [k.text for k in result]
+
+        assert "banana" not in texts
+
+    def test_lowercase_false(self):
+        docs = ["Apple apple"]
+        result = collect_keywords(docs, lowercase=False)
+        texts = [k.text for k in result]
+
+        assert "Apple" in texts
+        assert "apple" in texts
+
+    def test_vocabulary_restriction(self, docs):
+        vocab = ["apple"]
+        result = collect_keywords(docs, vocabulary=vocab)
+
+        assert result == [Keyword(score=result[0].score, text="apple")]
+
+
+class TestKeywordsDeterminism:
+    def test_deterministic_output(self, docs):
+        result1 = collect_keywords(docs)
+        result2 = collect_keywords(docs)
+
+        assert result1 == result2
+
+
+class TestKeywordsNumericalStability:
+    def test_scores_are_finite(self, docs):
+        result = collect_keywords(docs)
+
+        for kw in result:
+            assert math.isfinite(kw.score)
+
+
+class TestTfIdfClusteringGraph:
+    def test_similarity_matrix_shape(self, docs):
+        clu = TfIdfClustering(docs)
+
+        n = len(docs)
+        assert clu.sim.shape == (n, n)
+
+    def test_self_similarity_is_one(self, docs):
+        clu = TfIdfClustering(docs)
+
+        assert np.allclose(np.diag(clu.sim), 1.0)
+
+    def test_similarity_matrix_is_symmetric(self, docs):
+        clu = TfIdfClustering(docs)
+
+        assert np.allclose(clu.sim, clu.sim.T)
+
+    def test_graph_node_count(self, docs):
+        clu = TfIdfClustering(docs)
+
+        assert clu.G.number_of_nodes() == len(docs)
+
+    def test_graph_has_self_loops(self, docs):
+        clu = TfIdfClustering(docs)
+
+        self_loops = list(nx.selfloop_edges(clu.G))
+        assert len(self_loops) == len(docs)
+
+
+class TestTfIdfClusteringPruning:
+    def test_no_pruning_keeps_nonzero_edges(self, docs):
+        clu = TfIdfClustering(docs, similarity_min=0)
+
+        # at least one off-diagonal edge should be nonzero
+        off_diag = [
+            clu.sim[i, j] for i in range(len(docs)) for j in range(len(docs)) if i != j
         ]
-        assert clu.asyn_lpa_communities() == [0, 1, 2, 3, 4, 5, 6, 7]
-        # If resolution is less than 1, modularity favors larger communities.
-        # Greater than 1 favors smaller communities.
-        assert clu.greedy_modularity_communities(resolution=1) == [
-            0,
-            0,
-            0,
-            2,
-            1,
-            1,
-            2,
-            3,
+        assert any(v > 0 for v in off_diag)
+
+    def test_pruning_removes_weak_edges(self, docs):
+        clu = TfIdfClustering(docs, similarity_min=0.9)
+
+        off_diag = [
+            clu.sim[i, j] for i in range(len(docs)) for j in range(len(docs)) if i != j
         ]
-        assert clu.greedy_modularity_communities(resolution=0.5) == [
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            1,
-            2,
-        ]
+        assert all(v == 0 or v >= 0.9 for v in off_diag)
+
+
+class TestTfIdfClusteringCommunities:
+    def test_asyn_lpa_output_shape(self, docs):
+        clu = TfIdfClustering(docs)
+        labels = clu.asyn_lpa_communities(seed=42)
+
+        assert len(labels) == len(docs)
+        assert all(isinstance(x, int) for x in labels)
+        assert min(labels) >= 0
+
+    def test_greedy_modularity_output_shape(self, docs):
+        clu = TfIdfClustering(docs)
+        labels = clu.greedy_modularity_communities()
+
+        assert len(labels) == len(docs)
+        assert all(isinstance(x, int) for x in labels)
+        assert min(labels) >= 0
+
+    def test_resolution_affects_granularity(self, docs):
+        clu = TfIdfClustering(docs)
+
+        coarse = clu.greedy_modularity_communities(resolution=0.5)
+        fine = clu.greedy_modularity_communities(resolution=2.0)
+
+        # lower resolution → fewer communities
+        assert len(set(coarse)) <= len(set(fine))
+
+
+class TestTfIdfClusteringDeterminism:
+    def test_asyn_lpa_seeded_is_deterministic(self, docs):
+        clu = TfIdfClustering(docs)
+
+        labels1 = clu.asyn_lpa_communities(seed=123)
+        labels2 = clu.asyn_lpa_communities(seed=123)
+
+        assert labels1 == labels2

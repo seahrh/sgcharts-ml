@@ -55,7 +55,7 @@ def keywords(
         j = ordering[i] % len(ngrams)
         if ngrams[j] not in seen:
             seen.add(ngrams[j])
-            yield Keyword(score=x[ordering[i]], text=ngrams[j])
+            yield Keyword(score=x[ordering[i]].item(), text=ngrams[j])
         i += 1
 
 
