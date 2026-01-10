@@ -100,7 +100,7 @@ class GraphClustering:
             final_ca[ca == prev] = i
             cluster_info_list[i] = cluster_info_list[i]._replace(cluster_id=i)
         return GraphClustering.Result(
-            cluster_assignment=final_ca.tolist(),
+            cluster_assignment=final_ca.tolist(),  # type: ignore[arg-type]
             clusters=cluster_info_list,
         )
 
