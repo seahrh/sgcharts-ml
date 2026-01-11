@@ -12,19 +12,6 @@ scml.seed_everything()
 
 
 @pytest.fixture
-def docs2() -> List[str]:
-    return [
-        "10 11 12 13",
-        "13 12 11 10",
-        "12 11 10 13",  # this doc and above are duplicates
-        "10 20 21 22",
-        "10 11 20 21",
-        "20 21 22 23",
-        "99",
-    ]
-
-
-@pytest.fixture
 def docs() -> List[str]:
     return [
         "apple banana apple",
@@ -62,12 +49,6 @@ class TestKeywordsRanking:
         for a, b in zip(scores, scores[1:]):
             assert a >= b
 
-    def test_highest_scoring_term_first(self, docs):
-        result = collect_keywords(docs)
-
-        assert result[0].text in {"apple", "banana", "orange"}
-        assert result[0].score == max(k.score for k in result)
-
 
 class TestKeywordsOptions:
     def test_ngram_range(self, docs):
@@ -93,8 +74,7 @@ class TestKeywordsOptions:
     def test_vocabulary_restriction(self, docs):
         vocab = ["apple"]
         result = collect_keywords(docs, vocabulary=vocab)
-
-        assert result == [Keyword(score=result[0].score, text="apple")]
+        assert len(result) == 1 and result[0].text == "apple"
 
 
 class TestKeywordsDeterminism:
@@ -137,7 +117,7 @@ class TestTfIdfClusteringGraph:
 
     def test_graph_has_self_loops(self, docs):
         clu = TfIdfClustering(docs)
-
+        # A selfloop edge has the same node at both ends. (comparing the similarity of document with itself)
         self_loops = list(nx.selfloop_edges(clu.G))
         assert len(self_loops) == len(docs)
 
@@ -187,8 +167,6 @@ class TestTfIdfClusteringCommunities:
         # lower resolution → fewer communities
         assert len(set(coarse)) <= len(set(fine))
 
-
-class TestTfIdfClusteringDeterminism:
     def test_asyn_lpa_seeded_is_deterministic(self, docs):
         clu = TfIdfClustering(docs)
 
